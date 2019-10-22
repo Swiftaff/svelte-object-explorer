@@ -316,6 +316,7 @@
     padding: 0px;
     margin: 0px;
     z-index: 100000000000000000;
+    pointer-events: none;
   }
 
   .wrapper .tree:hover {
@@ -323,6 +324,7 @@
   }
 
   .tree {
+    pointer-events: all;
     transition: 0.2s;
     opacity: 0.3;
     position: fixed;
@@ -365,10 +367,12 @@
   }
 
   .toggle:hover {
+    pointer-events: all;
     opacity: 1;
   }
 
   .toggle {
+    pointer-events: all;
     cursor: pointer;
     opacity: 0.3;
     position: fixed;
