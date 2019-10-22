@@ -1,6 +1,6 @@
 {
   "name": "svelte-object-explorer",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "svelte": "src/index.svelte",
   "module": "dist/index.mjs",
   "main": "dist/index.js",
@@ -45,5 +45,8 @@
   "files": [
     "src",
     "dist"
-  ]
+  ],
+  "dependencies": {
+    "svelte-icons": "^1.1.0"
+  }
 }

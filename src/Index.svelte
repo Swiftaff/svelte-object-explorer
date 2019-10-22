@@ -1,6 +1,11 @@
 <script>
+  import FaChevronRight from "svelte-icons/fa/FaChevronRight.svelte";
+  import FaChevronDown from "svelte-icons/fa/FaChevronDown.svelte";
+  import FaChevronUp from "svelte-icons/fa/FaChevronUp.svelte";
+
   export let myStore;
   export let top = false;
+
   let toggle = true;
   let debugStoreHovered = null;
   let testyArr = [];
@@ -416,6 +421,11 @@
   pre {
     margin: 0px;
   }
+
+  .icon {
+    width: 15px;
+    height: 15px;
+  }
 </style>
 
 <div class="wrapper">
@@ -424,10 +434,10 @@
     on:click={doToggle}>
     {#if toggle}
       Hide
-      <i class="fas fa-chevron-down" />
+      <FaChevronDown />
     {:else}
       Show
-      <i class="fas fa-chevron-up" />
+      <FaChevronUp />
     {/if}
   </div>
 
@@ -442,12 +452,12 @@
         <tr
           class={displayClass(testy)}
           on:click={() => click(testy.key, testy.val, testy.type)}>
-          <td>
+          <td class="icon">
             {#if displayClass(testy)}
               {#if debugStoreHovered === testy.key}
-                <i class="fas fa-chevron-down" />
+                <FaChevronDown />
               {:else}
-                <i class="fas fa-chevron-right" />
+                <FaChevronRight />
               {/if}
             {/if}
             {displayVal(testy.val)}

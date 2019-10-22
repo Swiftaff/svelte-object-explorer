@@ -22,7 +22,7 @@ let largeTestObject = {
 
 const app = new App({
     target: document.body,
-    props: { testObject: largeTestObject, top: true }
+    props: { testObject: { largeTestObject, largeTestObject2: largeTestObject }, top: true }
 });
 
 export default app;
