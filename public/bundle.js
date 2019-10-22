@@ -339,7 +339,7 @@ var app = (function () {
     	return child_ctx;
     }
 
-    // (425:4) {:else}
+    // (424:4) {:else}
     function create_else_block_1(ctx) {
     	var t, i;
 
@@ -348,7 +348,7 @@ var app = (function () {
     			t = text("Show\n      ");
     			i = element("i");
     			attr_dev(i, "class", "fas fa-chevron-up");
-    			add_location(i, file, 426, 6, 9654);
+    			add_location(i, file, 425, 6, 9646);
     		},
 
     		m: function mount(target, anchor) {
@@ -363,11 +363,11 @@ var app = (function () {
     			}
     		}
     	};
-    	dispatch_dev("SvelteRegisterBlock", { block, id: create_else_block_1.name, type: "else", source: "(425:4) {:else}", ctx });
+    	dispatch_dev("SvelteRegisterBlock", { block, id: create_else_block_1.name, type: "else", source: "(424:4) {:else}", ctx });
     	return block;
     }
 
-    // (422:4) {#if toggle}
+    // (421:4) {#if toggle}
     function create_if_block_3(ctx) {
     	var t, i;
 
@@ -376,7 +376,7 @@ var app = (function () {
     			t = text("Hide\n      ");
     			i = element("i");
     			attr_dev(i, "class", "fas fa-chevron-down");
-    			add_location(i, file, 423, 6, 9591);
+    			add_location(i, file, 422, 6, 9583);
     		},
 
     		m: function mount(target, anchor) {
@@ -391,11 +391,11 @@ var app = (function () {
     			}
     		}
     	};
-    	dispatch_dev("SvelteRegisterBlock", { block, id: create_if_block_3.name, type: "if", source: "(422:4) {#if toggle}", ctx });
+    	dispatch_dev("SvelteRegisterBlock", { block, id: create_if_block_3.name, type: "if", source: "(421:4) {#if toggle}", ctx });
     	return block;
     }
 
-    // (443:12) {#if displayClass(testy)}
+    // (442:12) {#if displayClass(testy)}
     function create_if_block_1(ctx) {
     	var if_block_anchor;
 
@@ -437,11 +437,11 @@ var app = (function () {
     			}
     		}
     	};
-    	dispatch_dev("SvelteRegisterBlock", { block, id: create_if_block_1.name, type: "if", source: "(443:12) {#if displayClass(testy)}", ctx });
+    	dispatch_dev("SvelteRegisterBlock", { block, id: create_if_block_1.name, type: "if", source: "(442:12) {#if displayClass(testy)}", ctx });
     	return block;
     }
 
-    // (446:14) {:else}
+    // (445:14) {:else}
     function create_else_block(ctx) {
     	var i;
 
@@ -449,7 +449,7 @@ var app = (function () {
     		c: function create() {
     			i = element("i");
     			attr_dev(i, "class", "fas fa-chevron-right");
-    			add_location(i, file, 446, 16, 10252);
+    			add_location(i, file, 445, 16, 10244);
     		},
 
     		m: function mount(target, anchor) {
@@ -462,11 +462,11 @@ var app = (function () {
     			}
     		}
     	};
-    	dispatch_dev("SvelteRegisterBlock", { block, id: create_else_block.name, type: "else", source: "(446:14) {:else}", ctx });
+    	dispatch_dev("SvelteRegisterBlock", { block, id: create_else_block.name, type: "else", source: "(445:14) {:else}", ctx });
     	return block;
     }
 
-    // (444:14) {#if debugStoreHovered === testy.key}
+    // (443:14) {#if debugStoreHovered === testy.key}
     function create_if_block_2(ctx) {
     	var i;
 
@@ -474,7 +474,7 @@ var app = (function () {
     		c: function create() {
     			i = element("i");
     			attr_dev(i, "class", "fas fa-chevron-down");
-    			add_location(i, file, 444, 16, 10180);
+    			add_location(i, file, 443, 16, 10172);
     		},
 
     		m: function mount(target, anchor) {
@@ -487,11 +487,11 @@ var app = (function () {
     			}
     		}
     	};
-    	dispatch_dev("SvelteRegisterBlock", { block, id: create_if_block_2.name, type: "if", source: "(444:14) {#if debugStoreHovered === testy.key}", ctx });
+    	dispatch_dev("SvelteRegisterBlock", { block, id: create_if_block_2.name, type: "if", source: "(443:14) {#if debugStoreHovered === testy.key}", ctx });
     	return block;
     }
 
-    // (456:8) {#if debugStoreHovered === testy.key}
+    // (455:8) {#if debugStoreHovered === testy.key}
     function create_if_block(ctx) {
     	var tr0, td0, t0, tr1, td1, pre, t1_value = ctx.valueFormatter(ctx.testy.val) + "", t1, t2;
 
@@ -507,16 +507,16 @@ var app = (function () {
     			t2 = space();
     			attr_dev(td0, "colspan", "3");
     			attr_dev(td0, "class", "treeVal svelte-1wshp4h");
-    			add_location(td0, file, 458, 12, 10629);
+    			add_location(td0, file, 457, 12, 10621);
     			attr_dev(tr0, "class", "svelte-1wshp4h");
-    			add_location(tr0, file, 456, 10, 10511);
+    			add_location(tr0, file, 455, 10, 10503);
     			attr_dev(pre, "class", "svelte-1wshp4h");
-    			add_location(pre, file, 462, 14, 10770);
+    			add_location(pre, file, 461, 14, 10762);
     			attr_dev(td1, "colspan", "3");
     			attr_dev(td1, "class", "treeVal svelte-1wshp4h");
-    			add_location(td1, file, 461, 12, 10723);
+    			add_location(td1, file, 460, 12, 10715);
     			attr_dev(tr1, "class", "treeVal svelte-1wshp4h");
-    			add_location(tr1, file, 460, 10, 10690);
+    			add_location(tr1, file, 459, 10, 10682);
     		},
 
     		m: function mount(target, anchor) {
@@ -544,11 +544,11 @@ var app = (function () {
     			}
     		}
     	};
-    	dispatch_dev("SvelteRegisterBlock", { block, id: create_if_block.name, type: "if", source: "(456:8) {#if debugStoreHovered === testy.key}", ctx });
+    	dispatch_dev("SvelteRegisterBlock", { block, id: create_if_block.name, type: "if", source: "(455:8) {#if debugStoreHovered === testy.key}", ctx });
     	return block;
     }
 
-    // (438:6) {#each testyArr as testy}
+    // (437:6) {#each testyArr as testy}
     function create_each_block(ctx) {
     	var tr, td0, show_if = displayClass(ctx.testy), t0, t1_value = displayVal(ctx.testy.val) + "", t1, t2, td1, t3_value = ctx.testy.type + "", t3, t4, td2, t5_value = ctx.testy.key + "", t5, tr_class_value, t6, if_block1_anchor, dispose;
 
@@ -576,11 +576,11 @@ var app = (function () {
     			t6 = space();
     			if (if_block1) if_block1.c();
     			if_block1_anchor = empty();
-    			add_location(td0, file, 441, 10, 10069);
-    			add_location(td1, file, 451, 10, 10387);
-    			add_location(td2, file, 452, 10, 10419);
+    			add_location(td0, file, 440, 10, 10061);
+    			add_location(td1, file, 450, 10, 10379);
+    			add_location(td2, file, 451, 10, 10411);
     			attr_dev(tr, "class", tr_class_value = "" + null_to_empty(displayClass(ctx.testy)) + " svelte-1wshp4h");
-    			add_location(tr, file, 438, 8, 9949);
+    			add_location(tr, file, 437, 8, 9941);
     			dispose = listen_dev(tr, "click", click_handler);
     		},
 
@@ -668,12 +668,12 @@ var app = (function () {
     			dispose();
     		}
     	};
-    	dispatch_dev("SvelteRegisterBlock", { block, id: create_each_block.name, type: "each", source: "(438:6) {#each testyArr as testy}", ctx });
+    	dispatch_dev("SvelteRegisterBlock", { block, id: create_each_block.name, type: "each", source: "(437:6) {#each testyArr as testy}", ctx });
     	return block;
     }
 
     function create_fragment(ctx) {
-    	var div2, t0, t1, div0, div0_class_value, t2, div1, table, colgroup, col0, t3, col1, t4, col2, t5, div1_class_value, dispose;
+    	var div2, div0, div0_class_value, t0, div1, table, colgroup, col0, t1, col1, t2, col2, t3, div1_class_value, dispose;
 
     	function select_block_type(changed, ctx) {
     		if (ctx.toggle) return create_if_block_3;
@@ -694,37 +694,35 @@ var app = (function () {
     	const block = {
     		c: function create() {
     			div2 = element("div");
-    			t0 = text(ctx.top);
-    			t1 = space();
     			div0 = element("div");
     			if_block.c();
-    			t2 = space();
+    			t0 = space();
     			div1 = element("div");
     			table = element("table");
     			colgroup = element("colgroup");
     			col0 = element("col");
-    			t3 = space();
+    			t1 = space();
     			col1 = element("col");
-    			t4 = space();
+    			t2 = space();
     			col2 = element("col");
-    			t5 = space();
+    			t3 = space();
 
     			for (let i = 0; i < each_blocks.length; i += 1) {
     				each_blocks[i].c();
     			}
     			attr_dev(div0, "class", div0_class_value = "" + null_to_empty(((ctx.toggle ? 'toggle toggleShow' : 'toggle toggleHide') + (ctx.top ? ' toggleTop' : ' toggleBottom'))) + " svelte-1wshp4h");
-    			add_location(div0, file, 418, 2, 9421);
+    			add_location(div0, file, 417, 2, 9413);
     			set_style(col0, "width", "35%");
-    			add_location(col0, file, 433, 8, 9797);
+    			add_location(col0, file, 432, 8, 9789);
     			set_style(col1, "width", "10%");
-    			add_location(col1, file, 434, 8, 9831);
+    			add_location(col1, file, 433, 8, 9823);
     			set_style(col2, "width", "55%");
-    			add_location(col2, file, 435, 8, 9865);
-    			add_location(colgroup, file, 432, 6, 9778);
+    			add_location(col2, file, 434, 8, 9857);
+    			add_location(colgroup, file, 431, 6, 9770);
     			attr_dev(table, "class", "svelte-1wshp4h");
-    			add_location(table, file, 431, 4, 9764);
+    			add_location(table, file, 430, 4, 9756);
     			attr_dev(div1, "class", div1_class_value = "" + null_to_empty(('tree' + (ctx.toggle ? '' : ' tree-hide'))) + " svelte-1wshp4h");
-    			add_location(div1, file, 430, 2, 9708);
+    			add_location(div1, file, 429, 2, 9700);
     			attr_dev(div2, "class", "wrapper svelte-1wshp4h");
     			add_location(div2, file, 416, 0, 9389);
     			dispose = listen_dev(div0, "click", ctx.doToggle);
@@ -736,20 +734,18 @@ var app = (function () {
 
     		m: function mount(target, anchor) {
     			insert_dev(target, div2, anchor);
-    			append_dev(div2, t0);
-    			append_dev(div2, t1);
     			append_dev(div2, div0);
     			if_block.m(div0, null);
-    			append_dev(div2, t2);
+    			append_dev(div2, t0);
     			append_dev(div2, div1);
     			append_dev(div1, table);
     			append_dev(table, colgroup);
     			append_dev(colgroup, col0);
-    			append_dev(colgroup, t3);
+    			append_dev(colgroup, t1);
     			append_dev(colgroup, col1);
-    			append_dev(colgroup, t4);
+    			append_dev(colgroup, t2);
     			append_dev(colgroup, col2);
-    			append_dev(table, t5);
+    			append_dev(table, t3);
 
     			for (let i = 0; i < each_blocks.length; i += 1) {
     				each_blocks[i].m(table, null);
@@ -757,10 +753,6 @@ var app = (function () {
     		},
 
     		p: function update(changed, ctx) {
-    			if (changed.top) {
-    				set_data_dev(t0, ctx.top);
-    			}
-
     			if (current_block_type !== (current_block_type = select_block_type(changed, ctx))) {
     				if_block.d(1);
     				if_block = current_block_type(ctx);

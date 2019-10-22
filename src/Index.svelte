@@ -415,7 +415,6 @@
 </style>
 
 <div class="wrapper">
-  {top}
   <div
     class={(toggle ? 'toggle toggleShow' : 'toggle toggleHide') + (top ? ' toggleTop' : ' toggleBottom')}
     on:click={doToggle}>
