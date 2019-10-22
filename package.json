@@ -1,9 +1,18 @@
 {
   "name": "svelte-object-explorer",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "svelte": "src/index.svelte",
+  "module": "dist/index.mjs",
+  "main": "dist/index.js",
   "description": "A Svelte component to view objects similar to the console to easily see your state or stores",
-  "main": "src/index.svelte",
+  "homepage": "https://github.com/Swiftaff/svelte-object-explorer",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Swiftaff/svelte-object-explorer"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
   "keywords": [
     "svelte",
     "object",
@@ -28,10 +37,13 @@
     "svelte-loader": "^2.13.4"
   },
   "scripts": {
-    "dev": "run-p _start:dev _autobuild",
     "build": "rollup -c",
-    "_autobuild": "rollup -c -w",
-    "_start": "sirv public",
-    "_start:dev": "sirv public --dev"
-  }
+    "dev": "run-p start:dev build:dev",
+    "build:dev": "rollup -c rollup.config.example.js -w",
+    "start:dev": "sirv public --dev"
+  },
+  "files": [
+    "src",
+    "dist"
+  ]
 }
