@@ -1,5 +1,6 @@
 <script>
   export let myStore;
+  export let top = false;
   let toggle = true;
   let debugStoreHovered = null;
   let testyArr = [];
@@ -317,12 +318,18 @@
     z-index: 100000000000000000;
   }
 
+  .wrapper .tree:hover {
+    opacity: 1;
+  }
+
   .tree {
-    position: absolute;
+    transition: 0.2s;
+    opacity: 0.3;
+    position: fixed;
     right: 0px;
     top: 0px;
     width: 500px;
-    height: 100%;
+    height: 100vh;
     background-color: #aaa;
     z-index: 10000000;
     overflow: auto;
@@ -332,6 +339,11 @@
     font-family: "Roboto";
     font-size: 14px;
     line-height: 1.3em;
+  }
+
+  .tree-hide {
+    right: -500px;
+    transition: 0.2s;
   }
 
   .tree table {
@@ -352,9 +364,14 @@
     color: white;
   }
 
+  .toggle:hover {
+    opacity: 1;
+  }
+
   .toggle {
-    position: absolute;
-    bottom: 25px;
+    cursor: pointer;
+    opacity: 0.3;
+    position: fixed;
     width: 70px;
     height: 20px;
     text-align: center;
@@ -368,12 +385,23 @@
     line-height: 1.3em;
   }
 
+  .toggleTop {
+    top: 25px;
+  }
+
+  .toggleBottom {
+    bottom: 25px;
+  }
+
   .toggleShow {
+    transition: 0.2s;
     right: 475px;
+    z-index: 10000001;
   }
 
   .toggleHide {
-    right: 0px;
+    transition: 0.2s;
+    right: -25px;
   }
 
   .accordion {
@@ -387,8 +415,9 @@
 </style>
 
 <div class="wrapper">
+  {top}
   <div
-    class={toggle ? 'toggle toggleShow' : 'toggle toggleHide'}
+    class={(toggle ? 'toggle toggleShow' : 'toggle toggleHide') + (top ? ' toggleTop' : ' toggleBottom')}
     on:click={doToggle}>
     {#if toggle}
       Hide
@@ -398,45 +427,44 @@
       <i class="fas fa-chevron-up" />
     {/if}
   </div>
-  {#if toggle}
-    <div class="tree">
-      <table>
-        <colgroup>
-          <col style="width:35%" />
-          <col style="width:10%" />
-          <col style="width:55%" />
-        </colgroup>
-        {#each testyArr as testy}
-          <tr
-            class={displayClass(testy)}
-            on:click={() => click(testy.key, testy.val, testy.type)}>
-            <td>
-              {#if displayClass(testy)}
-                {#if debugStoreHovered === testy.key}
-                  <i class="fas fa-chevron-down" />
-                {:else}
-                  <i class="fas fa-chevron-right" />
-                {/if}
-              {/if}
-              {displayVal(testy.val)}
-            </td>
-            <td>{testy.type}</td>
-            <td>{testy.key}</td>
 
+  <div class={'tree' + (toggle ? '' : ' tree-hide')}>
+    <table>
+      <colgroup>
+        <col style="width:35%" />
+        <col style="width:10%" />
+        <col style="width:55%" />
+      </colgroup>
+      {#each testyArr as testy}
+        <tr
+          class={displayClass(testy)}
+          on:click={() => click(testy.key, testy.val, testy.type)}>
+          <td>
+            {#if displayClass(testy)}
+              {#if debugStoreHovered === testy.key}
+                <i class="fas fa-chevron-down" />
+              {:else}
+                <i class="fas fa-chevron-right" />
+              {/if}
+            {/if}
+            {displayVal(testy.val)}
+          </td>
+          <td>{testy.type}</td>
+          <td>{testy.key}</td>
+
+        </tr>
+        {#if debugStoreHovered === testy.key}
+          <tr>
+            <!-- only used to keep the odd even shading consistent when opening/closing accordion-->
+            <td colspan="3" class="treeVal" />
           </tr>
-          {#if debugStoreHovered === testy.key}
-            <tr>
-              <!-- only used to keep the odd even shading consistent when opening/closing accordion-->
-              <td colspan="3" class="treeVal" />
-            </tr>
-            <tr class="treeVal">
-              <td colspan="3" class="treeVal">
-                <pre>{valueFormatter(testy.val)}</pre>
-              </td>
-            </tr>
-          {/if}
-        {/each}
-      </table>
-    </div>
-  {/if}
+          <tr class="treeVal">
+            <td colspan="3" class="treeVal">
+              <pre>{valueFormatter(testy.val)}</pre>
+            </td>
+          </tr>
+        {/if}
+      {/each}
+    </table>
+  </div>
 </div>
