@@ -306,6 +306,17 @@
 </script>
 
 <style>
+  .wrapper {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100vw;
+    height: 100vh;
+    padding: 0px;
+    margin: 0px;
+    z-index: 100000000000000000;
+  }
+
   .tree {
     position: absolute;
     right: 0px;
@@ -362,7 +373,7 @@
   }
 
   .toggleHide {
-    right: -25px;
+    right: 0px;
   }
 
   .accordion {
@@ -375,55 +386,57 @@
   }
 </style>
 
-<div
-  class={toggle ? 'toggle toggleShow' : 'toggle toggleHide'}
-  on:click={doToggle}>
+<div class="wrapper">
+  <div
+    class={toggle ? 'toggle toggleShow' : 'toggle toggleHide'}
+    on:click={doToggle}>
+    {#if toggle}
+      Hide
+      <i class="fas fa-chevron-down" />
+    {:else}
+      Show
+      <i class="fas fa-chevron-up" />
+    {/if}
+  </div>
   {#if toggle}
-    Hide
-    <i class="fas fa-chevron-down" />
-  {:else}
-    Show
-    <i class="fas fa-chevron-up" />
+    <div class="tree">
+      <table>
+        <colgroup>
+          <col style="width:35%" />
+          <col style="width:10%" />
+          <col style="width:55%" />
+        </colgroup>
+        {#each testyArr as testy}
+          <tr
+            class={displayClass(testy)}
+            on:click={() => click(testy.key, testy.val, testy.type)}>
+            <td>
+              {#if displayClass(testy)}
+                {#if debugStoreHovered === testy.key}
+                  <i class="fas fa-chevron-down" />
+                {:else}
+                  <i class="fas fa-chevron-right" />
+                {/if}
+              {/if}
+              {displayVal(testy.val)}
+            </td>
+            <td>{testy.type}</td>
+            <td>{testy.key}</td>
+
+          </tr>
+          {#if debugStoreHovered === testy.key}
+            <tr>
+              <!-- only used to keep the odd even shading consistent when opening/closing accordion-->
+              <td colspan="3" class="treeVal" />
+            </tr>
+            <tr class="treeVal">
+              <td colspan="3" class="treeVal">
+                <pre>{valueFormatter(testy.val)}</pre>
+              </td>
+            </tr>
+          {/if}
+        {/each}
+      </table>
+    </div>
   {/if}
 </div>
-{#if toggle}
-  <div class="tree">
-    <table>
-      <colgroup>
-        <col style="width:35%" />
-        <col style="width:10%" />
-        <col style="width:55%" />
-      </colgroup>
-      {#each testyArr as testy}
-        <tr
-          class={displayClass(testy)}
-          on:click={() => click(testy.key, testy.val, testy.type)}>
-          <td>
-            {#if displayClass(testy)}
-              {#if debugStoreHovered === testy.key}
-                <i class="fas fa-chevron-down" />
-              {:else}
-                <i class="fas fa-chevron-right" />
-              {/if}
-            {/if}
-            {displayVal(testy.val)}
-          </td>
-          <td>{testy.type}</td>
-          <td>{testy.key}</td>
-
-        </tr>
-        {#if debugStoreHovered === testy.key}
-          <tr>
-            <!-- only used to keep the odd even shading consistent when opening/closing accordion-->
-            <td colspan="3" class="treeVal" />
-          </tr>
-          <tr class="treeVal">
-            <td colspan="3" class="treeVal">
-              <pre>{valueFormatter(testy.val)}</pre>
-            </td>
-          </tr>
-        {/if}
-      {/each}
-    </table>
-  </div>
-{/if}

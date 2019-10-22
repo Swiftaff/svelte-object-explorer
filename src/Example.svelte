@@ -1,6 +1,6 @@
 <script>
   export let testObject;
-  import SvelteObjectExplorer from "../src/Index.svelte";
+  import SvelteObjectExplorer from "../src/index.svelte";
 </script>
 
 <SvelteObjectExplorer myStore={testObject} />
