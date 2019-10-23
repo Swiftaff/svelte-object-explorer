@@ -1,6 +1,6 @@
 # Svelte Object Explorer
 
-[![version][version-badge]](package) [![MIT License][license-badge]](license) [![Build Status](https://travis-ci.org/Swiftaff/svelte-object-explorer.svg?branch=master)](https://travis-ci.org/Swiftaff/svelte-object-explorer) [![PRs Welcome][prs-badge]](prs)
+[![github-package.json-version](https://img.shields.io/github/package-json/v/Swiftaff/svelte-object-explorer?style=social&logo=github)](https://github.com/user/repo) [![Build Status](https://travis-ci.org/Swiftaff/svelte-object-explorer.svg?branch=master)](https://travis-ci.org/Swiftaff/svelte-object-explorer) [![The MIT License](https://img.shields.io/badge/license-MIT-orange.svg?style=flat-square)](http://opensource.org/licenses/MIT)
 
 ## Demo
 
