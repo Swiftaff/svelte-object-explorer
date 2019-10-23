@@ -8,4 +8,7 @@ jobs:
                   TERM: xterm
         steps:
             - checkout
+            - run:
+                  name: Set up dependencies
+                  command: npm install
             - run: npm run build
