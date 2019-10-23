@@ -1,4 +1,4 @@
-import App from "./example.svelte";
+import App from "./Example.svelte";
 
 let smallTestObject = {
     test: 1,
