@@ -2,7 +2,7 @@ import svelte from "rollup-plugin-svelte";
 import resolve from "rollup-plugin-node-resolve";
 import pkg from "./package.json";
 
-const input = "src/index.svelte";
+const input = "./src/index.svelte";
 
 export default [
     {
