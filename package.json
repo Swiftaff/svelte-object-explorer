@@ -1,7 +1,7 @@
 {
   "name": "svelte-object-explorer",
   "version": "1.0.8",
-  "svelte": "src/index.svelte",
+  "svelte": "src/Index.svelte",
   "module": "dist/index.mjs",
   "main": "dist/index.js",
   "description": "A Svelte component to view objects similar to the console to easily see your state or stores",
