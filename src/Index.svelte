@@ -320,8 +320,9 @@
     height: 100vh;
     padding: 0px;
     margin: 0px;
-    z-index: 100000000000000000;
+    z-index: 100000000000000000 !important;
     pointer-events: none;
+    font-family: "Roboto", "Arial", sans-serif !important;
   }
 
   .wrapper .tree:hover {
@@ -343,7 +344,6 @@
     font-size: small;
 
     margin: 0;
-    font-family: "Roboto";
     font-size: 14px;
     line-height: 1.3em;
   }
@@ -389,7 +389,6 @@
     z-index: 10000000;
 
     margin: 0;
-    font-family: "Roboto";
     font-size: 14px;
     line-height: 1.3em;
   }
@@ -403,12 +402,13 @@
   }
 
   .toggleShow {
+    pointer-events: all;
     transition: 0.2s;
     right: 475px;
-    z-index: 10000001;
   }
 
   .toggleHide {
+    pointer-events: all;
     transition: 0.2s;
     right: -25px;
   }
@@ -422,9 +422,25 @@
     margin: 0px;
   }
 
-  .icon {
+  .icon1 {
     width: 15px;
     height: 15px;
+  }
+
+  .smaller {
+    width: 15px;
+    height: 15px;
+    display: inline-block;
+    position: relative;
+    top: 4px;
+  }
+
+  .link {
+    cursor: pointer;
+  }
+
+  .link:hover {
+    background-color: #888;
   }
 </style>
 
@@ -434,10 +450,14 @@
     on:click={doToggle}>
     {#if toggle}
       Hide
-      <FaChevronDown />
+      <span class="smaller">
+        <FaChevronDown />
+      </span>
     {:else}
       Show
-      <FaChevronUp />
+      <span class="smaller">
+        <FaChevronUp />
+      </span>
     {/if}
   </div>
 
@@ -452,13 +472,15 @@
         <tr
           class={displayClass(testy)}
           on:click={() => click(testy.key, testy.val, testy.type)}>
-          <td class="icon">
+          <td class="link">
             {#if displayClass(testy)}
-              {#if debugStoreHovered === testy.key}
-                <FaChevronDown />
-              {:else}
-                <FaChevronRight />
-              {/if}
+              <span class="smaller">
+                {#if debugStoreHovered === testy.key}
+                  <FaChevronDown />
+                {:else}
+                  <FaChevronRight />
+                {/if}
+              </span>
             {/if}
             {displayVal(testy.val)}
           </td>
