@@ -1,6 +1,6 @@
 {
   "name": "svelte-object-explorer",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "svelte": "src/Index.svelte",
   "module": "dist/index.mjs",
   "main": "dist/index.js",
@@ -24,6 +24,7 @@
   "author": "swiftaff",
   "license": "MIT",
   "devDependencies": {
+    "cypress": "^3.4.1",
     "npm-run-all": "^4.1.5",
     "rollup": "^1.16.3",
     "rollup-plugin-commonjs": "^9.3.4",
@@ -41,7 +42,9 @@
     "dev": "run-p start:dev build:dev",
     "build:dev": "rollup -c rollup.config.example.js -w",
     "start:dev": "sirv public --dev",
-    "npmpublish": "npm publish"
+    "npmpublish": "npm publish",
+    "cy:open": "cypress open",
+    "cy:run": "cypress run"
   },
   "files": [
     "src",

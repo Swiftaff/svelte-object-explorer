@@ -1963,7 +1963,7 @@ var app = (function () {
     const file$5 = "src\\example.svelte";
 
     function create_fragment$5(ctx) {
-    	var t0, h1, t2, t3_value = JSON.stringify(ctx.testObject) + "", t3, current;
+    	var t0, h1, t2, p0, t3, t4_value = JSON.stringify(ctx.testObject.mediumTestObject) + "", t4, t5, p1, t6, t7_value = JSON.stringify(ctx.testObject.mediumTestObject) + "", t7, t8, p2, t9, t10_value = JSON.stringify(ctx.testObject.largeTestObject) + "", t10, current;
 
     	var svelteobjectexplorer = new Index({
     		props: { myStore: ctx.testObject },
@@ -1975,10 +1975,23 @@ var app = (function () {
     			svelteobjectexplorer.$$.fragment.c();
     			t0 = space();
     			h1 = element("h1");
-    			h1.textContent = "Example Object";
+    			h1.textContent = "Example Test Objects";
     			t2 = space();
-    			t3 = text(t3_value);
+    			p0 = element("p");
+    			t3 = text("small: ");
+    			t4 = text(t4_value);
+    			t5 = space();
+    			p1 = element("p");
+    			t6 = text("medium: ");
+    			t7 = text(t7_value);
+    			t8 = space();
+    			p2 = element("p");
+    			t9 = text("large: ");
+    			t10 = text(t10_value);
     			add_location(h1, file$5, 7, 0, 152);
+    			add_location(p0, file$5, 8, 0, 183);
+    			add_location(p1, file$5, 10, 0, 246);
+    			add_location(p2, file$5, 12, 0, 310);
     		},
 
     		l: function claim(nodes) {
@@ -1990,7 +2003,17 @@ var app = (function () {
     			insert_dev(target, t0, anchor);
     			insert_dev(target, h1, anchor);
     			insert_dev(target, t2, anchor);
-    			insert_dev(target, t3, anchor);
+    			insert_dev(target, p0, anchor);
+    			append_dev(p0, t3);
+    			append_dev(p0, t4);
+    			insert_dev(target, t5, anchor);
+    			insert_dev(target, p1, anchor);
+    			append_dev(p1, t6);
+    			append_dev(p1, t7);
+    			insert_dev(target, t8, anchor);
+    			insert_dev(target, p2, anchor);
+    			append_dev(p2, t9);
+    			append_dev(p2, t10);
     			current = true;
     		},
 
@@ -1999,8 +2022,16 @@ var app = (function () {
     			if (changed.testObject) svelteobjectexplorer_changes.myStore = ctx.testObject;
     			svelteobjectexplorer.$set(svelteobjectexplorer_changes);
 
-    			if ((!current || changed.testObject) && t3_value !== (t3_value = JSON.stringify(ctx.testObject) + "")) {
-    				set_data_dev(t3, t3_value);
+    			if ((!current || changed.testObject) && t4_value !== (t4_value = JSON.stringify(ctx.testObject.mediumTestObject) + "")) {
+    				set_data_dev(t4, t4_value);
+    			}
+
+    			if ((!current || changed.testObject) && t7_value !== (t7_value = JSON.stringify(ctx.testObject.mediumTestObject) + "")) {
+    				set_data_dev(t7, t7_value);
+    			}
+
+    			if ((!current || changed.testObject) && t10_value !== (t10_value = JSON.stringify(ctx.testObject.largeTestObject) + "")) {
+    				set_data_dev(t10, t10_value);
     			}
     		},
 
@@ -2023,7 +2054,11 @@ var app = (function () {
     				detach_dev(t0);
     				detach_dev(h1);
     				detach_dev(t2);
-    				detach_dev(t3);
+    				detach_dev(p0);
+    				detach_dev(t5);
+    				detach_dev(p1);
+    				detach_dev(t8);
+    				detach_dev(p2);
     			}
     		}
     	};
@@ -2082,6 +2117,10 @@ var app = (function () {
         test3: { test4: 4, test5: { test6: ["test6", "test7"] } }
     };
 
+    let mediumTestObject = {
+        test: [smallTestObject, smallTestObject, smallTestObject, smallTestObject, smallTestObject]
+    };
+
     let largeTestObject = {
         test: [
             smallTestObject,
@@ -2098,7 +2137,7 @@ var app = (function () {
 
     const app = new Example({
         target: document.body,
-        props: { testObject: { largeTestObject, largeTestObject2: largeTestObject }, top: true }
+        props: { testObject: { mediumTestObject, largeTestObject }, top: true }
     });
 
     return app;

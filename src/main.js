@@ -6,6 +6,10 @@ let smallTestObject = {
     test3: { test4: 4, test5: { test6: ["test6", "test7"] } }
 };
 
+let mediumTestObject = {
+    test: [smallTestObject, smallTestObject, smallTestObject, smallTestObject, smallTestObject]
+};
+
 let largeTestObject = {
     test: [
         smallTestObject,
@@ -22,7 +26,7 @@ let largeTestObject = {
 
 const app = new App({
     target: document.body,
-    props: { testObject: { largeTestObject, largeTestObject2: largeTestObject }, top: true }
+    props: { testObject: { mediumTestObject, largeTestObject }, top: true }
 });
 
 export default app;

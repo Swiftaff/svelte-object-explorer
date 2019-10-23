@@ -12,3 +12,4 @@ jobs:
                   name: Set up dependencies
                   command: npm install
             - run: npm run build
+            - run: npm run cy:run
