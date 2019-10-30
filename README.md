@@ -16,6 +16,8 @@ Sure you can do this with `console.log({object})` or add breakpoints while debug
 
 Displays an unobtrusive toggle-able window, with one or multiple variables of most kinds of data: array, object, string, number, boolean, symbol
 
+Manually expand/contract nested objects and arrays, or show all expanded, and hover to highlight elements of the same level.
+
 ## Installation
 
 1. Create your svelte project
