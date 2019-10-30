@@ -40,7 +40,8 @@ describe("Toggle data objects", function() {
             .first()
             .click();
         cy.get("td.treeVal").should("have.length", 2);
-        cy.get("td.treeVal").contains("Array (9)");
+        cy.get("td.treeVal").contains("Array");
+        cy.get("td.treeVal").contains("(9)");
     });
 
     it("Clicking second item, should show second expanded value (2 treeVal classes) with Array (5)", function() {
@@ -48,6 +49,7 @@ describe("Toggle data objects", function() {
             .last()
             .click();
         cy.get("td.treeVal").should("have.length", 2);
-        cy.get("td.treeVal").contains("Array (5)");
+        cy.get("td.treeVal").contains("Array");
+        cy.get("td.treeVal").contains("(5)");
     });
 });

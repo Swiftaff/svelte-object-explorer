@@ -7,11 +7,6 @@ let smallTestObject = {
 };
 
 let mediumTestObject = {
-    test1: 1,
-    test2: "2",
-    test3: {
-        test4: "test4"
-    },
     test: [smallTestObject, smallTestObject, smallTestObject, smallTestObject, smallTestObject]
 };
 
