@@ -496,7 +496,6 @@
     parentArr.map(row => {
       showAll.push(row.indexRef);
     });
-    console.log(showAll);
     return parentArr;
   }
 
