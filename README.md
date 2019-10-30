@@ -35,6 +35,9 @@ Include **svelte-object-explorer** in the script section of any svelte file, but
 
 <SvelteObjectExplorer
  myStore = { staticObject, dataFromProps }
+ fade = {false} //optional, default true
+ tabPosition = "top" //optional
+ open = "dataFromProps" //optional
 />
 // ...
 // the rest of your app
@@ -46,6 +49,16 @@ Include **svelte-object-explorer** in the script section of any svelte file, but
 -   variables from component props
 -   values from a store
 -   outputs from a function...
+
+`fade` is an optional boolean, which fades the panel when not hovered
+
+`tabPosition` is an optional string, which affects the position of the "Show/Hide" tab.
+
+-   "top" is default
+-   "middle"
+-   "bottom"
+
+`open` is an optional string, the name of one of the objects you supplied in myStore, to auto-expand it on load
 
 > It's not clever, it's not pretty...
 

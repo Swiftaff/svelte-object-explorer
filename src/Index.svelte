@@ -4,7 +4,9 @@
   import FaChevronUp from "svelte-icons/fa/FaChevronUp.svelte";
 
   export let myStore;
-  export let top = false;
+  export let tabPosition = "top";
+  export let open = null;
+  export let fade = true;
 
   let toggle = true;
   let debugStoreHovered = null;
@@ -65,10 +67,10 @@
       (Object.entries(val).length && type === "object") ||
       (val.length && type === "array")
     ) {
-      if (debugStoreHovered === key) {
-        debugStoreHovered = null;
+      if (open === key) {
+        open = null;
       } else {
-        debugStoreHovered = key;
+        open = key;
       }
     }
   }
@@ -329,6 +331,10 @@
     opacity: 1;
   }
 
+  .noFade {
+    opacity: 1 !important;
+  }
+
   .tree {
     pointer-events: all;
     transition: 0.2s;
@@ -393,11 +399,15 @@
     line-height: 1.3em;
   }
 
-  .toggleTop {
+  .toggletop {
     top: 25px;
   }
 
-  .toggleBottom {
+  .togglemiddle {
+    top: calc(50vh - 25px);
+  }
+
+  .togglebottom {
     bottom: 25px;
   }
 
@@ -446,7 +456,7 @@
 
 <div class="wrapper">
   <div
-    class={(toggle ? 'toggle toggleShow' : 'toggle toggleHide') + (top ? ' toggleTop' : ' toggleBottom')}
+    class={(toggle ? 'toggle toggleShow' : 'toggle toggleHide') + ' toggle' + tabPosition + (fade ? '' : ' noFade')}
     on:click={doToggle}>
     {#if toggle}
       Hide
@@ -461,7 +471,7 @@
     {/if}
   </div>
 
-  <div class={'tree' + (toggle ? '' : ' tree-hide')}>
+  <div class={'tree' + (toggle ? '' : ' tree-hide') + (fade ? '' : ' noFade')}>
     <table>
       <colgroup>
         <col style="width:35%" />
@@ -475,7 +485,7 @@
           <td class="link">
             {#if displayClass(testy)}
               <span class="smaller">
-                {#if debugStoreHovered === testy.key}
+                {#if open === testy.key}
                   <FaChevronDown />
                 {:else}
                   <FaChevronRight />
@@ -486,9 +496,8 @@
           </td>
           <td>{testy.type}</td>
           <td>{testy.key}</td>
-
         </tr>
-        {#if debugStoreHovered === testy.key}
+        {#if open === testy.key}
           <tr>
             <!-- only used to keep the odd even shading consistent when opening/closing accordion-->
             <td colspan="3" class="treeVal" />

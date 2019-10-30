@@ -3,7 +3,7 @@
   import SvelteObjectExplorer from "./Index.svelte";
 </script>
 
-<SvelteObjectExplorer myStore={testObject} />
+<SvelteObjectExplorer myStore={testObject} fade={false} />
 
 <h1>Example Test Objects</h1>
 <p>small: {JSON.stringify(testObject.mediumTestObject)}</p>
