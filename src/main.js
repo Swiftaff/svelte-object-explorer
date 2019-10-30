@@ -26,7 +26,7 @@ let largeTestObject = {
 
 const app = new App({
     target: document.body,
-    props: { testObject: { mediumTestObject, largeTestObject }, top: true }
+    props: { testObject: { mediumTestObject, largeTestObject } }
 });
 
 export default app;

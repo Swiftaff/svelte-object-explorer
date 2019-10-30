@@ -1,27 +1,44 @@
 <script>
+  import { onMount } from "svelte";
   import FaChevronRight from "svelte-icons/fa/FaChevronRight.svelte";
   import FaChevronDown from "svelte-icons/fa/FaChevronDown.svelte";
   import FaChevronUp from "svelte-icons/fa/FaChevronUp.svelte";
   import FaRegCheckSquare from "svelte-icons/fa/FaRegCheckSquare.svelte";
   import FaRegSquare from "svelte-icons/fa/FaRegSquare.svelte";
+  import FaClipboard from "svelte-icons/fa/FaClipboard.svelte";
+  import FaClipboardCheck from "svelte-icons/fa/FaClipboardCheck.svelte";
 
   export let myStore;
   export let tabPosition = "top";
   export let open = null;
-  export let fade = true;
+  export let fade = false;
+  let showAll = false;
 
-  let showAll = []; //populated later with all row references
-  let showManuallySelected = ["0.0", "0.0.2"];
+  let openIndex = null;
+
+  onMount(async () => {
+    rowsToShow = showAll ? showAllArr : showManuallySelected;
+    //if (open && myStore && testyArr) {
+    let i = testyArr.filter(item => item.key === open);
+    if (i.length) openIndex = i[0].index;
+    valueFormatterToArr(testyArr[i]);
+    createArray();
+    //}
+  });
+
+  let indentSpaces = 2;
+
+  let showAllArr = []; //populated later with all row references
+  let showManuallySelected = ["0", "0.0"];
   let rowsToShow = [];
-  let isShowingAll = false;
 
   function toggleShowAll() {
-    isShowingAll = !isShowingAll;
+    showAll = !showAll;
   }
-  $: rowsToShow = isShowingAll ? showAll : showManuallySelected;
+  $: rowsToShow = showAll ? showAllArr : showManuallySelected;
 
   function rowContract(rowIndex) {
-    isShowingAll = false;
+    showAll = false;
     showManuallySelected = showManuallySelected.filter(
       row => !row.startsWith(rowIndex)
     );
@@ -36,13 +53,47 @@
   let toggle = true;
   let testyArr = [];
   $: {
+    createArray();
+  }
+
+  function createArray() {
     testyArr = [];
     for (const key in myStore) {
       if (myStore.hasOwnProperty(key)) {
-        testyArr.push({ key, val: myStore[key], type: getType(myStore[key]) });
+        testyArr.push({
+          key,
+          val: myStore[key],
+          type: getType(myStore[key])
+        });
       }
     }
     testyArr.sort(sort_byKey);
+    testyArr = testyArr.map((item, index) => {
+      return { ...item, index };
+    });
+  }
+
+  function valueFormatterToArr(object) {
+    let parentArr = []; //[{ output: '   test:"test"', type: "string" }];
+    formatByType("0.0", "0", 0, parentArr, object, 0);
+    showAllArr = [];
+    parentArr.map(row => {
+      showAllArr.push(row.indexRef);
+    });
+    return parentArr;
+  }
+
+  let showClipboardText = false;
+  let clipboardCode = "";
+  function copyToClipboard() {
+    let clipboardEl = document.getElementById("hiddenClipboard");
+    clipboardEl.value = clipboardCode;
+    clipboardEl.select();
+    document.execCommand("copy");
+    showClipboardText = true;
+    setTimeout(() => {
+      showClipboardText = false;
+    }, 2000);
   }
 
   function sort_byKey(a, b) {
@@ -85,15 +136,15 @@
     }
   }
 
-  function click(key, val, type) {
+  function click(index, val, type) {
     if (
       (Object.entries(val).length && type === "object") ||
       (val.length && type === "array")
     ) {
-      if (open === key) {
-        open = null;
+      if (openIndex === index) {
+        openIndex = null;
       } else {
-        open = key;
+        openIndex = index;
       }
     }
   }
@@ -251,25 +302,28 @@
     optionalIndex,
     optionalNewLine
   ) {
-    if (optionalNewLine) {
-      parentArr.push({
-        indexRef,
-        parentIndexRef,
-        index,
-        output: indent_row(code_format_index(optionalIndex), level)
-      });
-    }
     parentArr.push({
       indexRef,
       parentIndexRef,
       index,
       output: indent_row(
-        (optionalNewLine ? "" : code_format_index(optionalIndex)) + "[  Array",
+        (optionalNewLine ? "" : code_format_index(optionalIndex)) +
+          code_format_index(optionalIndex),
         level + (optionalIndex ? 1 : 0)
       ),
+      type: "Array",
       len: arr.length,
       expandable: true
     });
+    if (optionalNewLine) {
+      parentArr.push({
+        indexRef,
+        parentIndexRef,
+        index,
+        output: indent_row("[", level + (optionalIndex ? 2 : 1)),
+        bracket: true
+      });
+    }
     arr.map((value, arrIndex) =>
       formatByType(
         indexRef + "." + arrIndex,
@@ -286,7 +340,8 @@
       indexRef,
       parentIndexRef,
       index,
-      output: indent_row("]", level + (optionalIndex ? 1 : 0))
+      output: indent_row("]", level + (optionalIndex ? 2 : 1)),
+      bracket: true
     });
   }
 
@@ -301,28 +356,31 @@
     optionalNewLine
   ) {
     let object = Object.entries(obj);
-    if (optionalNewLine) {
-      parentArr.push({
-        indexRef,
-        parentIndexRef,
-        index,
-        output: indent_row(code_format_index(optionalIndex), level)
-      });
-    }
     parentArr.push({
       indexRef,
       parentIndexRef,
       index,
       output: indent_row(
-        (optionalNewLine
-          ? ""
-          : code_format_index(indexRef, parentIndexRef, index, optionalIndex)) +
-          "{  Object",
-        level + (optionalIndex || optionalNewLine ? 1 : 0)
+        (optionalNewLine ? "" : code_format_index(optionalIndex)) +
+          code_format_index(optionalIndex),
+        level + (optionalIndex || optionalNewLine ? 0 : 0)
       ),
+      type: "Object",
       len: object.length,
       expandable: true
     });
+    if (optionalNewLine) {
+      parentArr.push({
+        indexRef,
+        parentIndexRef,
+        index,
+        output: indent_row(
+          "{",
+          level + (optionalIndex || optionalNewLine ? 1 : 0)
+        ),
+        bracket: true
+      });
+    }
     object.forEach(([key, value], objIndex) => {
       formatByType(
         indexRef + "." + objIndex,
@@ -342,7 +400,8 @@
       output: indent_row(
         "}",
         level + (optionalIndex || optionalNewLine ? 1 : 0)
-      )
+      ),
+      bracket: true
     });
   }
 
@@ -370,7 +429,7 @@
   }
 
   function indent_row(row, level) {
-    return " ".repeat(level * 3) + row;
+    return " ".repeat(level * indentSpaces) + row;
   }
 
   //formatByType("0.0", "0", 0, parentArr, object, 0);
@@ -488,27 +547,6 @@
         optionalIndex
       );
   }
-
-  function valueFormatterToArr(object) {
-    let parentArr = []; //[{ output: '   test:"test"', type: "string" }];
-    formatByType("0.0", "0", 0, parentArr, object, 0);
-    showAll = [];
-    parentArr.map(row => {
-      showAll.push(row.indexRef);
-    });
-    return parentArr;
-  }
-
-  function valueFormatter(object) {
-    let parentArr = []; //[{ output: '   test:"test"', type: "string" }];
-    formatByType("0.0", "0", 0, parentArr, object, 0);
-    let str = "";
-    parentArr.map(
-      row =>
-        (str += row.output + (row.type ? " (" + row.type + ")" : "") + "\n")
-    );
-    return str;
-  }
 </script>
 
 <style>
@@ -550,6 +588,10 @@
     margin: 0;
     font-size: 14px;
     line-height: 1.3em;
+
+    -webkit-box-shadow: -4px 4px 10px 0px rgba(0, 0, 0, 0.15);
+    -moz-box-shadow: -4px 4px 10px 0px rgba(0, 0, 0, 0.15);
+    box-shadow: -4px 4px 10px 0px rgba(0, 0, 0, 0.15);
   }
 
   .tree-hide {
@@ -641,7 +683,7 @@
     height: 15px;
     display: inline-block;
     position: relative;
-    top: 4px;
+    top: 2px;
   }
 
   .smallest {
@@ -687,6 +729,10 @@
     color: black;
   }
 
+  .type {
+    color: green;
+  }
+
   .nopointer {
     cursor: pointer;
     user-select: none;
@@ -694,6 +740,16 @@
 
   .hoverRow {
     background-color: #68f !important;
+  }
+
+  .toggleShowAll,
+  .copyToClipbord {
+    display: inline;
+  }
+
+  #hiddenClipboard {
+    position: absolute;
+    left: -9999px;
   }
 </style>
 
@@ -721,14 +777,14 @@
         <col style="width:10%" />
         <col style="width:55%" />
       </colgroup>
-      {#each testyArr as testy}
+      {#each testyArr as testy, i}
         <tr
           class={displayClass(testy)}
-          on:click={() => click(testy.key, testy.val, testy.type)}>
+          on:click={() => click(i, testy.val, testy.type)}>
           <td class="link">
             {#if displayClass(testy)}
               <span class="smaller">
-                {#if open === testy.key}
+                {#if openIndex === i}
                   <FaChevronDown />
                 {:else}
                   <FaChevronRight />
@@ -740,17 +796,17 @@
           <td>{testy.type}</td>
           <td>{testy.key}</td>
         </tr>
-        {#if open === testy.key}
+        {#if openIndex === i}
           <tr>
             <!-- only used to keep the odd even shading consistent when opening/closing accordion-->
             <td colspan="3" class="treeVal" />
           </tr>
-          <tr class="treeVal">
+          <tr class="treeVal" on:mouseout={() => (hoverRow = null)}>
             <td colspan="3" class="treeVal">
               <!---->
               <pre>
                 <div class="toggleShowAll nopointer" on:click={toggleShowAll}>
-                  {#if isShowingAll}
+                  {#if showAll}
                     <span class="smaller">
                       <FaRegCheckSquare />
                     </span>
@@ -761,12 +817,31 @@
                   {/if}
                   Show all
                 </div>
+                <div
+                  class="copyToClipbord nopointer"
+                  on:click={copyToClipboard}>
+                  {#if showClipboardText}
+                    <span class="smaller">
+                      <FaClipboardCheck />
+                    </span>
+                    Copied to clipboard!
+                  {:else}
+                    <span class="smaller">
+                      <FaClipboard />
+                    </span>
+                    Copy to clipboard
+                  {/if}
+                  <input id="hiddenClipboard" />
+                </div>
                 {#each valueFormatterToArr(testy.val) as row}
-                  {#if rowsToShow.includes(row.parentIndexRef)}
+                  {#if rowsToShow.includes(row.parentIndexRef) && (!row.bracket || (row.bracket && rowsToShow.includes(row.indexRef)))}
                     <div
                       class={hoverRow === row.indexRef || row.parentIndexRef.startsWith(hoverRow) ? 'row hoverRow' : 'row'}
                       on:mouseover={() => (hoverRow = row.indexRef)}>
                       <span>{row.output}</span>
+                      {#if row.type}
+                        <span class="type">{row.type}</span>
+                      {/if}
                       {#if row.len}
                         <span class="len">({row.len})</span>
                       {/if}
