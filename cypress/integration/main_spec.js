@@ -18,21 +18,21 @@ describe("Toggle Main panel", function() {
         cy.get("div.toggle.toggleHide");
     });
 
-    it("Clicking show button, hides panel", function() {
+    it("Clicking show button, shows panel", function() {
         cy.get("div.toggle.toggleHide").click();
         cy.get("div.tree.tree-hide").should("not.be.visible");
     });
 });
 
 describe("Toggle data objects", function() {
-    it("Count of items should be 2", function() {
+    it("Count of top level test objects should be 2", function() {
         cy.viewport(1000, 600);
         cy.visit("http://localhost:5000/");
         cy.get("td.link").should("have.length", 2);
     });
 
-    it("Count of expanded values should be 0", function() {
-        cy.get("td.treeVal").should("have.length", 0);
+    it("Second test object should be open so count of treeVal should be 2", function() {
+        cy.get("td.treeVal").should("have.length", 2);
     });
 
     it("Clicking first item, should show first expanded value (2 treeVal classes) with Array (9)", function() {
