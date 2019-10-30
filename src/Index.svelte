@@ -2,14 +2,38 @@
   import FaChevronRight from "svelte-icons/fa/FaChevronRight.svelte";
   import FaChevronDown from "svelte-icons/fa/FaChevronDown.svelte";
   import FaChevronUp from "svelte-icons/fa/FaChevronUp.svelte";
+  import FaRegCheckSquare from "svelte-icons/fa/FaRegCheckSquare.svelte";
+  import FaRegSquare from "svelte-icons/fa/FaRegSquare.svelte";
 
   export let myStore;
   export let tabPosition = "top";
   export let open = null;
   export let fade = true;
 
+  let showAll = []; //populated later with all row references
+  let showManuallySelected = ["0.0", "0.0.2"];
+  let rowsToShow = [];
+  let isShowingAll = false;
+
+  function toggleShowAll() {
+    isShowingAll = !isShowingAll;
+  }
+  $: rowsToShow = isShowingAll ? showAll : showManuallySelected;
+
+  function rowContract(rowIndex) {
+    isShowingAll = false;
+    showManuallySelected = showManuallySelected.filter(
+      row => !row.startsWith(rowIndex)
+    );
+  }
+
+  function rowExpand(rowIndex) {
+    showManuallySelected = showManuallySelected.filter(row => row !== rowIndex);
+    showManuallySelected.push(rowIndex);
+  }
+
+  let hoverRow = "none";
   let toggle = true;
-  let debugStoreHovered = null;
   let testyArr = [];
   $: {
     testyArr = [];
@@ -52,8 +76,7 @@
       return Object.entries(val).length ? "view Obj..." : "{ }";
     } else if (getType(val) === "array") {
       return val.length ? "view Arr..." : "[ ]";
-    } //
-    else if (getType(val) === "boolean") {
+    } else if (getType(val) === "boolean") {
       return val ? "true" : "false";
     } else if (getType(val) === "string") {
       return val;
@@ -83,21 +106,52 @@
       : "";
   }
 
-  function code_format_null(parentArr, level, optionalIndex) {
+  function code_format_null(
+    indexRef,
+    parentIndexRef,
+    index,
+    parentArr,
+    level,
+    optionalIndex
+  ) {
     parentArr.push({
+      indexRef,
+      parentIndexRef,
+      index,
       output: indent_row(code_format_index(optionalIndex) + "null", level),
       type: "Null"
     });
   }
 
-  function code_format_undefined(parentArr, level, optionalIndex) {
+  function code_format_undefined(
+    indexRef,
+    parentIndexRef,
+    index,
+    parentArr,
+    level,
+    optionalIndex
+  ) {
     parentArr.push({
+      indexRef,
+      parentIndexRef,
+      index,
       output: indent_row(code_format_index(optionalIndex) + "undefined", level),
       type: "Undefined"
     });
   }
-  function code_format_boolean(parentArr, bool, level, optionalIndex) {
+  function code_format_boolean(
+    indexRef,
+    parentIndexRef,
+    index,
+    parentArr,
+    bool,
+    level,
+    optionalIndex
+  ) {
     parentArr.push({
+      indexRef,
+      parentIndexRef,
+      index,
       output: indent_row(
         code_format_index(optionalIndex) + (bool ? "true" : "false"),
         level
@@ -106,8 +160,19 @@
     });
   }
 
-  function code_format_string(parentArr, str, level, optionalIndex) {
+  function code_format_string(
+    indexRef,
+    parentIndexRef,
+    index,
+    parentArr,
+    str,
+    level,
+    optionalIndex
+  ) {
     parentArr.push({
+      indexRef,
+      parentIndexRef,
+      index,
       output: indent_row(
         code_format_index(optionalIndex) + "'" + str + "'",
         level
@@ -116,15 +181,37 @@
     });
   }
 
-  function code_format_number(parentArr, num, level, optionalIndex) {
+  function code_format_number(
+    indexRef,
+    parentIndexRef,
+    index,
+    parentArr,
+    num,
+    level,
+    optionalIndex
+  ) {
     parentArr.push({
+      indexRef,
+      parentIndexRef,
+      index,
       output: indent_row(code_format_index(optionalIndex) + num, level),
       type: "Number"
     });
   }
 
-  function code_format_symbol(parentArr, sym, level, optionalIndex) {
+  function code_format_symbol(
+    indexRef,
+    parentIndexRef,
+    index,
+    parentArr,
+    sym,
+    level,
+    optionalIndex
+  ) {
     parentArr.push({
+      indexRef,
+      parentIndexRef,
+      index,
       output: indent_row(
         code_format_index(optionalIndex) + "'" + sym.toString() + "'",
         level
@@ -133,8 +220,19 @@
     });
   }
 
-  function code_format_function(parentArr, fn, level, optionalIndex) {
+  function code_format_function(
+    indexRef,
+    parentIndexRef,
+    index,
+    parentArr,
+    fn,
+    level,
+    optionalIndex
+  ) {
     parentArr.push({
+      indexRef,
+      parentIndexRef,
+      index,
       output: indent_row(
         code_format_index(optionalIndex) + "'" + fn.name + "'",
         level
@@ -144,6 +242,9 @@
   }
 
   function code_format_array(
+    indexRef,
+    parentIndexRef,
+    index,
     parentArr,
     arr,
     level,
@@ -152,48 +253,47 @@
   ) {
     if (optionalNewLine) {
       parentArr.push({
+        indexRef,
+        parentIndexRef,
+        index,
         output: indent_row(code_format_index(optionalIndex), level)
       });
     }
-    /*
-      parentArr.push({
-        output: indent_row(
-          "[  Array (" + arr.length + ")",
-          level + (optionalIndex ? 2 : 1)
-        )
-      });
-      arr.map((value, index) =>
-        formatByType(parentArr, value, level + (optionalIndex ? 3 : 2), index)
-      );
-      parentArr.push({
-        output: indent_row("]", level + (optionalIndex ? 2 : 1))
-      });
-    } else {*/
     parentArr.push({
+      indexRef,
+      parentIndexRef,
+      index,
       output: indent_row(
-        (optionalNewLine ? "" : code_format_index(optionalIndex)) +
-          "[  Array (" +
-          arr.length +
-          ")",
+        (optionalNewLine ? "" : code_format_index(optionalIndex)) + "[  Array",
         level + (optionalIndex ? 1 : 0)
-      )
+      ),
+      len: arr.length,
+      expandable: true
     });
-    arr.map((value, index) =>
+    arr.map((value, arrIndex) =>
       formatByType(
+        indexRef + "." + arrIndex,
+        indexRef,
+        arrIndex,
         parentArr,
         value,
         level + (optionalIndex ? 2 : 1),
-        index,
+        arrIndex,
         true
       )
     );
     parentArr.push({
+      indexRef,
+      parentIndexRef,
+      index,
       output: indent_row("]", level + (optionalIndex ? 1 : 0))
     });
-    //}
   }
 
   function code_format_object(
+    indexRef,
+    parentIndexRef,
+    index,
     parentArr,
     obj,
     level,
@@ -203,20 +303,31 @@
     let object = Object.entries(obj);
     if (optionalNewLine) {
       parentArr.push({
+        indexRef,
+        parentIndexRef,
+        index,
         output: indent_row(code_format_index(optionalIndex), level)
       });
     }
     parentArr.push({
+      indexRef,
+      parentIndexRef,
+      index,
       output: indent_row(
-        (optionalNewLine ? "" : code_format_index(optionalIndex)) +
-          "{  Object (" +
-          object.length +
-          ")",
+        (optionalNewLine
+          ? ""
+          : code_format_index(indexRef, parentIndexRef, index, optionalIndex)) +
+          "{  Object",
         level + (optionalIndex || optionalNewLine ? 1 : 0)
-      )
+      ),
+      len: object.length,
+      expandable: true
     });
-    object.forEach(([key, value], index) => {
+    object.forEach(([key, value], objIndex) => {
       formatByType(
+        indexRef + "." + objIndex,
+        indexRef,
+        objIndex,
         parentArr,
         value,
         level + (optionalIndex || optionalNewLine ? 2 : 1),
@@ -224,8 +335,10 @@
         true
       );
     });
-
     parentArr.push({
+      indexRef,
+      parentIndexRef,
+      index,
       output: indent_row(
         "}",
         level + (optionalIndex || optionalNewLine ? 1 : 0)
@@ -233,8 +346,18 @@
     });
   }
 
-  function code_format_unknown(parentArr, level, optionalIndex) {
+  function code_format_unknown(
+    indexRef,
+    parentIndexRef,
+    index,
+    parentArr,
+    level,
+    optionalIndex
+  ) {
     parentArr.push({
+      indexRef,
+      parentIndexRef,
+      index,
       output: indent_row(
         code_format_index(optionalIndex) + "!!unknown!!",
         level
@@ -250,28 +373,94 @@
     return " ".repeat(level * 3) + row;
   }
 
+  //formatByType("0.0", "0", 0, parentArr, object, 0);
   function formatByType(
+    //
+    indexRef,
+    parentIndexRef, //e.g. "1.1.2.3"
+    index, // e.g. 4, if this item is 1.1.2.3.4
+    //
     parentArr,
     value,
     level,
     optionalIndex,
     optionalNewLine
   ) {
-    if (value === null) code_format_null(parentArr, level, optionalIndex);
+    let newindexRef = parentIndexRef + "." + index.toString(10);
+    let newParentIndexRef = parentIndexRef + "." + index.toString(10);
+    if (value === null)
+      code_format_null(
+        indexRef,
+        parentIndexRef,
+        index,
+        parentArr,
+        level,
+        optionalIndex
+      );
     else if (typeof value === "undefined")
-      code_format_undefined(parentArr, level, optionalIndex);
+      code_format_undefined(
+        indexRef,
+        parentIndexRef,
+        index,
+        parentArr,
+        level,
+        optionalIndex
+      );
     else if (typeof value === "boolean")
-      code_format_boolean(parentArr, value, level, optionalIndex);
+      code_format_boolean(
+        indexRef,
+        parentIndexRef,
+        index,
+        parentArr,
+        value,
+        level,
+        optionalIndex
+      );
     else if (typeof value === "string")
-      code_format_string(parentArr, value, level, optionalIndex);
+      code_format_string(
+        indexRef,
+        parentIndexRef,
+        index,
+        parentArr,
+        value,
+        level,
+        optionalIndex
+      );
     else if (typeof value === "number")
-      code_format_number(parentArr, value, level, optionalIndex);
+      code_format_number(
+        indexRef,
+        parentIndexRef,
+        index,
+        parentArr,
+        value,
+        level,
+        optionalIndex
+      );
     else if (typeof value === "symbol")
-      code_format_symbol(parentArr, value, level, optionalIndex);
+      code_format_symbol(
+        indexRef,
+        parentIndexRef,
+        index,
+        parentArr,
+        value,
+        level,
+        optionalIndex
+      );
     else if (typeof value === "function")
-      code_format_function(parentArr, value, level, optionalIndex);
+      code_format_function(
+        indexRef,
+        parentIndexRef,
+        index,
+        parentArr,
+        value,
+        level,
+        optionalIndex
+      );
     else if (Array.isArray(value))
       code_format_array(
+        indexRef,
+        parentIndexRef,
+        index,
         parentArr,
         value,
         level,
@@ -280,30 +469,40 @@
       );
     else if (typeof value === "object")
       code_format_object(
+        indexRef,
+        parentIndexRef,
+        index,
         parentArr,
         value,
         level,
         optionalIndex,
         optionalNewLine
       );
-    else code_format_unknown(parentArr, level, optionalIndex);
+    else
+      code_format_unknown(
+        indexRef,
+        parentIndexRef,
+        index,
+        parentArr,
+        level,
+        optionalIndex
+      );
+  }
+
+  function valueFormatterToArr(object) {
+    let parentArr = []; //[{ output: '   test:"test"', type: "string" }];
+    formatByType("0.0", "0", 0, parentArr, object, 0);
+    showAll = [];
+    parentArr.map(row => {
+      showAll.push(row.indexRef);
+    });
+    console.log(showAll);
+    return parentArr;
   }
 
   function valueFormatter(object) {
     let parentArr = []; //[{ output: '   test:"test"', type: "string" }];
-    //let test = { test: ["test", { test: 1, test2: 2 }], test: 3, test2: 4 };
-    /*let test = {
-      test0: { test5: 1234 },
-      test: "test",
-      test2: 123,
-      test3: [123],
-      test4: { test5: 1234 },
-      test5: 2,
-      test6: "3",
-      test7: [4, 5, 6]
-    };*/
-    formatByType(parentArr, object, 0);
-
+    formatByType("0.0", "0", 0, parentArr, object, 0);
     let str = "";
     parentArr.map(
       row =>
@@ -430,6 +629,7 @@
 
   pre {
     margin: 0px;
+    white-space: normal;
   }
 
   .icon1 {
@@ -445,12 +645,56 @@
     top: 4px;
   }
 
+  .smallest {
+    width: 15px;
+    height: 15px;
+    display: inline-block;
+    position: relative;
+    top: 2px;
+    color: green;
+  }
+
   .link {
     cursor: pointer;
   }
 
   .link:hover {
     background-color: #888;
+  }
+
+  .row {
+    background-color: #999;
+    position: relative;
+    padding-left: 15px;
+    display: block ruby;
+    white-space: pre;
+  }
+
+  .row:nth-child(even) {
+    background-color: #aaa;
+  }
+
+  .dataArrow {
+    position: absolute;
+    left: 0px;
+    cursor: pointer;
+  }
+
+  .dataArrow:hover {
+    color: black;
+  }
+
+  .len {
+    color: black;
+  }
+
+  .nopointer {
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .hoverRow {
+    background-color: #68f !important;
   }
 </style>
 
@@ -504,7 +748,48 @@
           </tr>
           <tr class="treeVal">
             <td colspan="3" class="treeVal">
-              <pre>{valueFormatter(testy.val)}</pre>
+              <!---->
+              <pre>
+                <div class="toggleShowAll nopointer" on:click={toggleShowAll}>
+                  {#if isShowingAll}
+                    <span class="smaller">
+                      <FaRegCheckSquare />
+                    </span>
+                  {:else}
+                    <span class="smaller">
+                      <FaRegSquare />
+                    </span>
+                  {/if}
+                  Show all
+                </div>
+                {#each valueFormatterToArr(testy.val) as row}
+                  {#if rowsToShow.includes(row.parentIndexRef)}
+                    <div
+                      class={hoverRow === row.indexRef || row.parentIndexRef.startsWith(hoverRow) ? 'row hoverRow' : 'row'}
+                      on:mouseover={() => (hoverRow = row.indexRef)}>
+                      <span>{row.output}</span>
+                      {#if row.len}
+                        <span class="len">({row.len})</span>
+                      {/if}
+                      {#if row.expandable}
+                        {#if rowsToShow.includes(row.indexRef)}
+                          <span
+                            class="smallest dataArrow"
+                            on:click={() => rowContract(row.indexRef)}>
+                            <FaChevronDown />
+                          </span>
+                        {:else}
+                          <span
+                            class="smallest dataArrow"
+                            on:click={() => rowExpand(row.indexRef)}>
+                            <FaChevronRight />
+                          </span>
+                        {/if}
+                      {/if}
+                    </div>
+                  {/if}
+                {/each}
+              </pre>
             </td>
           </tr>
         {/if}

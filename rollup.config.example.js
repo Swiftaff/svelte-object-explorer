@@ -22,6 +22,13 @@ export default {
             // a separate file — better for performance
             css: css => {
                 css.write("public/bundle.css");
+            },
+            preprocess: {
+                markup: ({ content, filename }) => {
+                    return {
+                        code: content.replace(/[ ]{2,}/g, "")
+                    };
+                }
             }
         }),
 
