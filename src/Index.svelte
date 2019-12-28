@@ -13,30 +13,47 @@
   export let open = null;
   export let fade = false;
   export let rateLimit = 100;
+
   let showAll = false;
-
   let openIndex = null;
-
-  onMount(async () => {
-    rowsToShow = showAll ? showAllArr : showManuallySelected;
-    //if (open && myStore && testyArr) {
-    let i = testyArr.filter(item => item.key === open);
-    if (i.length) openIndex = i[0].index;
-    valueFormatterToArr(testyArr[i]);
-    createArray();
-    //}
-  });
-
   let indentSpaces = 2;
-
   let showAllArr = []; //populated later with all row references
   let showManuallySelected = ["0", "0.0"];
   let rowsToShow = [];
+  let showClipboardText = false;
+  let clipboardCode = "";
+  let hoverRow = "none";
+  let toggle = true;
+  let topLevelObjectArray = [];
+  let openedObjectArray = [];
+  let cache = {
+    dataChanges: 0,
+    viewChanges: 0,
+    dataUpdated: new Date(),
+    viewUpdated: new Date(),
+    formatted: "",
+    myStore
+  };
+
+  $: rowsToShow = showAll ? showAllArr : showManuallySelected;
+
+  onMount(async () => {
+    rowsToShow = showAll ? showAllArr : showManuallySelected;
+    let i = topLevelObjectArray.filter(item => item.key === open);
+    if (i.length) openIndex = i[0].index;
+    createArray();
+  });
+
+  let mainLoop = timer();
+
+  //------- functions
 
   function toggleShowAll() {
     showAll = !showAll;
   }
-  $: rowsToShow = showAll ? showAllArr : showManuallySelected;
+  function doToggle() {
+    toggle = !toggle;
+  }
 
   function rowContract(rowIndex) {
     showAll = false;
@@ -50,32 +67,21 @@
     showManuallySelected.push(rowIndex);
   }
 
-  let hoverRow = "none";
-  let toggle = true;
-  let testyArr = [];
-
-  let cache = {
-    dataChanges: 0,
-    viewChanges: 0,
-    dataUpdated: new Date(),
-    viewUpdated: new Date(),
-    formatted: "",
-    myStore
-  };
-
-  let timer = setInterval(() => {
-    if (JSON.stringify(myStore) !== JSON.stringify(cache.myStore)) {
-      cache.dataUpdated = new Date();
-      cache.dataChanges = cache.dataChanges + 1;
-    }
-    if (cache.dataUpdated - cache.viewUpdated > rateLimit) {
-      cache.myStore = myStore;
-      cache.viewChanges = cache.viewChanges + 1;
-      cache.viewUpdated = new Date();
-      cache.formatted = formatDate(cache.viewUpdated);
-      createArray();
-    }
-  }, rateLimit);
+  function timer() {
+    setInterval(() => {
+      if (JSON.stringify(myStore) !== JSON.stringify(cache.myStore)) {
+        cache.dataUpdated = new Date();
+        cache.dataChanges = cache.dataChanges + 1;
+      }
+      if (cache.dataUpdated - cache.viewUpdated > rateLimit) {
+        cache.myStore = myStore;
+        cache.viewChanges = cache.viewChanges + 1;
+        cache.viewUpdated = new Date();
+        cache.formatted = formatDate(cache.viewUpdated);
+        createArray();
+      }
+    }, rateLimit);
+  }
 
   function formatDate(d) {
     return (
@@ -89,35 +95,46 @@
   }
 
   function createArray() {
-    testyArr = [];
+    let tempArr = [];
     for (const key in cache.myStore) {
       if (cache.myStore.hasOwnProperty(key)) {
-        testyArr.push({
+        let tempItem = {
           key,
           val: cache.myStore[key],
           type: getType(cache.myStore[key])
-        });
+        };
+        tempItem.class = displayClass(tempItem);
+        tempItem.valType = displayValType(tempItem.val);
+        tempItem.childRows = valueFormatterToArr(tempItem.val);
+        tempArr.push(tempItem);
       }
     }
-    testyArr.sort(sort_byKey);
-    testyArr = testyArr.map((item, index) => {
+    tempArr.sort(sort_byKey);
+    tempArr = tempArr.map((item, index) => {
       return { ...item, index };
     });
+    topLevelObjectArray = tempArr; //this should trigger a redraw
+    //console.log(topLevelObjectArray);
   }
 
   function valueFormatterToArr(object) {
-    console.log("valueFormatterToArr");
+    //console.log("valueFormatterToArr");
     let parentArr = []; //[{ output: '   test:"test"', type: "string" }];
-    formatByType("0.0", "0", 0, parentArr, object, 0);
-    showAllArr = [];
-    parentArr.map(row => {
-      showAllArr.push(row.indexRef);
-    });
+    formatByType("0.0", "0", 0, parentArr, object, 0); // <- make this assign to parentArr specifically instead of with JS magic
+
+    showAllArr = getAllIndexes(parentArr);
     return parentArr;
   }
 
-  let showClipboardText = false;
-  let clipboardCode = "";
+  function getAllIndexes(arrayToMap) {
+    //update the showallarray with all rows from parentArr
+    let arr = [];
+    arrayToMap.map(row => {
+      arr.push(row.indexRef);
+    });
+    return arr;
+  }
+
   function copyToClipboard() {
     let clipboardEl = document.getElementById("hiddenClipboard");
     clipboardEl.value = clipboardCode;
@@ -143,15 +160,11 @@
     return 0;
   }
 
-  function doToggle() {
-    toggle = !toggle;
-  }
-
   function getType(val) {
     return Array.isArray(val) ? "array" : typeof val;
   }
 
-  function displayVal(val) {
+  function displayValType(val) {
     if (val === null) {
       return "null";
     } else if (getType(val) === "function") {
@@ -170,7 +183,7 @@
   }
 
   function click(index, val, type) {
-    console.log("click", index, val, type, openIndex);
+    //console.log("click", index, val, type, openIndex);
     if (
       (Object.entries(val).length && type === "object") ||
       (val.length && type === "array")
@@ -261,7 +274,7 @@
       index,
       output: indent_row(
         code_format_index(optionalIndex) + "'" + str + "'",
-        level
+        level + (optionalIndex ? 1 : 0)
       ),
       type: "String"
     });
@@ -398,7 +411,7 @@
       output: indent_row(
         (optionalNewLine ? "" : code_format_index(optionalIndex)) +
           code_format_index(optionalIndex),
-        level + (optionalIndex || optionalNewLine ? 0 : 0)
+        level + (optionalIndex || optionalNewLine ? 1 : 0)
       ),
       type: "Object",
       len: object.length,
@@ -480,10 +493,8 @@
     optionalIndex,
     optionalNewLine
   ) {
-    console.log("formatByType", value);
-    let newindexRef = parentIndexRef + "." + index.toString(10);
-    let newParentIndexRef = parentIndexRef + "." + index.toString(10);
-    /*if (value === null)
+    //console.log("formatByType", value);
+    if (value === null)
       code_format_null(
         indexRef,
         parentIndexRef,
@@ -552,16 +563,42 @@
         optionalIndex
       );
     else if (Array.isArray(value))
-      code_format_array(
-        indexRef,
-        parentIndexRef,
-        index,
-        parentArr,
-        value,
-        level,
-        optionalIndex,
-        optionalNewLine
-      );
+      if (value.length > 100) {
+        code_format_string(
+          indexRef,
+          parentIndexRef,
+          index,
+          parentArr,
+          "Array is very long (" + value.length + ")",
+          level,
+          optionalIndex
+        );
+        for (let i = 0; i < value.length; i += 100) {
+          let end = i + 100 > value.length - 1 ? value.length : i + 99;
+          let tempArr = value.slice(i, end);
+          code_format_array(
+            indexRef + "." + i,
+            parentIndexRef,
+            index,
+            parentArr,
+            tempArr,
+            level + 1,
+            optionalIndex + " (" + i + " to " + end + ")",
+            optionalNewLine
+          );
+        }
+      } else {
+        code_format_array(
+          indexRef,
+          parentIndexRef,
+          index,
+          parentArr,
+          value,
+          level,
+          optionalIndex,
+          optionalNewLine
+        );
+      }
     else if (typeof value === "object")
       code_format_object(
         indexRef,
@@ -581,7 +618,14 @@
         parentArr,
         level,
         optionalIndex
-      );*/
+      );
+  }
+
+  function removeWhitespace(row) {
+    let html = "<span>" + row.output + "</span>";
+    if (row.type) html = html + '<span class="type">' + row.type + "</span>";
+    if (row.len) html = html + '<span class="len">(' + row.len + ")</span>";
+    return html;
   }
 </script>
 
@@ -707,6 +751,7 @@
   pre {
     margin: 0px;
     white-space: normal;
+    padding: 0px;
   }
 
   .icon1 {
@@ -763,10 +808,18 @@
 
   .len {
     color: black;
+    position: absolute;
+    right: 50px;
+    top: 0px;
   }
 
   .type {
     color: green;
+    position: absolute;
+
+    top: 0px;
+
+    right: 0px;
   }
 
   .nopointer {
@@ -815,12 +868,12 @@
         <col style="width:10%" />
         <col style="width:55%" />
       </colgroup>
-      {#each testyArr as testy, i}
+      {#each topLevelObjectArray as testy, i}
         <tr
-          class={displayClass(testy)}
+          class={testy.class}
           on:mousedown={() => click(i, testy.val, testy.type)}>
           <td class="link">
-            {#if displayClass(testy)}
+            {#if testy.class}
               <span class="smaller">
                 {#if openIndex === i}
                   <FaChevronDown />
@@ -829,7 +882,7 @@
                 {/if}
               </span>
             {/if}
-            {displayVal(testy.val)}
+            {testy.valType}
           </td>
           <td>{testy.type}</td>
           <td>{testy.key}</td>
@@ -873,19 +926,22 @@
                   {/if}
                   <input id="hiddenClipboard" />
                 </div>
-                {#each valueFormatterToArr(testy.val) as row}
-                  {#if openIndex === i + 1234}
+
+                {#if openIndex === i}
+                  {#each testy.childRows as row}
                     {#if rowsToShow.includes(row.parentIndexRef) && (!row.bracket || (row.bracket && rowsToShow.includes(row.indexRef)))}
                       <div
                         class={hoverRow === row.indexRef || row.parentIndexRef.startsWith(hoverRow) ? 'row hoverRow' : 'row'}
                         on:mouseover={() => (hoverRow = row.indexRef)}>
-                        <span>{row.output}</span>
-                        {#if row.type}
-                          <span class="type">{row.type}</span>
-                        {/if}
-                        {#if row.len}
-                          <span class="len">({row.len})</span>
-                        {/if}
+                        <span>
+                          {row.output}
+                          {#if row.type}
+                            <span class="type">{row.type}</span>
+                          {/if}
+                          {#if row.len}
+                            <span class="len">({row.len})</span>
+                          {/if}
+                        </span>
                         {#if row.expandable}
                           {#if rowsToShow.includes(row.indexRef)}
                             <span
@@ -903,9 +959,8 @@
                         {/if}
                       </div>
                     {/if}
-                  {/if}
-                {/each}
-
+                  {/each}
+                {/if}
               </pre>
             </td>
           </tr>
