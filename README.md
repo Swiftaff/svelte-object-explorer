@@ -31,15 +31,16 @@ Include **svelte-object-explorer** in the script section of any svelte file, but
 // App.svelte
 <script>
   import SvelteObjectExplorer from 'svelte-object-explorer'
-  let staticObject = { test: "test" }
-  export let dataFromProps;
+  let staticObject1 = { test1: "test1" }
+  let staticObject2 = { test2: "test2" }
 </script>
 
 <SvelteObjectExplorer
- myStore = { staticObject, dataFromProps }
+ myStore = { staticObject1, staticObject2 }
  fade = {false} //optional, default true
  tabPosition = "top" //optional
  open = "dataFromProps" //optional
+ rateLimit = {1000} //optional, default 100
 />
 // ...
 // the rest of your app
@@ -61,6 +62,8 @@ Include **svelte-object-explorer** in the script section of any svelte file, but
 -   "bottom"
 
 `open` is an optional string, the name of one of the objects you supplied in myStore, to auto-expand it on load
+
+`rateLimit` is an optional integer, for the rate at which the view should update (to avoid it getting bogged down by very fast data updates. The default is 100 (milliseconds)
 
 > It's not clever, it's not pretty...
 

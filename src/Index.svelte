@@ -12,6 +12,7 @@
   export let tabPosition = "top";
   export let open = null;
   export let fade = false;
+  export let rateLimit = 100;
   let showAll = false;
 
   let openIndex = null;
@@ -52,18 +53,49 @@
   let hoverRow = "none";
   let toggle = true;
   let testyArr = [];
-  $: {
-    createArray();
+
+  let cache = {
+    dataChanges: 0,
+    viewChanges: 0,
+    dataUpdated: new Date(),
+    viewUpdated: new Date(),
+    formatted: "",
+    myStore
+  };
+
+  let timer = setInterval(() => {
+    if (JSON.stringify(myStore) !== JSON.stringify(cache.myStore)) {
+      cache.dataUpdated = new Date();
+      cache.dataChanges = cache.dataChanges + 1;
+    }
+    if (cache.dataUpdated - cache.viewUpdated > rateLimit) {
+      cache.myStore = myStore;
+      cache.viewChanges = cache.viewChanges + 1;
+      cache.viewUpdated = new Date();
+      cache.formatted = formatDate(cache.viewUpdated);
+      createArray();
+    }
+  }, rateLimit);
+
+  function formatDate(d) {
+    return (
+      d.toDateString() +
+      " " +
+      d.getUTCSeconds() +
+      "s " +
+      d.getUTCMilliseconds() +
+      "ms"
+    );
   }
 
   function createArray() {
     testyArr = [];
-    for (const key in myStore) {
-      if (myStore.hasOwnProperty(key)) {
+    for (const key in cache.myStore) {
+      if (cache.myStore.hasOwnProperty(key)) {
         testyArr.push({
           key,
-          val: myStore[key],
-          type: getType(myStore[key])
+          val: cache.myStore[key],
+          type: getType(cache.myStore[key])
         });
       }
     }
@@ -74,6 +106,7 @@
   }
 
   function valueFormatterToArr(object) {
+    console.log("valueFormatterToArr");
     let parentArr = []; //[{ output: '   test:"test"', type: "string" }];
     formatByType("0.0", "0", 0, parentArr, object, 0);
     showAllArr = [];
@@ -137,6 +170,7 @@
   }
 
   function click(index, val, type) {
+    console.log("click", index, val, type, openIndex);
     if (
       (Object.entries(val).length && type === "object") ||
       (val.length && type === "array")
@@ -190,6 +224,7 @@
       type: "Undefined"
     });
   }
+
   function code_format_boolean(
     indexRef,
     parentIndexRef,
@@ -445,9 +480,10 @@
     optionalIndex,
     optionalNewLine
   ) {
+    console.log("formatByType", value);
     let newindexRef = parentIndexRef + "." + index.toString(10);
     let newParentIndexRef = parentIndexRef + "." + index.toString(10);
-    if (value === null)
+    /*if (value === null)
       code_format_null(
         indexRef,
         parentIndexRef,
@@ -545,7 +581,7 @@
         parentArr,
         level,
         optionalIndex
-      );
+      );*/
   }
 </script>
 
@@ -756,7 +792,7 @@
 <div class="wrapper">
   <div
     class={(toggle ? 'toggle toggleShow' : 'toggle toggleHide') + ' toggle' + tabPosition + (fade ? '' : ' noFade')}
-    on:click={doToggle}>
+    on:mousedown={doToggle}>
     {#if toggle}
       Hide
       <span class="smaller">
@@ -771,6 +807,8 @@
   </div>
 
   <div class={'tree' + (toggle ? '' : ' tree-hide') + (fade ? '' : ' noFade')}>
+    Data Changes({cache.dataChanges}) View Changes({cache.viewChanges}) Last
+    Updated({cache.formatted})
     <table>
       <colgroup>
         <col style="width:35%" />
@@ -780,7 +818,7 @@
       {#each testyArr as testy, i}
         <tr
           class={displayClass(testy)}
-          on:click={() => click(i, testy.val, testy.type)}>
+          on:mousedown={() => click(i, testy.val, testy.type)}>
           <td class="link">
             {#if displayClass(testy)}
               <span class="smaller">
@@ -805,7 +843,9 @@
             <td colspan="3" class="treeVal">
               <!---->
               <pre>
-                <div class="toggleShowAll nopointer" on:click={toggleShowAll}>
+                <div
+                  class="toggleShowAll nopointer"
+                  on:mousedown={toggleShowAll}>
                   {#if showAll}
                     <span class="smaller">
                       <FaRegCheckSquare />
@@ -819,7 +859,7 @@
                 </div>
                 <div
                   class="copyToClipbord nopointer"
-                  on:click={copyToClipboard}>
+                  on:mousedown={copyToClipboard}>
                   {#if showClipboardText}
                     <span class="smaller">
                       <FaClipboardCheck />
@@ -834,35 +874,38 @@
                   <input id="hiddenClipboard" />
                 </div>
                 {#each valueFormatterToArr(testy.val) as row}
-                  {#if rowsToShow.includes(row.parentIndexRef) && (!row.bracket || (row.bracket && rowsToShow.includes(row.indexRef)))}
-                    <div
-                      class={hoverRow === row.indexRef || row.parentIndexRef.startsWith(hoverRow) ? 'row hoverRow' : 'row'}
-                      on:mouseover={() => (hoverRow = row.indexRef)}>
-                      <span>{row.output}</span>
-                      {#if row.type}
-                        <span class="type">{row.type}</span>
-                      {/if}
-                      {#if row.len}
-                        <span class="len">({row.len})</span>
-                      {/if}
-                      {#if row.expandable}
-                        {#if rowsToShow.includes(row.indexRef)}
-                          <span
-                            class="smallest dataArrow"
-                            on:click={() => rowContract(row.indexRef)}>
-                            <FaChevronDown />
-                          </span>
-                        {:else}
-                          <span
-                            class="smallest dataArrow"
-                            on:click={() => rowExpand(row.indexRef)}>
-                            <FaChevronRight />
-                          </span>
+                  {#if openIndex === i + 1234}
+                    {#if rowsToShow.includes(row.parentIndexRef) && (!row.bracket || (row.bracket && rowsToShow.includes(row.indexRef)))}
+                      <div
+                        class={hoverRow === row.indexRef || row.parentIndexRef.startsWith(hoverRow) ? 'row hoverRow' : 'row'}
+                        on:mouseover={() => (hoverRow = row.indexRef)}>
+                        <span>{row.output}</span>
+                        {#if row.type}
+                          <span class="type">{row.type}</span>
                         {/if}
-                      {/if}
-                    </div>
+                        {#if row.len}
+                          <span class="len">({row.len})</span>
+                        {/if}
+                        {#if row.expandable}
+                          {#if rowsToShow.includes(row.indexRef)}
+                            <span
+                              class="smallest dataArrow"
+                              on:mousedown={() => rowContract(row.indexRef)}>
+                              <FaChevronDown />
+                            </span>
+                          {:else}
+                            <span
+                              class="smallest dataArrow"
+                              on:mousedown={() => rowExpand(row.indexRef)}>
+                              <FaChevronRight />
+                            </span>
+                          {/if}
+                        {/if}
+                      </div>
+                    {/if}
                   {/if}
                 {/each}
+
               </pre>
             </td>
           </tr>
