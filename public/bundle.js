@@ -1514,18 +1514,18 @@ var app = (function () {
 
     function get_each_context_1(ctx, list, i) {
     	const child_ctx = ctx.slice();
-    	child_ctx[43] = list[i];
+    	child_ctx[53] = list[i];
     	return child_ctx;
     }
 
     function get_each_context(ctx, list, i) {
     	const child_ctx = ctx.slice();
-    	child_ctx[40] = list[i];
-    	child_ctx[42] = i;
+    	child_ctx[50] = list[i];
+    	child_ctx[52] = i;
     	return child_ctx;
     }
 
-    // (770:0) {:else}
+    // (871:0) {:else}
     function create_else_block_4(ctx) {
     	let t;
     	let span;
@@ -1537,8 +1537,8 @@ var app = (function () {
     			t = text("Show\n");
     			span = element("span");
     			create_component(fachevronup.$$.fragment);
-    			attr_dev(span, "class", "smaller svelte-hsvar4");
-    			add_location(span, file$8, 771, 0, 12244);
+    			attr_dev(span, "class", "smaller svelte-1w7cnc4");
+    			add_location(span, file$8, 872, 0, 14723);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, t, anchor);
@@ -1566,15 +1566,15 @@ var app = (function () {
     		block,
     		id: create_else_block_4.name,
     		type: "else",
-    		source: "(770:0) {:else}",
+    		source: "(871:0) {:else}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (765:0) {#if toggle}
-    function create_if_block_10(ctx) {
+    // (866:0) {#if toggle}
+    function create_if_block_11(ctx) {
     	let t;
     	let span;
     	let current;
@@ -1585,8 +1585,8 @@ var app = (function () {
     			t = text("Hide\n");
     			span = element("span");
     			create_component(fachevrondown.$$.fragment);
-    			attr_dev(span, "class", "smaller svelte-hsvar4");
-    			add_location(span, file$8, 766, 0, 12182);
+    			attr_dev(span, "class", "smaller svelte-1w7cnc4");
+    			add_location(span, file$8, 867, 0, 14661);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, t, anchor);
@@ -1612,26 +1612,26 @@ var app = (function () {
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_if_block_10.name,
+    		id: create_if_block_11.name,
     		type: "if",
-    		source: "(765:0) {#if toggle}",
+    		source: "(866:0) {#if toggle}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (790:0) {#if displayClass(testy)}
-    function create_if_block_8(ctx) {
+    // (897:0) {#if testy.class}
+    function create_if_block_9(ctx) {
     	let span;
     	let current_block_type_index;
     	let if_block;
     	let current;
-    	const if_block_creators = [create_if_block_9, create_else_block_3];
+    	const if_block_creators = [create_if_block_10, create_else_block_3];
     	const if_blocks = [];
 
     	function select_block_type_1(ctx, dirty) {
-    		if (/*openIndex*/ ctx[3] === /*i*/ ctx[42]) return 0;
+    		if (/*openIndex*/ ctx[4] === /*i*/ ctx[52]) return 0;
     		return 1;
     	}
 
@@ -1642,8 +1642,8 @@ var app = (function () {
     		c: function create() {
     			span = element("span");
     			if_block.c();
-    			attr_dev(span, "class", "smaller svelte-hsvar4");
-    			add_location(span, file$8, 790, 0, 12647);
+    			attr_dev(span, "class", "smaller svelte-1w7cnc4");
+    			add_location(span, file$8, 897, 0, 15360);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, span, anchor);
@@ -1690,16 +1690,16 @@ var app = (function () {
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_if_block_8.name,
+    		id: create_if_block_9.name,
     		type: "if",
-    		source: "(790:0) {#if displayClass(testy)}",
+    		source: "(897:0) {#if testy.class}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (794:0) {:else}
+    // (901:0) {:else}
     function create_else_block_3(ctx) {
     	let current;
     	const fachevronright = new FaChevronRight({ $$inline: true });
@@ -1730,15 +1730,15 @@ var app = (function () {
     		block,
     		id: create_else_block_3.name,
     		type: "else",
-    		source: "(794:0) {:else}",
+    		source: "(901:0) {:else}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (792:0) {#if openIndex === i}
-    function create_if_block_9(ctx) {
+    // (899:0) {#if openIndex === i}
+    function create_if_block_10(ctx) {
     	let current;
     	const fachevrondown = new FaChevronDown({ $$inline: true });
 
@@ -1766,16 +1766,16 @@ var app = (function () {
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_if_block_9.name,
+    		id: create_if_block_10.name,
     		type: "if",
-    		source: "(792:0) {#if openIndex === i}",
+    		source: "(899:0) {#if openIndex === i}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (804:0) {#if openIndex === i}
+    // (911:0) {#if openIndex === i}
     function create_if_block$1(ctx) {
     	let tr0;
     	let td0;
@@ -1797,36 +1797,27 @@ var app = (function () {
     	let t5;
     	let current;
     	let dispose;
-    	const if_block_creators = [create_if_block_7, create_else_block_2];
+    	const if_block_creators = [create_if_block_8, create_else_block_2];
     	const if_blocks = [];
 
     	function select_block_type_2(ctx, dirty) {
-    		if (/*showAll*/ ctx[2]) return 0;
+    		if (/*showAll*/ ctx[3]) return 0;
     		return 1;
     	}
 
     	current_block_type_index = select_block_type_2(ctx);
     	if_block0 = if_blocks[current_block_type_index] = if_block_creators[current_block_type_index](ctx);
-    	const if_block_creators_1 = [create_if_block_6, create_else_block_1];
+    	const if_block_creators_1 = [create_if_block_7, create_else_block_1];
     	const if_blocks_1 = [];
 
     	function select_block_type_3(ctx, dirty) {
-    		if (/*showClipboardText*/ ctx[8]) return 0;
+    		if (/*showClipboardText*/ ctx[6]) return 0;
     		return 1;
     	}
 
     	current_block_type_index_1 = select_block_type_3(ctx);
     	if_block1 = if_blocks_1[current_block_type_index_1] = if_block_creators_1[current_block_type_index_1](ctx);
-    	let each_value_1 = /*valueFormatterToArr*/ ctx[12](/*testy*/ ctx[40].val);
-    	let each_blocks = [];
-
-    	for (let i = 0; i < each_value_1.length; i += 1) {
-    		each_blocks[i] = create_each_block_1(get_each_context_1(ctx, each_value_1, i));
-    	}
-
-    	const out = i => transition_out(each_blocks[i], 1, 1, () => {
-    		each_blocks[i] = null;
-    	});
+    	let if_block2 = /*openIndex*/ ctx[4] === /*i*/ ctx[52] && create_if_block_1(ctx);
 
     	const block = {
     		c: function create() {
@@ -1844,37 +1835,33 @@ var app = (function () {
     			if_block1.c();
     			t3 = text("\n");
     			input = element("input");
-    			t4 = text("\n");
-
-    			for (let i = 0; i < each_blocks.length; i += 1) {
-    				each_blocks[i].c();
-    			}
-
+    			t4 = text("\n\n");
+    			if (if_block2) if_block2.c();
     			t5 = space();
     			attr_dev(td0, "colspan", "3");
-    			attr_dev(td0, "class", "treeVal svelte-hsvar4");
-    			add_location(td0, file$8, 806, 0, 12952);
-    			attr_dev(tr0, "class", "svelte-hsvar4");
-    			add_location(tr0, file$8, 804, 0, 12858);
-    			attr_dev(div0, "class", "toggleShowAll nopointer svelte-hsvar4");
-    			add_location(div0, file$8, 812, 0, 13099);
+    			attr_dev(td0, "class", "treeVal svelte-1w7cnc4");
+    			add_location(td0, file$8, 913, 0, 15657);
+    			attr_dev(tr0, "class", "svelte-1w7cnc4");
+    			add_location(tr0, file$8, 911, 0, 15563);
+    			attr_dev(div0, "class", "toggleShowAll nopointer svelte-1w7cnc4");
+    			add_location(div0, file$8, 919, 0, 15804);
     			attr_dev(input, "id", "hiddenClipboard");
-    			attr_dev(input, "class", "svelte-hsvar4");
-    			add_location(input, file$8, 838, 0, 13547);
-    			attr_dev(div1, "class", "copyToClipbord nopointer svelte-hsvar4");
-    			add_location(div1, file$8, 824, 0, 13305);
-    			attr_dev(pre, "class", "svelte-hsvar4");
-    			add_location(pre, file$8, 811, 0, 13093);
+    			attr_dev(input, "class", "svelte-1w7cnc4");
+    			add_location(input, file$8, 947, 0, 16260);
+    			attr_dev(div1, "class", "copyToClipbord nopointer svelte-1w7cnc4");
+    			add_location(div1, file$8, 933, 0, 16014);
+    			attr_dev(pre, "class", "svelte-1w7cnc4");
+    			add_location(pre, file$8, 918, 0, 15798);
     			attr_dev(td1, "colspan", "3");
-    			attr_dev(td1, "class", "treeVal svelte-hsvar4");
-    			add_location(td1, file$8, 809, 0, 13052);
-    			attr_dev(tr1, "class", "treeVal svelte-hsvar4");
-    			add_location(tr1, file$8, 808, 0, 12993);
+    			attr_dev(td1, "class", "treeVal svelte-1w7cnc4");
+    			add_location(td1, file$8, 916, 0, 15757);
+    			attr_dev(tr1, "class", "treeVal svelte-1w7cnc4");
+    			add_location(tr1, file$8, 915, 0, 15698);
 
     			dispose = [
-    				listen_dev(div0, "click", /*toggleShowAll*/ ctx[9], false, false, false),
-    				listen_dev(div1, "click", /*copyToClipboard*/ ctx[13], false, false, false),
-    				listen_dev(tr1, "mouseout", /*mouseout_handler*/ ctx[39], false, false, false)
+    				listen_dev(div0, "mousedown", /*toggleShowAll*/ ctx[11], false, false, false),
+    				listen_dev(div1, "mousedown", /*copyToClipboard*/ ctx[15], false, false, false),
+    				listen_dev(tr1, "mouseout", /*mouseout_handler*/ ctx[47], false, false, false)
     			];
     		},
     		m: function mount(target, anchor) {
@@ -1893,11 +1880,7 @@ var app = (function () {
     			append_dev(div1, t3);
     			append_dev(div1, input);
     			append_dev(pre, t4);
-
-    			for (let i = 0; i < each_blocks.length; i += 1) {
-    				each_blocks[i].m(pre, null);
-    			}
-
+    			if (if_block2) if_block2.m(pre, null);
     			append_dev(tr1, t5);
     			current = true;
     		},
@@ -1946,29 +1929,22 @@ var app = (function () {
     				if_block1.m(div1, t3);
     			}
 
-    			if (dirty[0] & /*rowsToShow, valueFormatterToArr, testyArr, hoverRow, rowContract, rowExpand*/ 7344) {
-    				each_value_1 = /*valueFormatterToArr*/ ctx[12](/*testy*/ ctx[40].val);
-    				let i;
-
-    				for (i = 0; i < each_value_1.length; i += 1) {
-    					const child_ctx = get_each_context_1(ctx, each_value_1, i);
-
-    					if (each_blocks[i]) {
-    						each_blocks[i].p(child_ctx, dirty);
-    						transition_in(each_blocks[i], 1);
-    					} else {
-    						each_blocks[i] = create_each_block_1(child_ctx);
-    						each_blocks[i].c();
-    						transition_in(each_blocks[i], 1);
-    						each_blocks[i].m(pre, null);
-    					}
+    			if (/*openIndex*/ ctx[4] === /*i*/ ctx[52]) {
+    				if (if_block2) {
+    					if_block2.p(ctx, dirty);
+    					transition_in(if_block2, 1);
+    				} else {
+    					if_block2 = create_if_block_1(ctx);
+    					if_block2.c();
+    					transition_in(if_block2, 1);
+    					if_block2.m(pre, null);
     				}
-
+    			} else if (if_block2) {
     				group_outros();
 
-    				for (i = each_value_1.length; i < each_blocks.length; i += 1) {
-    					out(i);
-    				}
+    				transition_out(if_block2, 1, 1, () => {
+    					if_block2 = null;
+    				});
 
     				check_outros();
     			}
@@ -1977,22 +1953,13 @@ var app = (function () {
     			if (current) return;
     			transition_in(if_block0);
     			transition_in(if_block1);
-
-    			for (let i = 0; i < each_value_1.length; i += 1) {
-    				transition_in(each_blocks[i]);
-    			}
-
+    			transition_in(if_block2);
     			current = true;
     		},
     		o: function outro(local) {
     			transition_out(if_block0);
     			transition_out(if_block1);
-    			each_blocks = each_blocks.filter(Boolean);
-
-    			for (let i = 0; i < each_blocks.length; i += 1) {
-    				transition_out(each_blocks[i]);
-    			}
-
+    			transition_out(if_block2);
     			current = false;
     		},
     		d: function destroy(detaching) {
@@ -2001,7 +1968,7 @@ var app = (function () {
     			if (detaching) detach_dev(tr1);
     			if_blocks[current_block_type_index].d();
     			if_blocks_1[current_block_type_index_1].d();
-    			destroy_each(each_blocks, detaching);
+    			if (if_block2) if_block2.d();
     			run_all(dispose);
     		}
     	};
@@ -2010,14 +1977,14 @@ var app = (function () {
     		block,
     		id: create_if_block$1.name,
     		type: "if",
-    		source: "(804:0) {#if openIndex === i}",
+    		source: "(911:0) {#if openIndex === i}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (818:0) {:else}
+    // (927:0) {:else}
     function create_else_block_2(ctx) {
     	let span;
     	let current;
@@ -2027,8 +1994,8 @@ var app = (function () {
     		c: function create() {
     			span = element("span");
     			create_component(faregsquare.$$.fragment);
-    			attr_dev(span, "class", "smaller svelte-hsvar4");
-    			add_location(span, file$8, 818, 0, 13236);
+    			attr_dev(span, "class", "smaller svelte-1w7cnc4");
+    			add_location(span, file$8, 927, 0, 15945);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, span, anchor);
@@ -2054,15 +2021,15 @@ var app = (function () {
     		block,
     		id: create_else_block_2.name,
     		type: "else",
-    		source: "(818:0) {:else}",
+    		source: "(927:0) {:else}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (814:0) {#if showAll}
-    function create_if_block_7(ctx) {
+    // (923:0) {#if showAll}
+    function create_if_block_8(ctx) {
     	let span;
     	let current;
     	const faregchecksquare = new FaRegCheckSquare({ $$inline: true });
@@ -2071,8 +2038,8 @@ var app = (function () {
     		c: function create() {
     			span = element("span");
     			create_component(faregchecksquare.$$.fragment);
-    			attr_dev(span, "class", "smaller svelte-hsvar4");
-    			add_location(span, file$8, 814, 0, 13176);
+    			attr_dev(span, "class", "smaller svelte-1w7cnc4");
+    			add_location(span, file$8, 923, 0, 15885);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, span, anchor);
@@ -2096,16 +2063,16 @@ var app = (function () {
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_if_block_7.name,
+    		id: create_if_block_8.name,
     		type: "if",
-    		source: "(814:0) {#if showAll}",
+    		source: "(923:0) {#if showAll}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (833:0) {:else}
+    // (942:0) {:else}
     function create_else_block_1(ctx) {
     	let span;
     	let t;
@@ -2117,8 +2084,8 @@ var app = (function () {
     			span = element("span");
     			create_component(faclipboard.$$.fragment);
     			t = text("\nCopy to clipboard");
-    			attr_dev(span, "class", "smaller svelte-hsvar4");
-    			add_location(span, file$8, 833, 0, 13476);
+    			attr_dev(span, "class", "smaller svelte-1w7cnc4");
+    			add_location(span, file$8, 942, 0, 16189);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, span, anchor);
@@ -2146,15 +2113,15 @@ var app = (function () {
     		block,
     		id: create_else_block_1.name,
     		type: "else",
-    		source: "(833:0) {:else}",
+    		source: "(942:0) {:else}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (828:0) {#if showClipboardText}
-    function create_if_block_6(ctx) {
+    // (937:0) {#if showClipboardText}
+    function create_if_block_7(ctx) {
     	let span;
     	let t;
     	let current;
@@ -2165,8 +2132,8 @@ var app = (function () {
     			span = element("span");
     			create_component(faclipboardcheck.$$.fragment);
     			t = text("\nCopied to clipboard!");
-    			attr_dev(span, "class", "smaller svelte-hsvar4");
-    			add_location(span, file$8, 828, 0, 13395);
+    			attr_dev(span, "class", "smaller svelte-1w7cnc4");
+    			add_location(span, file$8, 937, 0, 16108);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, span, anchor);
@@ -2192,20 +2159,114 @@ var app = (function () {
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_if_block_6.name,
+    		id: create_if_block_7.name,
     		type: "if",
-    		source: "(828:0) {#if showClipboardText}",
+    		source: "(937:0) {#if showClipboardText}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (842:0) {#if rowsToShow.includes(row.parentIndexRef) && (!row.bracket || (row.bracket && rowsToShow.includes(row.indexRef)))}
+    // (951:0) {#if openIndex === i}
     function create_if_block_1(ctx) {
+    	let each_1_anchor;
+    	let current;
+    	let each_value_1 = /*testy*/ ctx[50].childRows;
+    	let each_blocks = [];
+
+    	for (let i = 0; i < each_value_1.length; i += 1) {
+    		each_blocks[i] = create_each_block_1(get_each_context_1(ctx, each_value_1, i));
+    	}
+
+    	const out = i => transition_out(each_blocks[i], 1, 1, () => {
+    		each_blocks[i] = null;
+    	});
+
+    	const block = {
+    		c: function create() {
+    			for (let i = 0; i < each_blocks.length; i += 1) {
+    				each_blocks[i].c();
+    			}
+
+    			each_1_anchor = empty();
+    		},
+    		m: function mount(target, anchor) {
+    			for (let i = 0; i < each_blocks.length; i += 1) {
+    				each_blocks[i].m(target, anchor);
+    			}
+
+    			insert_dev(target, each_1_anchor, anchor);
+    			current = true;
+    		},
+    		p: function update(ctx, dirty) {
+    			if (dirty[0] & /*rowsToShow, topLevelObjectArray, hoverRow, rowContract, rowExpand*/ 25248) {
+    				each_value_1 = /*testy*/ ctx[50].childRows;
+    				let i;
+
+    				for (i = 0; i < each_value_1.length; i += 1) {
+    					const child_ctx = get_each_context_1(ctx, each_value_1, i);
+
+    					if (each_blocks[i]) {
+    						each_blocks[i].p(child_ctx, dirty);
+    						transition_in(each_blocks[i], 1);
+    					} else {
+    						each_blocks[i] = create_each_block_1(child_ctx);
+    						each_blocks[i].c();
+    						transition_in(each_blocks[i], 1);
+    						each_blocks[i].m(each_1_anchor.parentNode, each_1_anchor);
+    					}
+    				}
+
+    				group_outros();
+
+    				for (i = each_value_1.length; i < each_blocks.length; i += 1) {
+    					out(i);
+    				}
+
+    				check_outros();
+    			}
+    		},
+    		i: function intro(local) {
+    			if (current) return;
+
+    			for (let i = 0; i < each_value_1.length; i += 1) {
+    				transition_in(each_blocks[i]);
+    			}
+
+    			current = true;
+    		},
+    		o: function outro(local) {
+    			each_blocks = each_blocks.filter(Boolean);
+
+    			for (let i = 0; i < each_blocks.length; i += 1) {
+    				transition_out(each_blocks[i]);
+    			}
+
+    			current = false;
+    		},
+    		d: function destroy(detaching) {
+    			destroy_each(each_blocks, detaching);
+    			if (detaching) detach_dev(each_1_anchor);
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_if_block_1.name,
+    		type: "if",
+    		source: "(951:0) {#if openIndex === i}",
+    		ctx
+    	});
+
+    	return block;
+    }
+
+    // (953:0) {#if rowsToShow.includes(row.parentIndexRef) && (!row.bracket || (row.bracket && rowsToShow.includes(row.indexRef)))}
+    function create_if_block_2(ctx) {
     	let div;
     	let span;
-    	let t0_value = /*row*/ ctx[43].output + "";
+    	let t0_value = /*row*/ ctx[53].output + "";
     	let t0;
     	let t1;
     	let t2;
@@ -2214,12 +2275,12 @@ var app = (function () {
     	let div_class_value;
     	let current;
     	let dispose;
-    	let if_block0 = /*row*/ ctx[43].type && create_if_block_5(ctx);
-    	let if_block1 = /*row*/ ctx[43].len && create_if_block_4(ctx);
-    	let if_block2 = /*row*/ ctx[43].expandable && create_if_block_2(ctx);
+    	let if_block0 = /*row*/ ctx[53].type && create_if_block_6(ctx);
+    	let if_block1 = /*row*/ ctx[53].len && create_if_block_5(ctx);
+    	let if_block2 = /*row*/ ctx[53].expandable && create_if_block_3(ctx);
 
     	function mouseover_handler(...args) {
-    		return /*mouseover_handler*/ ctx[38](/*row*/ ctx[43], ...args);
+    		return /*mouseover_handler*/ ctx[46](/*row*/ ctx[53], ...args);
     	}
 
     	const block = {
@@ -2234,23 +2295,23 @@ var app = (function () {
     			t3 = text("\n");
     			if (if_block2) if_block2.c();
     			t4 = text("\n");
-    			add_location(span, file$8, 845, 0, 13904);
+    			add_location(span, file$8, 956, 0, 16625);
 
-    			attr_dev(div, "class", div_class_value = "" + (null_to_empty(/*hoverRow*/ ctx[5] === /*row*/ ctx[43].indexRef || /*row*/ ctx[43].parentIndexRef.startsWith(/*hoverRow*/ ctx[5])
+    			attr_dev(div, "class", div_class_value = "" + (null_to_empty(/*hoverRow*/ ctx[7] === /*row*/ ctx[53].indexRef || /*row*/ ctx[53].parentIndexRef.startsWith(/*hoverRow*/ ctx[7])
     			? "row hoverRow"
-    			: "row") + " svelte-hsvar4"));
+    			: "row") + " svelte-1w7cnc4"));
 
-    			add_location(div, file$8, 842, 0, 13749);
+    			add_location(div, file$8, 953, 0, 16470);
     			dispose = listen_dev(div, "mouseover", mouseover_handler, false, false, false);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
     			append_dev(div, span);
     			append_dev(span, t0);
-    			append_dev(div, t1);
-    			if (if_block0) if_block0.m(div, null);
-    			append_dev(div, t2);
-    			if (if_block1) if_block1.m(div, null);
+    			append_dev(span, t1);
+    			if (if_block0) if_block0.m(span, null);
+    			append_dev(span, t2);
+    			if (if_block1) if_block1.m(span, null);
     			append_dev(div, t3);
     			if (if_block2) if_block2.m(div, null);
     			append_dev(div, t4);
@@ -2258,40 +2319,40 @@ var app = (function () {
     		},
     		p: function update(new_ctx, dirty) {
     			ctx = new_ctx;
-    			if ((!current || dirty[0] & /*testyArr*/ 128) && t0_value !== (t0_value = /*row*/ ctx[43].output + "")) set_data_dev(t0, t0_value);
+    			if ((!current || dirty[0] & /*topLevelObjectArray*/ 512) && t0_value !== (t0_value = /*row*/ ctx[53].output + "")) set_data_dev(t0, t0_value);
 
-    			if (/*row*/ ctx[43].type) {
+    			if (/*row*/ ctx[53].type) {
     				if (if_block0) {
     					if_block0.p(ctx, dirty);
     				} else {
-    					if_block0 = create_if_block_5(ctx);
+    					if_block0 = create_if_block_6(ctx);
     					if_block0.c();
-    					if_block0.m(div, t2);
+    					if_block0.m(span, t2);
     				}
     			} else if (if_block0) {
     				if_block0.d(1);
     				if_block0 = null;
     			}
 
-    			if (/*row*/ ctx[43].len) {
+    			if (/*row*/ ctx[53].len) {
     				if (if_block1) {
     					if_block1.p(ctx, dirty);
     				} else {
-    					if_block1 = create_if_block_4(ctx);
+    					if_block1 = create_if_block_5(ctx);
     					if_block1.c();
-    					if_block1.m(div, t3);
+    					if_block1.m(span, null);
     				}
     			} else if (if_block1) {
     				if_block1.d(1);
     				if_block1 = null;
     			}
 
-    			if (/*row*/ ctx[43].expandable) {
+    			if (/*row*/ ctx[53].expandable) {
     				if (if_block2) {
     					if_block2.p(ctx, dirty);
     					transition_in(if_block2, 1);
     				} else {
-    					if_block2 = create_if_block_2(ctx);
+    					if_block2 = create_if_block_3(ctx);
     					if_block2.c();
     					transition_in(if_block2, 1);
     					if_block2.m(div, t4);
@@ -2306,9 +2367,9 @@ var app = (function () {
     				check_outros();
     			}
 
-    			if (!current || dirty[0] & /*hoverRow, testyArr*/ 160 && div_class_value !== (div_class_value = "" + (null_to_empty(/*hoverRow*/ ctx[5] === /*row*/ ctx[43].indexRef || /*row*/ ctx[43].parentIndexRef.startsWith(/*hoverRow*/ ctx[5])
+    			if (!current || dirty[0] & /*hoverRow, topLevelObjectArray*/ 640 && div_class_value !== (div_class_value = "" + (null_to_empty(/*hoverRow*/ ctx[7] === /*row*/ ctx[53].indexRef || /*row*/ ctx[53].parentIndexRef.startsWith(/*hoverRow*/ ctx[7])
     			? "row hoverRow"
-    			: "row") + " svelte-hsvar4"))) {
+    			: "row") + " svelte-1w7cnc4"))) {
     				attr_dev(div, "class", div_class_value);
     			}
     		},
@@ -2332,34 +2393,76 @@ var app = (function () {
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_if_block_1.name,
+    		id: create_if_block_2.name,
     		type: "if",
-    		source: "(842:0) {#if rowsToShow.includes(row.parentIndexRef) && (!row.bracket || (row.bracket && rowsToShow.includes(row.indexRef)))}",
+    		source: "(953:0) {#if rowsToShow.includes(row.parentIndexRef) && (!row.bracket || (row.bracket && rowsToShow.includes(row.indexRef)))}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (847:0) {#if row.type}
-    function create_if_block_5(ctx) {
+    // (959:0) {#if row.type}
+    function create_if_block_6(ctx) {
     	let span;
-    	let t_value = /*row*/ ctx[43].type + "";
+    	let t_value = /*row*/ ctx[53].type + "";
     	let t;
 
     	const block = {
     		c: function create() {
     			span = element("span");
     			t = text(t_value);
-    			attr_dev(span, "class", "type svelte-hsvar4");
-    			add_location(span, file$8, 847, 0, 13945);
+    			attr_dev(span, "class", "type svelte-1w7cnc4");
+    			add_location(span, file$8, 959, 0, 16660);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, span, anchor);
     			append_dev(span, t);
     		},
     		p: function update(ctx, dirty) {
-    			if (dirty[0] & /*testyArr*/ 128 && t_value !== (t_value = /*row*/ ctx[43].type + "")) set_data_dev(t, t_value);
+    			if (dirty[0] & /*topLevelObjectArray*/ 512 && t_value !== (t_value = /*row*/ ctx[53].type + "")) set_data_dev(t, t_value);
+    		},
+    		d: function destroy(detaching) {
+    			if (detaching) detach_dev(span);
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_if_block_6.name,
+    		type: "if",
+    		source: "(959:0) {#if row.type}",
+    		ctx
+    	});
+
+    	return block;
+    }
+
+    // (962:0) {#if row.len}
+    function create_if_block_5(ctx) {
+    	let span;
+    	let t0;
+    	let t1_value = /*row*/ ctx[53].len + "";
+    	let t1;
+    	let t2;
+
+    	const block = {
+    		c: function create() {
+    			span = element("span");
+    			t0 = text("(");
+    			t1 = text(t1_value);
+    			t2 = text(")");
+    			attr_dev(span, "class", "len svelte-1w7cnc4");
+    			add_location(span, file$8, 962, 0, 16717);
+    		},
+    		m: function mount(target, anchor) {
+    			insert_dev(target, span, anchor);
+    			append_dev(span, t0);
+    			append_dev(span, t1);
+    			append_dev(span, t2);
+    		},
+    		p: function update(ctx, dirty) {
+    			if (dirty[0] & /*topLevelObjectArray*/ 512 && t1_value !== (t1_value = /*row*/ ctx[53].len + "")) set_data_dev(t1, t1_value);
     		},
     		d: function destroy(detaching) {
     			if (detaching) detach_dev(span);
@@ -2370,67 +2473,25 @@ var app = (function () {
     		block,
     		id: create_if_block_5.name,
     		type: "if",
-    		source: "(847:0) {#if row.type}",
+    		source: "(962:0) {#if row.len}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (850:0) {#if row.len}
-    function create_if_block_4(ctx) {
-    	let span;
-    	let t0;
-    	let t1_value = /*row*/ ctx[43].len + "";
-    	let t1;
-    	let t2;
-
-    	const block = {
-    		c: function create() {
-    			span = element("span");
-    			t0 = text("(");
-    			t1 = text(t1_value);
-    			t2 = text(")");
-    			attr_dev(span, "class", "len svelte-hsvar4");
-    			add_location(span, file$8, 850, 0, 14002);
-    		},
-    		m: function mount(target, anchor) {
-    			insert_dev(target, span, anchor);
-    			append_dev(span, t0);
-    			append_dev(span, t1);
-    			append_dev(span, t2);
-    		},
-    		p: function update(ctx, dirty) {
-    			if (dirty[0] & /*testyArr*/ 128 && t1_value !== (t1_value = /*row*/ ctx[43].len + "")) set_data_dev(t1, t1_value);
-    		},
-    		d: function destroy(detaching) {
-    			if (detaching) detach_dev(span);
-    		}
-    	};
-
-    	dispatch_dev("SvelteRegisterBlock", {
-    		block,
-    		id: create_if_block_4.name,
-    		type: "if",
-    		source: "(850:0) {#if row.len}",
-    		ctx
-    	});
-
-    	return block;
-    }
-
-    // (853:0) {#if row.expandable}
-    function create_if_block_2(ctx) {
+    // (966:0) {#if row.expandable}
+    function create_if_block_3(ctx) {
     	let show_if;
     	let current_block_type_index;
     	let if_block;
     	let if_block_anchor;
     	let current;
-    	const if_block_creators = [create_if_block_3, create_else_block];
+    	const if_block_creators = [create_if_block_4, create_else_block];
     	const if_blocks = [];
 
     	function select_block_type_4(ctx, dirty) {
-    		if (dirty[0] & /*rowsToShow, testyArr*/ 144) show_if = !!/*rowsToShow*/ ctx[4].includes(/*row*/ ctx[43].indexRef);
+    		if (dirty[0] & /*rowsToShow, topLevelObjectArray*/ 544) show_if = !!/*rowsToShow*/ ctx[5].includes(/*row*/ ctx[53].indexRef);
     		if (show_if) return 0;
     		return 1;
     	}
@@ -2490,33 +2551,33 @@ var app = (function () {
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_if_block_2.name,
+    		id: create_if_block_3.name,
     		type: "if",
-    		source: "(853:0) {#if row.expandable}",
+    		source: "(966:0) {#if row.expandable}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (860:0) {:else}
+    // (973:0) {:else}
     function create_else_block(ctx) {
     	let span;
     	let current;
     	let dispose;
     	const fachevronright = new FaChevronRight({ $$inline: true });
 
-    	function click_handler_2(...args) {
-    		return /*click_handler_2*/ ctx[37](/*row*/ ctx[43], ...args);
+    	function mousedown_handler_2(...args) {
+    		return /*mousedown_handler_2*/ ctx[45](/*row*/ ctx[53], ...args);
     	}
 
     	const block = {
     		c: function create() {
     			span = element("span");
     			create_component(fachevronright.$$.fragment);
-    			attr_dev(span, "class", "smallest dataArrow svelte-hsvar4");
-    			add_location(span, file$8, 860, 0, 14217);
-    			dispose = listen_dev(span, "click", click_handler_2, false, false, false);
+    			attr_dev(span, "class", "smallest dataArrow svelte-1w7cnc4");
+    			add_location(span, file$8, 973, 0, 16944);
+    			dispose = listen_dev(span, "mousedown", mousedown_handler_2, false, false, false);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, span, anchor);
@@ -2546,31 +2607,31 @@ var app = (function () {
     		block,
     		id: create_else_block.name,
     		type: "else",
-    		source: "(860:0) {:else}",
+    		source: "(973:0) {:else}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (854:0) {#if rowsToShow.includes(row.indexRef)}
-    function create_if_block_3(ctx) {
+    // (967:0) {#if rowsToShow.includes(row.indexRef)}
+    function create_if_block_4(ctx) {
     	let span;
     	let current;
     	let dispose;
     	const fachevrondown = new FaChevronDown({ $$inline: true });
 
-    	function click_handler_1(...args) {
-    		return /*click_handler_1*/ ctx[36](/*row*/ ctx[43], ...args);
+    	function mousedown_handler_1(...args) {
+    		return /*mousedown_handler_1*/ ctx[44](/*row*/ ctx[53], ...args);
     	}
 
     	const block = {
     		c: function create() {
     			span = element("span");
     			create_component(fachevrondown.$$.fragment);
-    			attr_dev(span, "class", "smallest dataArrow svelte-hsvar4");
-    			add_location(span, file$8, 854, 0, 14106);
-    			dispose = listen_dev(span, "click", click_handler_1, false, false, false);
+    			attr_dev(span, "class", "smallest dataArrow svelte-1w7cnc4");
+    			add_location(span, file$8, 967, 0, 16829);
+    			dispose = listen_dev(span, "mousedown", mousedown_handler_1, false, false, false);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, span, anchor);
@@ -2598,21 +2659,21 @@ var app = (function () {
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_if_block_3.name,
+    		id: create_if_block_4.name,
     		type: "if",
-    		source: "(854:0) {#if rowsToShow.includes(row.indexRef)}",
+    		source: "(967:0) {#if rowsToShow.includes(row.indexRef)}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (841:0) {#each valueFormatterToArr(testy.val) as row}
+    // (952:0) {#each testy.childRows as row}
     function create_each_block_1(ctx) {
-    	let show_if = /*rowsToShow*/ ctx[4].includes(/*row*/ ctx[43].parentIndexRef) && (!/*row*/ ctx[43].bracket || /*row*/ ctx[43].bracket && /*rowsToShow*/ ctx[4].includes(/*row*/ ctx[43].indexRef));
+    	let show_if = /*rowsToShow*/ ctx[5].includes(/*row*/ ctx[53].parentIndexRef) && (!/*row*/ ctx[53].bracket || /*row*/ ctx[53].bracket && /*rowsToShow*/ ctx[5].includes(/*row*/ ctx[53].indexRef));
     	let if_block_anchor;
     	let current;
-    	let if_block = show_if && create_if_block_1(ctx);
+    	let if_block = show_if && create_if_block_2(ctx);
 
     	const block = {
     		c: function create() {
@@ -2625,14 +2686,14 @@ var app = (function () {
     			current = true;
     		},
     		p: function update(ctx, dirty) {
-    			if (dirty[0] & /*rowsToShow, testyArr*/ 144) show_if = /*rowsToShow*/ ctx[4].includes(/*row*/ ctx[43].parentIndexRef) && (!/*row*/ ctx[43].bracket || /*row*/ ctx[43].bracket && /*rowsToShow*/ ctx[4].includes(/*row*/ ctx[43].indexRef));
+    			if (dirty[0] & /*rowsToShow, topLevelObjectArray*/ 544) show_if = /*rowsToShow*/ ctx[5].includes(/*row*/ ctx[53].parentIndexRef) && (!/*row*/ ctx[53].bracket || /*row*/ ctx[53].bracket && /*rowsToShow*/ ctx[5].includes(/*row*/ ctx[53].indexRef));
 
     			if (show_if) {
     				if (if_block) {
     					if_block.p(ctx, dirty);
     					transition_in(if_block, 1);
     				} else {
-    					if_block = create_if_block_1(ctx);
+    					if_block = create_if_block_2(ctx);
     					if_block.c();
     					transition_in(if_block, 1);
     					if_block.m(if_block_anchor.parentNode, if_block_anchor);
@@ -2666,41 +2727,40 @@ var app = (function () {
     		block,
     		id: create_each_block_1.name,
     		type: "each",
-    		source: "(841:0) {#each valueFormatterToArr(testy.val) as row}",
+    		source: "(952:0) {#each testy.childRows as row}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (785:0) {#each testyArr as testy, i}
+    // (892:0) {#each topLevelObjectArray as testy, i}
     function create_each_block(ctx) {
     	let tr;
     	let td0;
-    	let show_if = displayClass(/*testy*/ ctx[40]);
     	let t0;
-    	let t1_value = displayVal(/*testy*/ ctx[40].val) + "";
+    	let t1_value = /*testy*/ ctx[50].valType + "";
     	let t1;
     	let t2;
     	let td1;
-    	let t3_value = /*testy*/ ctx[40].type + "";
+    	let t3_value = /*testy*/ ctx[50].type + "";
     	let t3;
     	let t4;
     	let td2;
-    	let t5_value = /*testy*/ ctx[40].key + "";
+    	let t5_value = /*testy*/ ctx[50].key + "";
     	let t5;
     	let tr_class_value;
     	let t6;
     	let if_block1_anchor;
     	let current;
     	let dispose;
-    	let if_block0 = show_if && create_if_block_8(ctx);
+    	let if_block0 = /*testy*/ ctx[50].class && create_if_block_9(ctx);
 
-    	function click_handler(...args) {
-    		return /*click_handler*/ ctx[35](/*i*/ ctx[42], /*testy*/ ctx[40], ...args);
+    	function mousedown_handler(...args) {
+    		return /*mousedown_handler*/ ctx[43](/*i*/ ctx[52], /*testy*/ ctx[50], ...args);
     	}
 
-    	let if_block1 = /*openIndex*/ ctx[3] === /*i*/ ctx[42] && create_if_block$1(ctx);
+    	let if_block1 = /*openIndex*/ ctx[4] === /*i*/ ctx[52] && create_if_block$1(ctx);
 
     	const block = {
     		c: function create() {
@@ -2718,13 +2778,13 @@ var app = (function () {
     			t6 = space();
     			if (if_block1) if_block1.c();
     			if_block1_anchor = empty();
-    			attr_dev(td0, "class", "link svelte-hsvar4");
-    			add_location(td0, file$8, 788, 0, 12603);
-    			add_location(td1, file$8, 800, 0, 12787);
-    			add_location(td2, file$8, 801, 0, 12809);
-    			attr_dev(tr, "class", tr_class_value = "" + (null_to_empty(displayClass(/*testy*/ ctx[40])) + " svelte-hsvar4"));
-    			add_location(tr, file$8, 785, 0, 12521);
-    			dispose = listen_dev(tr, "click", click_handler, false, false, false);
+    			attr_dev(td0, "class", "link svelte-1w7cnc4");
+    			add_location(td0, file$8, 895, 0, 15324);
+    			add_location(td1, file$8, 907, 0, 15492);
+    			add_location(td2, file$8, 908, 0, 15514);
+    			attr_dev(tr, "class", tr_class_value = "" + (null_to_empty(/*testy*/ ctx[50].class) + " svelte-1w7cnc4"));
+    			add_location(tr, file$8, 892, 0, 15246);
+    			dispose = listen_dev(tr, "mousedown", mousedown_handler, false, false, false);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, tr, anchor);
@@ -2745,14 +2805,13 @@ var app = (function () {
     		},
     		p: function update(new_ctx, dirty) {
     			ctx = new_ctx;
-    			if (dirty[0] & /*testyArr*/ 128) show_if = displayClass(/*testy*/ ctx[40]);
 
-    			if (show_if) {
+    			if (/*testy*/ ctx[50].class) {
     				if (if_block0) {
     					if_block0.p(ctx, dirty);
     					transition_in(if_block0, 1);
     				} else {
-    					if_block0 = create_if_block_8(ctx);
+    					if_block0 = create_if_block_9(ctx);
     					if_block0.c();
     					transition_in(if_block0, 1);
     					if_block0.m(td0, t0);
@@ -2767,15 +2826,15 @@ var app = (function () {
     				check_outros();
     			}
 
-    			if ((!current || dirty[0] & /*testyArr*/ 128) && t1_value !== (t1_value = displayVal(/*testy*/ ctx[40].val) + "")) set_data_dev(t1, t1_value);
-    			if ((!current || dirty[0] & /*testyArr*/ 128) && t3_value !== (t3_value = /*testy*/ ctx[40].type + "")) set_data_dev(t3, t3_value);
-    			if ((!current || dirty[0] & /*testyArr*/ 128) && t5_value !== (t5_value = /*testy*/ ctx[40].key + "")) set_data_dev(t5, t5_value);
+    			if ((!current || dirty[0] & /*topLevelObjectArray*/ 512) && t1_value !== (t1_value = /*testy*/ ctx[50].valType + "")) set_data_dev(t1, t1_value);
+    			if ((!current || dirty[0] & /*topLevelObjectArray*/ 512) && t3_value !== (t3_value = /*testy*/ ctx[50].type + "")) set_data_dev(t3, t3_value);
+    			if ((!current || dirty[0] & /*topLevelObjectArray*/ 512) && t5_value !== (t5_value = /*testy*/ ctx[50].key + "")) set_data_dev(t5, t5_value);
 
-    			if (!current || dirty[0] & /*testyArr*/ 128 && tr_class_value !== (tr_class_value = "" + (null_to_empty(displayClass(/*testy*/ ctx[40])) + " svelte-hsvar4"))) {
+    			if (!current || dirty[0] & /*topLevelObjectArray*/ 512 && tr_class_value !== (tr_class_value = "" + (null_to_empty(/*testy*/ ctx[50].class) + " svelte-1w7cnc4"))) {
     				attr_dev(tr, "class", tr_class_value);
     			}
 
-    			if (/*openIndex*/ ctx[3] === /*i*/ ctx[42]) {
+    			if (/*openIndex*/ ctx[4] === /*i*/ ctx[52]) {
     				if (if_block1) {
     					if_block1.p(ctx, dirty);
     					transition_in(if_block1, 1);
@@ -2820,7 +2879,7 @@ var app = (function () {
     		block,
     		id: create_each_block.name,
     		type: "each",
-    		source: "(785:0) {#each testyArr as testy, i}",
+    		source: "(892:0) {#each topLevelObjectArray as testy, i}",
     		ctx
     	});
 
@@ -2835,28 +2894,38 @@ var app = (function () {
     	let div0_class_value;
     	let t0;
     	let div1;
+    	let t1;
+    	let t2_value = /*cache*/ ctx[10].dataChanges + "";
+    	let t2;
+    	let t3;
+    	let t4_value = /*cache*/ ctx[10].viewChanges + "";
+    	let t4;
+    	let t5;
+    	let t6_value = /*cache*/ ctx[10].formatted + "";
+    	let t6;
+    	let t7;
     	let table;
     	let colgroup;
     	let col0;
-    	let t1;
+    	let t8;
     	let col1;
-    	let t2;
+    	let t9;
     	let col2;
-    	let t3;
+    	let t10;
     	let div1_class_value;
     	let current;
     	let dispose;
-    	const if_block_creators = [create_if_block_10, create_else_block_4];
+    	const if_block_creators = [create_if_block_11, create_else_block_4];
     	const if_blocks = [];
 
     	function select_block_type(ctx, dirty) {
-    		if (/*toggle*/ ctx[6]) return 0;
+    		if (/*toggle*/ ctx[8]) return 0;
     		return 1;
     	}
 
     	current_block_type_index = select_block_type(ctx);
     	if_block = if_blocks[current_block_type_index] = if_block_creators[current_block_type_index](ctx);
-    	let each_value = /*testyArr*/ ctx[7];
+    	let each_value = /*topLevelObjectArray*/ ctx[9];
     	let each_blocks = [];
 
     	for (let i = 0; i < each_value.length; i += 1) {
@@ -2874,38 +2943,57 @@ var app = (function () {
     			if_block.c();
     			t0 = space();
     			div1 = element("div");
+    			t1 = text("Data Changes(");
+    			t2 = text(t2_value);
+    			t3 = text(") View Changes(");
+    			t4 = text(t4_value);
+    			t5 = text(") Last\nUpdated(");
+    			t6 = text(t6_value);
+    			t7 = text(")\n");
     			table = element("table");
     			colgroup = element("colgroup");
     			col0 = element("col");
-    			t1 = space();
+    			t8 = space();
     			col1 = element("col");
-    			t2 = space();
+    			t9 = space();
     			col2 = element("col");
-    			t3 = space();
+    			t10 = space();
 
     			for (let i = 0; i < each_blocks.length; i += 1) {
     				each_blocks[i].c();
     			}
 
-    			attr_dev(div0, "class", div0_class_value = "" + (null_to_empty((/*toggle*/ ctx[6]
+    			attr_dev(div0, "class", div0_class_value = "" + (null_to_empty((/*toggle*/ ctx[8]
     			? "toggle toggleShow"
-    			: "toggle toggleHide") + " toggle" + /*tabPosition*/ ctx[0] + (/*fade*/ ctx[1] ? "" : " noFade")) + " svelte-hsvar4"));
+    			: "toggle toggleHide") + " toggle" + /*tabPosition*/ ctx[0] + (/*fade*/ ctx[1]
+    			? /*hovering*/ ctx[2] ? " noFade" : " fade"
+    			: "noFade")) + " svelte-1w7cnc4"));
 
-    			add_location(div0, file$8, 761, 0, 12025);
+    			add_location(div0, file$8, 862, 0, 14471);
     			set_style(col0, "width", "35%");
-    			add_location(col0, file$8, 780, 0, 12402);
+    			add_location(col0, file$8, 887, 0, 15116);
     			set_style(col1, "width", "10%");
-    			add_location(col1, file$8, 781, 0, 12428);
+    			add_location(col1, file$8, 888, 0, 15142);
     			set_style(col2, "width", "55%");
-    			add_location(col2, file$8, 782, 0, 12454);
-    			add_location(colgroup, file$8, 779, 0, 12391);
-    			attr_dev(table, "class", "svelte-hsvar4");
-    			add_location(table, file$8, 778, 0, 12383);
-    			attr_dev(div1, "class", div1_class_value = "" + (null_to_empty("tree" + (/*toggle*/ ctx[6] ? "" : " tree-hide") + (/*fade*/ ctx[1] ? "" : " noFade")) + " svelte-hsvar4"));
-    			add_location(div1, file$8, 777, 0, 12305);
-    			attr_dev(div2, "class", "wrapper tortoise svelte-hsvar4");
-    			add_location(div2, file$8, 760, 0, 11994);
-    			dispose = listen_dev(div0, "click", /*doToggle*/ ctx[14], false, false, false);
+    			add_location(col2, file$8, 889, 0, 15168);
+    			add_location(colgroup, file$8, 886, 0, 15105);
+    			attr_dev(table, "class", "svelte-1w7cnc4");
+    			add_location(table, file$8, 885, 0, 15097);
+    			attr_dev(div1, "id", "svelteObjectExplorer");
+
+    			attr_dev(div1, "class", div1_class_value = "" + (null_to_empty("tree" + (/*toggle*/ ctx[8] ? "" : " tree-hide") + (/*fade*/ ctx[1]
+    			? /*hovering*/ ctx[2] ? " noFade" : " fade"
+    			: "noFade")) + " svelte-1w7cnc4"));
+
+    			add_location(div1, file$8, 878, 0, 14784);
+    			attr_dev(div2, "class", "wrapper svelte-1w7cnc4");
+    			add_location(div2, file$8, 861, 0, 14449);
+
+    			dispose = [
+    				listen_dev(div0, "mousedown", /*doToggle*/ ctx[12], false, false, false),
+    				listen_dev(div1, "mouseover", /*mouseover_handler_1*/ ctx[48], false, false, false),
+    				listen_dev(div1, "mouseleave", /*mouseleave_handler*/ ctx[49], false, false, false)
+    			];
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -2916,14 +3004,21 @@ var app = (function () {
     			if_blocks[current_block_type_index].m(div0, null);
     			append_dev(div2, t0);
     			append_dev(div2, div1);
+    			append_dev(div1, t1);
+    			append_dev(div1, t2);
+    			append_dev(div1, t3);
+    			append_dev(div1, t4);
+    			append_dev(div1, t5);
+    			append_dev(div1, t6);
+    			append_dev(div1, t7);
     			append_dev(div1, table);
     			append_dev(table, colgroup);
     			append_dev(colgroup, col0);
-    			append_dev(colgroup, t1);
+    			append_dev(colgroup, t8);
     			append_dev(colgroup, col1);
-    			append_dev(colgroup, t2);
+    			append_dev(colgroup, t9);
     			append_dev(colgroup, col2);
-    			append_dev(table, t3);
+    			append_dev(table, t10);
 
     			for (let i = 0; i < each_blocks.length; i += 1) {
     				each_blocks[i].m(table, null);
@@ -2954,14 +3049,20 @@ var app = (function () {
     				if_block.m(div0, null);
     			}
 
-    			if (!current || dirty[0] & /*toggle, tabPosition, fade*/ 67 && div0_class_value !== (div0_class_value = "" + (null_to_empty((/*toggle*/ ctx[6]
+    			if (!current || dirty[0] & /*toggle, tabPosition, fade, hovering*/ 263 && div0_class_value !== (div0_class_value = "" + (null_to_empty((/*toggle*/ ctx[8]
     			? "toggle toggleShow"
-    			: "toggle toggleHide") + " toggle" + /*tabPosition*/ ctx[0] + (/*fade*/ ctx[1] ? "" : " noFade")) + " svelte-hsvar4"))) {
+    			: "toggle toggleHide") + " toggle" + /*tabPosition*/ ctx[0] + (/*fade*/ ctx[1]
+    			? /*hovering*/ ctx[2] ? " noFade" : " fade"
+    			: "noFade")) + " svelte-1w7cnc4"))) {
     				attr_dev(div0, "class", div0_class_value);
     			}
 
-    			if (dirty[0] & /*openIndex, hoverRow, valueFormatterToArr, testyArr, rowsToShow, rowContract, rowExpand, copyToClipboard, showClipboardText, toggleShowAll, showAll, click*/ 49084) {
-    				each_value = /*testyArr*/ ctx[7];
+    			if ((!current || dirty[0] & /*cache*/ 1024) && t2_value !== (t2_value = /*cache*/ ctx[10].dataChanges + "")) set_data_dev(t2, t2_value);
+    			if ((!current || dirty[0] & /*cache*/ 1024) && t4_value !== (t4_value = /*cache*/ ctx[10].viewChanges + "")) set_data_dev(t4, t4_value);
+    			if ((!current || dirty[0] & /*cache*/ 1024) && t6_value !== (t6_value = /*cache*/ ctx[10].formatted + "")) set_data_dev(t6, t6_value);
+
+    			if (dirty[0] & /*openIndex, hoverRow, topLevelObjectArray, rowsToShow, rowContract, rowExpand, copyToClipboard, showClipboardText, toggleShowAll, showAll, click*/ 125688) {
+    				each_value = /*topLevelObjectArray*/ ctx[9];
     				let i;
 
     				for (i = 0; i < each_value.length; i += 1) {
@@ -2987,7 +3088,9 @@ var app = (function () {
     				check_outros();
     			}
 
-    			if (!current || dirty[0] & /*toggle, fade*/ 66 && div1_class_value !== (div1_class_value = "" + (null_to_empty("tree" + (/*toggle*/ ctx[6] ? "" : " tree-hide") + (/*fade*/ ctx[1] ? "" : " noFade")) + " svelte-hsvar4"))) {
+    			if (!current || dirty[0] & /*toggle, fade, hovering*/ 262 && div1_class_value !== (div1_class_value = "" + (null_to_empty("tree" + (/*toggle*/ ctx[8] ? "" : " tree-hide") + (/*fade*/ ctx[1]
+    			? /*hovering*/ ctx[2] ? " noFade" : " fade"
+    			: "noFade")) + " svelte-1w7cnc4"))) {
     				attr_dev(div1, "class", div1_class_value);
     			}
     		},
@@ -3015,7 +3118,7 @@ var app = (function () {
     			if (detaching) detach_dev(div2);
     			if_blocks[current_block_type_index].d();
     			destroy_each(each_blocks, detaching);
-    			dispose();
+    			run_all(dispose);
     		}
     	};
 
@@ -3028,6 +3131,20 @@ var app = (function () {
     	});
 
     	return block;
+    }
+
+    function formatDate(d) {
+    	return d.toDateString() + " " + d.getUTCSeconds() + "s " + d.getUTCMilliseconds() + "ms";
+    }
+
+    function getAllIndexes(arrayToMap, openIndex) {
+    	let arr = [];
+
+    	if (openIndex && arrayToMap[openIndex] && arrayToMap[openIndex].childRows) arrayToMap[openIndex].childRows.map(row => {
+    		arr.push(row.index);
+    	});
+
+    	return arr;
     }
 
     function sort_byKey(a, b) {
@@ -3049,7 +3166,7 @@ var app = (function () {
     	return Array.isArray(val) ? "array" : typeof val;
     }
 
-    function displayVal(val) {
+    function displayValType(val) {
     	if (val === null) {
     		return "null";
     	} else if (getType(val) === "function") {
@@ -3087,100 +3204,144 @@ var app = (function () {
     	let { tabPosition = "top" } = $$props;
     	let { open = null } = $$props;
     	let { fade = false } = $$props;
+    	let { rateLimit = 100 } = $$props;
+    	let hovering = false;
     	let showAll = false;
     	let openIndex = null;
-
-    	onMount(async () => {
-    		$$invalidate(4, rowsToShow = showAll ? showAllArr : showManuallySelected);
-    		let i = testyArr.filter(item => item.key === open);
-    		if (i.length) $$invalidate(3, openIndex = i[0].index);
-    		valueFormatterToArr(testyArr[i]);
-    		createArray();
-    	});
-
+    	let openIndexSetOnce = false;
     	let indentSpaces = 2;
     	let showAllArr = [];
     	let showManuallySelected = ["0", "0.0"];
     	let rowsToShow = [];
+    	let showClipboardText = false;
+    	let clipboardCode = "";
+    	let hoverRow = "none";
+    	let toggle = true;
+    	let topLevelObjectArray = [];
+    	let openedObjectArray = [];
+
+    	let cache = {
+    		dataChanges: 0,
+    		viewChanges: 0,
+    		dataUpdated: new Date(),
+    		viewUpdated: new Date(),
+    		formatted: "",
+    		myStore
+    	};
+
+    	onMount(async () => {
+    		$$invalidate(5, rowsToShow = showAll ? showAllArr : showManuallySelected);
+    	});
+
+    	let mainLoop = timer();
 
     	function toggleShowAll() {
-    		$$invalidate(2, showAll = !showAll);
+    		$$invalidate(3, showAll = !showAll);
+    	}
+
+    	function doToggle() {
+    		$$invalidate(8, toggle = !toggle);
     	}
 
     	function rowContract(rowIndex) {
-    		$$invalidate(2, showAll = false);
-    		$$invalidate(19, showManuallySelected = showManuallySelected.filter(row => !row.startsWith(rowIndex)));
+    		$$invalidate(3, showAll = false);
+    		$$invalidate(22, showManuallySelected = showManuallySelected.filter(row => !row.startsWith(rowIndex)));
     	}
 
     	function rowExpand(rowIndex) {
-    		$$invalidate(19, showManuallySelected = showManuallySelected.filter(row => row !== rowIndex));
+    		$$invalidate(22, showManuallySelected = showManuallySelected.filter(row => row !== rowIndex));
     		showManuallySelected.push(rowIndex);
     	}
 
-    	let hoverRow = "none";
-    	let toggle = true;
-    	let testyArr = [];
+    	function timer() {
+    		setInterval(
+    			() => {
+    				if (JSON.stringify(myStore) !== JSON.stringify(cache.myStore)) {
+    					$$invalidate(10, cache.dataUpdated = new Date(), cache);
+    					$$invalidate(10, cache.dataChanges = cache.dataChanges + 1, cache);
+    				}
+
+    				if (cache.dataUpdated - cache.viewUpdated > rateLimit) {
+    					$$invalidate(10, cache.myStore = myStore, cache);
+    					$$invalidate(10, cache.viewChanges = cache.viewChanges + 1, cache);
+    					$$invalidate(10, cache.viewUpdated = new Date(), cache);
+    					$$invalidate(10, cache.formatted = formatDate(cache.viewUpdated), cache);
+    					createArray();
+    				}
+    			},
+    			rateLimit
+    		);
+    	}
 
     	function createArray() {
-    		$$invalidate(7, testyArr = []);
+    		let tempArr = [];
 
-    		for (const key in myStore) {
-    			if (myStore.hasOwnProperty(key)) {
-    				testyArr.push({
+    		for (const key in cache.myStore) {
+    			if (cache.myStore.hasOwnProperty(key)) {
+    				let tempItem = {
     					key,
-    					val: myStore[key],
-    					type: getType(myStore[key])
-    				});
+    					val: cache.myStore[key],
+    					type: getType(cache.myStore[key])
+    				};
+
+    				tempItem.class = displayClass(tempItem);
+    				tempItem.valType = displayValType(tempItem.val);
+    				tempItem.childRows = valueFormatterToArr(tempItem.val);
+    				tempArr.push(tempItem);
     			}
     		}
 
-    		testyArr.sort(sort_byKey);
+    		tempArr.sort(sort_byKey);
 
-    		$$invalidate(7, testyArr = testyArr.map((item, index) => {
+    		tempArr = tempArr.map((item, index) => {
     			return { ...item, index };
-    		}));
+    		});
+
+    		$$invalidate(9, topLevelObjectArray = tempArr);
+    		if (!openIndexSetOnce) $$invalidate(4, openIndex = getOpenIndex(topLevelObjectArray));
+    		$$invalidate(21, showAllArr = getAllIndexes(tempArr, openIndex));
+    	}
+
+    	function getOpenIndex(arr) {
+    		let i = null;
+
+    		if (arr && arr.length) {
+    			arr.map((item, index) => {
+    				if (item.key === open && (item.type === "object" || item.type == "array")) i = index;
+    				openIndexSetOnce = true;
+    			});
+    		}
+
+    		return i;
     	}
 
     	function valueFormatterToArr(object) {
     		let parentArr = [];
     		formatByType("0.0", "0", 0, parentArr, object, 0);
-    		$$invalidate(18, showAllArr = []);
-
-    		parentArr.map(row => {
-    			showAllArr.push(row.indexRef);
-    		});
-
     		return parentArr;
     	}
-
-    	let showClipboardText = false;
-    	let clipboardCode = "";
 
     	function copyToClipboard() {
     		let clipboardEl = document.getElementById("hiddenClipboard");
     		clipboardEl.value = clipboardCode;
     		clipboardEl.select();
     		document.execCommand("copy");
-    		$$invalidate(8, showClipboardText = true);
+    		$$invalidate(6, showClipboardText = true);
 
     		setTimeout(
     			() => {
-    				$$invalidate(8, showClipboardText = false);
+    				$$invalidate(6, showClipboardText = false);
     			},
     			2000
     		);
     	}
 
-    	function doToggle() {
-    		$$invalidate(6, toggle = !toggle);
-    	}
-
     	function click(index, val, type) {
     		if (Object.entries(val).length && type === "object" || val.length && type === "array") {
     			if (openIndex === index) {
-    				$$invalidate(3, openIndex = null);
+    				$$invalidate(4, openIndex = null);
     			} else {
-    				$$invalidate(3, openIndex = index);
+    				$$invalidate(4, openIndex = index);
     			}
     		}
     	}
@@ -3220,7 +3381,7 @@ var app = (function () {
     			indexRef,
     			parentIndexRef,
     			index,
-    			output: indent_row(code_format_index(optionalIndex) + "'" + str + "'", level),
+    			output: indent_row(code_format_index(optionalIndex) + "'" + str + "'", level + (optionalIndex ? 1 : 0)),
     			type: "String"
     		});
     	}
@@ -3312,7 +3473,7 @@ var app = (function () {
     			indexRef,
     			parentIndexRef,
     			index,
-    			output: indent_row((optionalNewLine ? "" : code_format_index(optionalIndex)) + code_format_index(optionalIndex), level + (optionalIndex || optionalNewLine ? 0 : 0)),
+    			output: indent_row((optionalNewLine ? "" : code_format_index(optionalIndex)) + code_format_index(optionalIndex), level + (optionalIndex || optionalNewLine ? 1 : 0)),
     			type: "Object",
     			len: object.length,
     			expandable: true
@@ -3364,28 +3525,39 @@ var app = (function () {
     	optionalIndex,
     	optionalNewLine
     	) {
-    		let newindexRef = parentIndexRef + "." + index.toString(10);
-    		let newParentIndexRef = parentIndexRef + "." + index.toString(10);
-    		if (value === null) code_format_null(indexRef, parentIndexRef, index, parentArr, level, optionalIndex); else if (typeof value === "undefined") code_format_undefined(indexRef, parentIndexRef, index, parentArr, level, optionalIndex); else if (typeof value === "boolean") code_format_boolean(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex); else if (typeof value === "string") code_format_string(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex); else if (typeof value === "number") code_format_number(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex); else if (typeof value === "symbol") code_format_symbol(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex); else if (typeof value === "function") code_format_function(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex); else if (Array.isArray(value)) code_format_array(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex, optionalNewLine); else if (typeof value === "object") code_format_object(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex, optionalNewLine); else code_format_unknown(indexRef, parentIndexRef, index, parentArr, level, optionalIndex);
+    		if (value === null) code_format_null(indexRef, parentIndexRef, index, parentArr, level, optionalIndex); else if (typeof value === "undefined") code_format_undefined(indexRef, parentIndexRef, index, parentArr, level, optionalIndex); else if (typeof value === "boolean") code_format_boolean(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex); else if (typeof value === "string") code_format_string(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex); else if (typeof value === "number") code_format_number(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex); else if (typeof value === "symbol") code_format_symbol(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex); else if (typeof value === "function") code_format_function(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex); else if (Array.isArray(value)) if (value.length > 100) {
+    			code_format_string(indexRef, parentIndexRef, index, parentArr, "Array is very long (" + value.length + ")", level, optionalIndex);
+
+    			for (let i = 0; i < value.length; i += 100) {
+    				let end = i + 100 > value.length - 1 ? value.length : i + 99;
+    				let tempArr = value.slice(i, end);
+    				code_format_array(indexRef + "." + i, parentIndexRef, index, parentArr, tempArr, level + 1, optionalIndex + " (" + i + " to " + end + ")", optionalNewLine);
+    			}
+    		} else {
+    			code_format_array(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex, optionalNewLine);
+    		} else if (typeof value === "object") code_format_object(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex, optionalNewLine); else code_format_unknown(indexRef, parentIndexRef, index, parentArr, level, optionalIndex);
     	}
 
-    	const writable_props = ["myStore", "tabPosition", "open", "fade"];
+    	const writable_props = ["myStore", "tabPosition", "open", "fade", "rateLimit"];
 
     	Object_1.keys($$props).forEach(key => {
     		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console.warn(`<Index> was created with unknown prop '${key}'`);
     	});
 
-    	const click_handler = (i, testy) => click(i, testy.val, testy.type);
-    	const click_handler_1 = row => rowContract(row.indexRef);
-    	const click_handler_2 = row => rowExpand(row.indexRef);
-    	const mouseover_handler = row => $$invalidate(5, hoverRow = row.indexRef);
-    	const mouseout_handler = () => $$invalidate(5, hoverRow = null);
+    	const mousedown_handler = (i, testy) => click(i, testy.val, testy.type);
+    	const mousedown_handler_1 = row => rowContract(row.indexRef);
+    	const mousedown_handler_2 = row => rowExpand(row.indexRef);
+    	const mouseover_handler = row => $$invalidate(7, hoverRow = row.indexRef);
+    	const mouseout_handler = () => $$invalidate(7, hoverRow = null);
+    	const mouseover_handler_1 = () => $$invalidate(2, hovering = true);
+    	const mouseleave_handler = () => $$invalidate(2, hovering = false);
 
     	$$self.$set = $$props => {
-    		if ("myStore" in $$props) $$invalidate(16, myStore = $$props.myStore);
+    		if ("myStore" in $$props) $$invalidate(17, myStore = $$props.myStore);
     		if ("tabPosition" in $$props) $$invalidate(0, tabPosition = $$props.tabPosition);
-    		if ("open" in $$props) $$invalidate(17, open = $$props.open);
+    		if ("open" in $$props) $$invalidate(18, open = $$props.open);
     		if ("fade" in $$props) $$invalidate(1, fade = $$props.fade);
+    		if ("rateLimit" in $$props) $$invalidate(19, rateLimit = $$props.rateLimit);
     	};
 
     	$$self.$capture_state = () => {
@@ -3394,74 +3566,88 @@ var app = (function () {
     			tabPosition,
     			open,
     			fade,
+    			rateLimit,
+    			hovering,
     			showAll,
     			openIndex,
+    			openIndexSetOnce,
     			indentSpaces,
     			showAllArr,
     			showManuallySelected,
     			rowsToShow,
+    			showClipboardText,
+    			clipboardCode,
     			hoverRow,
     			toggle,
-    			testyArr,
-    			showClipboardText,
-    			clipboardCode
+    			topLevelObjectArray,
+    			openedObjectArray,
+    			cache,
+    			mainLoop
     		};
     	};
 
     	$$self.$inject_state = $$props => {
-    		if ("myStore" in $$props) $$invalidate(16, myStore = $$props.myStore);
+    		if ("myStore" in $$props) $$invalidate(17, myStore = $$props.myStore);
     		if ("tabPosition" in $$props) $$invalidate(0, tabPosition = $$props.tabPosition);
-    		if ("open" in $$props) $$invalidate(17, open = $$props.open);
+    		if ("open" in $$props) $$invalidate(18, open = $$props.open);
     		if ("fade" in $$props) $$invalidate(1, fade = $$props.fade);
-    		if ("showAll" in $$props) $$invalidate(2, showAll = $$props.showAll);
-    		if ("openIndex" in $$props) $$invalidate(3, openIndex = $$props.openIndex);
+    		if ("rateLimit" in $$props) $$invalidate(19, rateLimit = $$props.rateLimit);
+    		if ("hovering" in $$props) $$invalidate(2, hovering = $$props.hovering);
+    		if ("showAll" in $$props) $$invalidate(3, showAll = $$props.showAll);
+    		if ("openIndex" in $$props) $$invalidate(4, openIndex = $$props.openIndex);
+    		if ("openIndexSetOnce" in $$props) openIndexSetOnce = $$props.openIndexSetOnce;
     		if ("indentSpaces" in $$props) indentSpaces = $$props.indentSpaces;
-    		if ("showAllArr" in $$props) $$invalidate(18, showAllArr = $$props.showAllArr);
-    		if ("showManuallySelected" in $$props) $$invalidate(19, showManuallySelected = $$props.showManuallySelected);
-    		if ("rowsToShow" in $$props) $$invalidate(4, rowsToShow = $$props.rowsToShow);
-    		if ("hoverRow" in $$props) $$invalidate(5, hoverRow = $$props.hoverRow);
-    		if ("toggle" in $$props) $$invalidate(6, toggle = $$props.toggle);
-    		if ("testyArr" in $$props) $$invalidate(7, testyArr = $$props.testyArr);
-    		if ("showClipboardText" in $$props) $$invalidate(8, showClipboardText = $$props.showClipboardText);
+    		if ("showAllArr" in $$props) $$invalidate(21, showAllArr = $$props.showAllArr);
+    		if ("showManuallySelected" in $$props) $$invalidate(22, showManuallySelected = $$props.showManuallySelected);
+    		if ("rowsToShow" in $$props) $$invalidate(5, rowsToShow = $$props.rowsToShow);
+    		if ("showClipboardText" in $$props) $$invalidate(6, showClipboardText = $$props.showClipboardText);
     		if ("clipboardCode" in $$props) clipboardCode = $$props.clipboardCode;
+    		if ("hoverRow" in $$props) $$invalidate(7, hoverRow = $$props.hoverRow);
+    		if ("toggle" in $$props) $$invalidate(8, toggle = $$props.toggle);
+    		if ("topLevelObjectArray" in $$props) $$invalidate(9, topLevelObjectArray = $$props.topLevelObjectArray);
+    		if ("openedObjectArray" in $$props) openedObjectArray = $$props.openedObjectArray;
+    		if ("cache" in $$props) $$invalidate(10, cache = $$props.cache);
+    		if ("mainLoop" in $$props) mainLoop = $$props.mainLoop;
     	};
 
     	$$self.$$.update = () => {
-    		if ($$self.$$.dirty[0] & /*showAll, showAllArr, showManuallySelected*/ 786436) {
-    			 $$invalidate(4, rowsToShow = showAll ? showAllArr : showManuallySelected);
-    		}
-
-    		if ($$self.$$.dirty[0] & /*myStore*/ 65536) {
-    			 if (myStore) {
-    				createArray();
-    			}
+    		if ($$self.$$.dirty[0] & /*showAll, showAllArr, showManuallySelected*/ 6291464) {
+    			 $$invalidate(5, rowsToShow = showAll ? showAllArr : showManuallySelected);
     		}
     	};
 
     	return [
     		tabPosition,
     		fade,
+    		hovering,
     		showAll,
     		openIndex,
     		rowsToShow,
+    		showClipboardText,
     		hoverRow,
     		toggle,
-    		testyArr,
-    		showClipboardText,
+    		topLevelObjectArray,
+    		cache,
     		toggleShowAll,
+    		doToggle,
     		rowContract,
     		rowExpand,
-    		valueFormatterToArr,
     		copyToClipboard,
-    		doToggle,
     		click,
     		myStore,
     		open,
+    		rateLimit,
+    		openIndexSetOnce,
     		showAllArr,
     		showManuallySelected,
     		indentSpaces,
-    		createArray,
     		clipboardCode,
+    		openedObjectArray,
+    		mainLoop,
+    		timer,
+    		createArray,
+    		getOpenIndex,
+    		valueFormatterToArr,
     		code_format_null,
     		code_format_undefined,
     		code_format_boolean,
@@ -3474,11 +3660,13 @@ var app = (function () {
     		code_format_unknown,
     		indent_row,
     		formatByType,
-    		click_handler,
-    		click_handler_1,
-    		click_handler_2,
+    		mousedown_handler,
+    		mousedown_handler_1,
+    		mousedown_handler_2,
     		mouseover_handler,
-    		mouseout_handler
+    		mouseout_handler,
+    		mouseover_handler_1,
+    		mouseleave_handler
     	];
     }
 
@@ -3493,10 +3681,11 @@ var app = (function () {
     			create_fragment$8,
     			safe_not_equal,
     			{
-    				myStore: 16,
+    				myStore: 17,
     				tabPosition: 0,
-    				open: 17,
-    				fade: 1
+    				open: 18,
+    				fade: 1,
+    				rateLimit: 19
     			},
     			[-1, -1]
     		);
@@ -3511,7 +3700,7 @@ var app = (function () {
     		const { ctx } = this.$$;
     		const props = options.props || ({});
 
-    		if (/*myStore*/ ctx[16] === undefined && !("myStore" in props)) {
+    		if (/*myStore*/ ctx[17] === undefined && !("myStore" in props)) {
     			console.warn("<Index> was created without expected prop 'myStore'");
     		}
     	}
@@ -3545,6 +3734,14 @@ var app = (function () {
     	}
 
     	set fade(value) {
+    		throw new Error("<Index>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
+
+    	get rateLimit() {
+    		throw new Error("<Index>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
+
+    	set rateLimit(value) {
     		throw new Error("<Index>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
     	}
     }
@@ -3644,7 +3841,13 @@ var app = (function () {
     	let dispose;
 
     	const svelteobjectexplorer = new Index({
-    			props: { myStore: /*myStore*/ ctx[1] },
+    			props: {
+    				myStore: /*myStore*/ ctx[1],
+    				open: "variousTypes",
+    				fade: true,
+    				tabPosition: "middle",
+    				rateLimit: 2000
+    			},
     			$$inline: true
     		});
 
@@ -3679,15 +3882,18 @@ var app = (function () {
     			t17 = space();
     			button2 = element("button");
     			button2.textContent = "reset";
-    			add_location(h1, file$9, 33, 0, 630);
-    			add_location(p0, file$9, 34, 0, 663);
-    			add_location(p1, file$9, 37, 0, 690);
-    			add_location(p2, file$9, 42, 0, 882);
-    			add_location(h20, file$9, 46, 0, 972);
-    			add_location(h21, file$9, 48, 0, 1028);
-    			add_location(button0, file$9, 50, 0, 1083);
-    			add_location(button1, file$9, 51, 0, 1130);
-    			add_location(button2, file$9, 52, 0, 1177);
+    			add_location(h1, file$9, 50, 0, 926);
+    			add_location(p0, file$9, 51, 0, 959);
+    			add_location(p1, file$9, 54, 0, 986);
+    			add_location(p2, file$9, 59, 0, 1178);
+    			add_location(h20, file$9, 63, 0, 1268);
+    			add_location(h21, file$9, 65, 0, 1324);
+    			attr_dev(button0, "id", "decr");
+    			add_location(button0, file$9, 67, 0, 1379);
+    			attr_dev(button1, "id", "incr");
+    			add_location(button1, file$9, 68, 0, 1436);
+    			attr_dev(button2, "id", "reset");
+    			add_location(button2, file$9, 69, 0, 1493);
 
     			dispose = [
     				listen_dev(button0, "click", count.decrement, false, false, false),
@@ -3796,7 +4002,7 @@ var app = (function () {
     			() => {
     				$$invalidate(0, counter++, counter);
     			},
-    			1000
+    			100
     		);
     	}
 
@@ -3810,7 +4016,7 @@ var app = (function () {
 
     	$$self.$inject_state = $$props => {
     		if ("counter" in $$props) $$invalidate(0, counter = $$props.counter);
-    		if ("array" in $$props) $$invalidate(4, array = $$props.array);
+    		if ("array" in $$props) array = $$props.array;
     		if ("myStore" in $$props) $$invalidate(1, myStore = $$props.myStore);
     		if ("string" in $$props) $$invalidate(3, string = $$props.string);
     		if ("$count" in $$props) count.set($count = $$props.$count);
@@ -3819,11 +4025,25 @@ var app = (function () {
     	$$self.$$.update = () => {
     		if ($$self.$$.dirty & /*counter, $count*/ 5) {
     			 $$invalidate(1, myStore = {
-    				arrays: array,
-    				componentStateVariable: counter,
+    				variousTypes: {
+    					boolean: true,
+    					string: "test",
+    					number: 123,
+    					array: ["test1", "test2"],
+    					object: { test1: "test1", test2: "test2" },
+    					arrowfunction: () => {
+    						
+    					},
+    					function: function test() {
+    						console.log("test");
+    					},
+    					symbol: Symbol(),
+    					null: null,
+    					undefined: typeof bananaman
+    				},
+    				SvelteVariable: counter,
     				customStore: count,
-    				customStoreValue: $count,
-    				hardCodedValues: { test2: "test" }
+    				customStoreValue: $count
     			});
     		}
     	};

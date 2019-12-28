@@ -14,8 +14,10 @@
   export let fade = false;
   export let rateLimit = 100;
 
+  let hovering = false;
   let showAll = false;
   let openIndex = null;
+  let openIndexSetOnce = false;
   let indentSpaces = 2;
   let showAllArr = []; //populated later with all row references
   let showManuallySelected = ["0", "0.0"];
@@ -39,9 +41,9 @@
 
   onMount(async () => {
     rowsToShow = showAll ? showAllArr : showManuallySelected;
-    let i = topLevelObjectArray.filter(item => item.key === open);
-    if (i.length) openIndex = i[0].index;
-    createArray();
+    //createArray();
+    //console.log(JSON.stringify(cache.nyStore));
+    //openIndex = getOpenIndex(cache.nyStore); //only get onMount, since you don't want to override users selection later
   });
 
   let mainLoop = timer();
@@ -114,7 +116,34 @@
       return { ...item, index };
     });
     topLevelObjectArray = tempArr; //this should trigger a redraw
-    //console.log(topLevelObjectArray);
+    if (!openIndexSetOnce) openIndex = getOpenIndex(topLevelObjectArray);
+    showAllArr = getAllIndexes(tempArr, openIndex);
+  }
+
+  function getOpenIndex(arr) {
+    let i = null;
+    if (arr && arr.length) {
+      arr.map((item, index) => {
+        if (
+          item.key === open &&
+          (item.type === "object" || item.type == "array")
+        )
+          i = index;
+        openIndexSetOnce = true;
+      });
+    }
+    return i;
+  }
+
+  function getAllIndexes(arrayToMap, openIndex) {
+    //update the showallarray with all rows from parentArr
+    //console.log(arrayToMap, openIndex);
+    let arr = [];
+    if (openIndex && arrayToMap[openIndex] && arrayToMap[openIndex].childRows)
+      arrayToMap[openIndex].childRows.map(row => {
+        arr.push(row.index);
+      });
+    return arr;
   }
 
   function valueFormatterToArr(object) {
@@ -122,17 +151,7 @@
     let parentArr = []; //[{ output: '   test:"test"', type: "string" }];
     formatByType("0.0", "0", 0, parentArr, object, 0); // <- make this assign to parentArr specifically instead of with JS magic
 
-    showAllArr = getAllIndexes(parentArr);
     return parentArr;
-  }
-
-  function getAllIndexes(arrayToMap) {
-    //update the showallarray with all rows from parentArr
-    let arr = [];
-    arrayToMap.map(row => {
-      arr.push(row.indexRef);
-    });
-    return arr;
   }
 
   function copyToClipboard() {
@@ -643,8 +662,8 @@
     font-family: "Roboto", "Arial", sans-serif !important;
   }
 
-  .wrapper .tree:hover {
-    opacity: 1;
+  .fade {
+    opacity: 0.3 !important;
   }
 
   .noFade {
@@ -654,7 +673,6 @@
   .tree {
     pointer-events: all;
     transition: 0.2s;
-    opacity: 0.3;
     position: fixed;
     right: 0px;
     top: 0px;
@@ -705,7 +723,6 @@
   .toggle {
     pointer-events: all;
     cursor: pointer;
-    opacity: 0.3;
     position: fixed;
     width: 70px;
     height: 20px;
@@ -844,7 +861,7 @@
 
 <div class="wrapper">
   <div
-    class={(toggle ? 'toggle toggleShow' : 'toggle toggleHide') + ' toggle' + tabPosition + (fade ? '' : ' noFade')}
+    class={(toggle ? 'toggle toggleShow' : 'toggle toggleHide') + ' toggle' + tabPosition + (fade ? (hovering ? ' noFade' : ' fade') : 'noFade')}
     on:mousedown={doToggle}>
     {#if toggle}
       Hide
@@ -859,7 +876,11 @@
     {/if}
   </div>
 
-  <div class={'tree' + (toggle ? '' : ' tree-hide') + (fade ? '' : ' noFade')}>
+  <div
+    id="svelteObjectExplorer"
+    class={'tree' + (toggle ? '' : ' tree-hide') + (fade ? (hovering ? ' noFade' : ' fade') : 'noFade')}
+    on:mouseover={() => (hovering = true)}
+    on:mouseleave={() => (hovering = false)}>
     Data Changes({cache.dataChanges}) View Changes({cache.viewChanges}) Last
     Updated({cache.formatted})
     <table>

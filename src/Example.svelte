@@ -11,7 +11,7 @@
   function incr() {
     setInterval(() => {
       counter++;
-    }, 1000);
+    }, 100);
   }
 
   incr();
@@ -19,17 +19,34 @@
   let myStore;
 
   $: myStore = {
-    arrays: array,
-    componentStateVariable: counter,
+    variousTypes: {
+      boolean: true,
+      string: "test",
+      number: 123,
+      array: ["test1", "test2"],
+      object: { test1: "test1", test2: "test2" },
+      arrowfunction: () => {},
+      function: function test() {
+        console.log("test");
+      },
+      symbol: Symbol(),
+      null: null,
+      undefined: typeof bananaman
+    },
+    SvelteVariable: counter,
     customStore: count,
-    customStoreValue: $count,
-    hardCodedValues: { test2: "test" }
+    customStoreValue: $count
   };
 
   let string = "< SvelteObjectExplorer {myStore} />";
 </script>
 
-<SvelteObjectExplorer {myStore} />
+<SvelteObjectExplorer
+  {myStore}
+  open="variousTypes"
+  fade={true}
+  tabPosition="middle"
+  rateLimit={2000} />
 
 <h1>Svelte Object Explorer</h1>
 <p>
@@ -48,6 +65,6 @@
 
 <h2>Manual counter from custom store: {$count}</h2>
 
-<button on:click={count.decrement}>-</button>
-<button on:click={count.increment}>+</button>
-<button on:click={count.reset}>reset</button>
+<button id="decr" on:click={count.decrement}>-</button>
+<button id="incr" on:click={count.increment}>+</button>
+<button id="reset" on:click={count.reset}>reset</button>
