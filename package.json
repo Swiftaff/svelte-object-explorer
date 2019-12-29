@@ -1,6 +1,6 @@
 {
   "name": "svelte-object-explorer",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "svelte": "src/index.js",
   "module": "dist/index.mjs",
   "main": "dist/index.js",
@@ -42,7 +42,7 @@
   "scripts": {
     "build": "rollup -c",
     "dev": "run-p start:dev build:dev",
-    "build:dev": "rollup -c rollup.config.example.js -w",
+    "build:dev": "rollup -c && rollup -c rollup.config.example.js -w",
     "start:dev": "sirv public --dev",
     "npmpublish": "npm publish",
     "cy:open": "cypress open",
