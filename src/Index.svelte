@@ -296,7 +296,7 @@
       index,
       output: indent_row(
         code_format_index(optionalIndex) + "'" + str + "'",
-        level + (optionalIndex ? 1 : 0)
+        level
       ),
       type: "String"
     });
@@ -379,7 +379,7 @@
       output: indent_row(
         (optionalNewLine ? "" : code_format_index(optionalIndex)) +
           code_format_index(optionalIndex),
-        level + (optionalIndex ? 1 : 0)
+        level
       ),
       type: "Array",
       len: arr.length,
@@ -390,7 +390,7 @@
         indexRef,
         parentIndexRef,
         index,
-        output: indent_row("[", level + (optionalIndex ? 2 : 1)),
+        output: indent_row("[", level + (optionalIndex ? 1 : 0)),
         bracket: true
       });
     }
@@ -410,7 +410,7 @@
       indexRef,
       parentIndexRef,
       index,
-      output: indent_row("]", level + (optionalIndex ? 2 : 1)),
+      output: indent_row("]", level + (optionalIndex ? 1 : 0)),
       bracket: true
     });
   }
@@ -433,7 +433,7 @@
       output: indent_row(
         (optionalNewLine ? "" : code_format_index(optionalIndex)) +
           code_format_index(optionalIndex),
-        level + (optionalIndex || optionalNewLine ? 1 : 0)
+        level
       ),
       type: "Object",
       len: object.length,
@@ -444,10 +444,7 @@
         indexRef,
         parentIndexRef,
         index,
-        output: indent_row(
-          "{",
-          level + (optionalIndex || optionalNewLine ? 1 : 0)
-        ),
+        output: indent_row("{", level + (optionalIndex ? 1 : 0)),
         bracket: true
       });
     }
@@ -808,8 +805,9 @@
     background-color: #999;
     position: relative;
     padding-left: 15px;
-    display: block ruby;
+    display: block;
     white-space: pre;
+    height: 1.5em;
   }
 
   .row:nth-child(even) {
@@ -829,17 +827,15 @@
   .len {
     color: black;
     position: absolute;
-    right: 50px;
+    right: 70px;
     top: 0px;
   }
 
   .type {
     color: green;
     position: absolute;
-
     top: 0px;
-
-    right: 0px;
+    right: 5px;
   }
 
   .nopointer {

@@ -1663,7 +1663,7 @@ var app = (function () {
     	return child_ctx;
     }
 
-    // (874:0) {:else}
+    // (870:0) {:else}
     function create_else_block_4(ctx) {
     	let t;
     	let span;
@@ -1675,8 +1675,8 @@ var app = (function () {
     			t = text("Show\n");
     			span = element("span");
     			create_component(fachevronup.$$.fragment);
-    			attr_dev(span, "class", "smaller svelte-1w7cnc4");
-    			add_location(span, file$8, 875, 0, 14766);
+    			attr_dev(span, "class", "smaller svelte-8u0ecn");
+    			add_location(span, file$8, 871, 0, 14656);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, t, anchor);
@@ -1704,14 +1704,14 @@ var app = (function () {
     		block,
     		id: create_else_block_4.name,
     		type: "else",
-    		source: "(874:0) {:else}",
+    		source: "(870:0) {:else}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (869:0) {#if toggle}
+    // (865:0) {#if toggle}
     function create_if_block_11(ctx) {
     	let t;
     	let span;
@@ -1723,8 +1723,8 @@ var app = (function () {
     			t = text("Hide\n");
     			span = element("span");
     			create_component(fachevrondown.$$.fragment);
-    			attr_dev(span, "class", "smaller svelte-1w7cnc4");
-    			add_location(span, file$8, 870, 0, 14704);
+    			attr_dev(span, "class", "smaller svelte-8u0ecn");
+    			add_location(span, file$8, 866, 0, 14594);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, t, anchor);
@@ -1752,14 +1752,14 @@ var app = (function () {
     		block,
     		id: create_if_block_11.name,
     		type: "if",
-    		source: "(869:0) {#if toggle}",
+    		source: "(865:0) {#if toggle}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (901:0) {#if testy.class}
+    // (897:0) {#if testy.class}
     function create_if_block_9(ctx) {
     	let span;
     	let current_block_type_index;
@@ -1780,8 +1780,8 @@ var app = (function () {
     		c: function create() {
     			span = element("span");
     			if_block.c();
-    			attr_dev(span, "class", "smaller svelte-1w7cnc4");
-    			add_location(span, file$8, 901, 0, 15446);
+    			attr_dev(span, "class", "smaller svelte-8u0ecn");
+    			add_location(span, file$8, 897, 0, 15336);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, span, anchor);
@@ -1830,14 +1830,14 @@ var app = (function () {
     		block,
     		id: create_if_block_9.name,
     		type: "if",
-    		source: "(901:0) {#if testy.class}",
+    		source: "(897:0) {#if testy.class}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (905:0) {:else}
+    // (901:0) {:else}
     function create_else_block_3(ctx) {
     	let current;
     	const fachevronright = new FaChevronRight({ $$inline: true });
@@ -1868,14 +1868,14 @@ var app = (function () {
     		block,
     		id: create_else_block_3.name,
     		type: "else",
-    		source: "(905:0) {:else}",
+    		source: "(901:0) {:else}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (903:0) {#if openIndex === i}
+    // (899:0) {#if openIndex === i}
     function create_if_block_10(ctx) {
     	let current;
     	const fachevrondown = new FaChevronDown({ $$inline: true });
@@ -1906,14 +1906,14 @@ var app = (function () {
     		block,
     		id: create_if_block_10.name,
     		type: "if",
-    		source: "(903:0) {#if openIndex === i}",
+    		source: "(899:0) {#if openIndex === i}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (915:0) {#if openIndex === i}
+    // (911:0) {#if openIndex === i}
     function create_if_block$1(ctx) {
     	let tr0;
     	let td0;
@@ -1977,24 +1977,24 @@ var app = (function () {
     			if (if_block2) if_block2.c();
     			t5 = space();
     			attr_dev(td0, "colspan", "3");
-    			attr_dev(td0, "class", "treeVal svelte-1w7cnc4");
-    			add_location(td0, file$8, 917, 0, 15743);
-    			attr_dev(tr0, "class", "svelte-1w7cnc4");
-    			add_location(tr0, file$8, 915, 0, 15649);
-    			attr_dev(div0, "class", "toggleShowAll nopointer svelte-1w7cnc4");
-    			add_location(div0, file$8, 923, 0, 15890);
+    			attr_dev(td0, "class", "treeVal svelte-8u0ecn");
+    			add_location(td0, file$8, 913, 0, 15633);
+    			attr_dev(tr0, "class", "svelte-8u0ecn");
+    			add_location(tr0, file$8, 911, 0, 15539);
+    			attr_dev(div0, "class", "toggleShowAll nopointer svelte-8u0ecn");
+    			add_location(div0, file$8, 919, 0, 15780);
     			attr_dev(input, "id", "hiddenClipboard");
-    			attr_dev(input, "class", "svelte-1w7cnc4");
-    			add_location(input, file$8, 951, 0, 16346);
-    			attr_dev(div1, "class", "copyToClipbord nopointer svelte-1w7cnc4");
-    			add_location(div1, file$8, 937, 0, 16100);
-    			attr_dev(pre, "class", "svelte-1w7cnc4");
-    			add_location(pre, file$8, 922, 0, 15884);
+    			attr_dev(input, "class", "svelte-8u0ecn");
+    			add_location(input, file$8, 947, 0, 16236);
+    			attr_dev(div1, "class", "copyToClipbord nopointer svelte-8u0ecn");
+    			add_location(div1, file$8, 933, 0, 15990);
+    			attr_dev(pre, "class", "svelte-8u0ecn");
+    			add_location(pre, file$8, 918, 0, 15774);
     			attr_dev(td1, "colspan", "3");
-    			attr_dev(td1, "class", "treeVal svelte-1w7cnc4");
-    			add_location(td1, file$8, 920, 0, 15843);
-    			attr_dev(tr1, "class", "treeVal svelte-1w7cnc4");
-    			add_location(tr1, file$8, 919, 0, 15784);
+    			attr_dev(td1, "class", "treeVal svelte-8u0ecn");
+    			add_location(td1, file$8, 916, 0, 15733);
+    			attr_dev(tr1, "class", "treeVal svelte-8u0ecn");
+    			add_location(tr1, file$8, 915, 0, 15674);
 
     			dispose = [
     				listen_dev(div0, "mousedown", /*toggleShowAll*/ ctx[11], false, false, false),
@@ -2115,14 +2115,14 @@ var app = (function () {
     		block,
     		id: create_if_block$1.name,
     		type: "if",
-    		source: "(915:0) {#if openIndex === i}",
+    		source: "(911:0) {#if openIndex === i}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (931:0) {:else}
+    // (927:0) {:else}
     function create_else_block_2(ctx) {
     	let span;
     	let current;
@@ -2132,8 +2132,8 @@ var app = (function () {
     		c: function create() {
     			span = element("span");
     			create_component(faregsquare.$$.fragment);
-    			attr_dev(span, "class", "smaller svelte-1w7cnc4");
-    			add_location(span, file$8, 931, 0, 16031);
+    			attr_dev(span, "class", "smaller svelte-8u0ecn");
+    			add_location(span, file$8, 927, 0, 15921);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, span, anchor);
@@ -2159,14 +2159,14 @@ var app = (function () {
     		block,
     		id: create_else_block_2.name,
     		type: "else",
-    		source: "(931:0) {:else}",
+    		source: "(927:0) {:else}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (927:0) {#if showAll}
+    // (923:0) {#if showAll}
     function create_if_block_8(ctx) {
     	let span;
     	let current;
@@ -2176,8 +2176,8 @@ var app = (function () {
     		c: function create() {
     			span = element("span");
     			create_component(faregchecksquare.$$.fragment);
-    			attr_dev(span, "class", "smaller svelte-1w7cnc4");
-    			add_location(span, file$8, 927, 0, 15971);
+    			attr_dev(span, "class", "smaller svelte-8u0ecn");
+    			add_location(span, file$8, 923, 0, 15861);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, span, anchor);
@@ -2203,14 +2203,14 @@ var app = (function () {
     		block,
     		id: create_if_block_8.name,
     		type: "if",
-    		source: "(927:0) {#if showAll}",
+    		source: "(923:0) {#if showAll}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (946:0) {:else}
+    // (942:0) {:else}
     function create_else_block_1(ctx) {
     	let span;
     	let t;
@@ -2222,8 +2222,8 @@ var app = (function () {
     			span = element("span");
     			create_component(faclipboard.$$.fragment);
     			t = text("\nCopy to clipboard");
-    			attr_dev(span, "class", "smaller svelte-1w7cnc4");
-    			add_location(span, file$8, 946, 0, 16275);
+    			attr_dev(span, "class", "smaller svelte-8u0ecn");
+    			add_location(span, file$8, 942, 0, 16165);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, span, anchor);
@@ -2251,14 +2251,14 @@ var app = (function () {
     		block,
     		id: create_else_block_1.name,
     		type: "else",
-    		source: "(946:0) {:else}",
+    		source: "(942:0) {:else}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (941:0) {#if showClipboardText}
+    // (937:0) {#if showClipboardText}
     function create_if_block_7(ctx) {
     	let span;
     	let t;
@@ -2270,8 +2270,8 @@ var app = (function () {
     			span = element("span");
     			create_component(faclipboardcheck.$$.fragment);
     			t = text("\nCopied to clipboard!");
-    			attr_dev(span, "class", "smaller svelte-1w7cnc4");
-    			add_location(span, file$8, 941, 0, 16194);
+    			attr_dev(span, "class", "smaller svelte-8u0ecn");
+    			add_location(span, file$8, 937, 0, 16084);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, span, anchor);
@@ -2299,14 +2299,14 @@ var app = (function () {
     		block,
     		id: create_if_block_7.name,
     		type: "if",
-    		source: "(941:0) {#if showClipboardText}",
+    		source: "(937:0) {#if showClipboardText}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (955:0) {#if openIndex === i}
+    // (951:0) {#if openIndex === i}
     function create_if_block_1(ctx) {
     	let each_1_anchor;
     	let current;
@@ -2393,14 +2393,14 @@ var app = (function () {
     		block,
     		id: create_if_block_1.name,
     		type: "if",
-    		source: "(955:0) {#if openIndex === i}",
+    		source: "(951:0) {#if openIndex === i}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (957:0) {#if rowsToShow.includes(row.parentIndexRef) && (!row.bracket || (row.bracket && rowsToShow.includes(row.indexRef)))}
+    // (953:0) {#if rowsToShow.includes(row.parentIndexRef) && (!row.bracket || (row.bracket && rowsToShow.includes(row.indexRef)))}
     function create_if_block_2(ctx) {
     	let div;
     	let span;
@@ -2433,13 +2433,13 @@ var app = (function () {
     			t3 = text("\n");
     			if (if_block2) if_block2.c();
     			t4 = text("\n");
-    			add_location(span, file$8, 960, 0, 16711);
+    			add_location(span, file$8, 956, 0, 16601);
 
     			attr_dev(div, "class", div_class_value = "" + (null_to_empty(/*hoverRow*/ ctx[7] === /*row*/ ctx[53].indexRef || /*row*/ ctx[53].parentIndexRef.startsWith(/*hoverRow*/ ctx[7])
     			? "row hoverRow"
-    			: "row") + " svelte-1w7cnc4"));
+    			: "row") + " svelte-8u0ecn"));
 
-    			add_location(div, file$8, 957, 0, 16556);
+    			add_location(div, file$8, 953, 0, 16446);
     			dispose = listen_dev(div, "mouseover", mouseover_handler, false, false, false);
     		},
     		m: function mount(target, anchor) {
@@ -2507,7 +2507,7 @@ var app = (function () {
 
     			if (!current || dirty[0] & /*hoverRow, topLevelObjectArray*/ 640 && div_class_value !== (div_class_value = "" + (null_to_empty(/*hoverRow*/ ctx[7] === /*row*/ ctx[53].indexRef || /*row*/ ctx[53].parentIndexRef.startsWith(/*hoverRow*/ ctx[7])
     			? "row hoverRow"
-    			: "row") + " svelte-1w7cnc4"))) {
+    			: "row") + " svelte-8u0ecn"))) {
     				attr_dev(div, "class", div_class_value);
     			}
     		},
@@ -2533,14 +2533,14 @@ var app = (function () {
     		block,
     		id: create_if_block_2.name,
     		type: "if",
-    		source: "(957:0) {#if rowsToShow.includes(row.parentIndexRef) && (!row.bracket || (row.bracket && rowsToShow.includes(row.indexRef)))}",
+    		source: "(953:0) {#if rowsToShow.includes(row.parentIndexRef) && (!row.bracket || (row.bracket && rowsToShow.includes(row.indexRef)))}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (963:0) {#if row.type}
+    // (959:0) {#if row.type}
     function create_if_block_6(ctx) {
     	let span;
     	let t_value = /*row*/ ctx[53].type + "";
@@ -2550,8 +2550,8 @@ var app = (function () {
     		c: function create() {
     			span = element("span");
     			t = text(t_value);
-    			attr_dev(span, "class", "type svelte-1w7cnc4");
-    			add_location(span, file$8, 963, 0, 16746);
+    			attr_dev(span, "class", "type svelte-8u0ecn");
+    			add_location(span, file$8, 959, 0, 16636);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, span, anchor);
@@ -2569,14 +2569,14 @@ var app = (function () {
     		block,
     		id: create_if_block_6.name,
     		type: "if",
-    		source: "(963:0) {#if row.type}",
+    		source: "(959:0) {#if row.type}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (966:0) {#if row.len}
+    // (962:0) {#if row.len}
     function create_if_block_5(ctx) {
     	let span;
     	let t0;
@@ -2590,8 +2590,8 @@ var app = (function () {
     			t0 = text("(");
     			t1 = text(t1_value);
     			t2 = text(")");
-    			attr_dev(span, "class", "len svelte-1w7cnc4");
-    			add_location(span, file$8, 966, 0, 16803);
+    			attr_dev(span, "class", "len svelte-8u0ecn");
+    			add_location(span, file$8, 962, 0, 16693);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, span, anchor);
@@ -2611,14 +2611,14 @@ var app = (function () {
     		block,
     		id: create_if_block_5.name,
     		type: "if",
-    		source: "(966:0) {#if row.len}",
+    		source: "(962:0) {#if row.len}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (970:0) {#if row.expandable}
+    // (966:0) {#if row.expandable}
     function create_if_block_3(ctx) {
     	let show_if;
     	let current_block_type_index;
@@ -2691,14 +2691,14 @@ var app = (function () {
     		block,
     		id: create_if_block_3.name,
     		type: "if",
-    		source: "(970:0) {#if row.expandable}",
+    		source: "(966:0) {#if row.expandable}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (977:0) {:else}
+    // (973:0) {:else}
     function create_else_block(ctx) {
     	let span;
     	let current;
@@ -2713,8 +2713,8 @@ var app = (function () {
     		c: function create() {
     			span = element("span");
     			create_component(fachevronright.$$.fragment);
-    			attr_dev(span, "class", "smallest dataArrow svelte-1w7cnc4");
-    			add_location(span, file$8, 977, 0, 17030);
+    			attr_dev(span, "class", "smallest dataArrow svelte-8u0ecn");
+    			add_location(span, file$8, 973, 0, 16920);
     			dispose = listen_dev(span, "mousedown", mousedown_handler_2, false, false, false);
     		},
     		m: function mount(target, anchor) {
@@ -2745,14 +2745,14 @@ var app = (function () {
     		block,
     		id: create_else_block.name,
     		type: "else",
-    		source: "(977:0) {:else}",
+    		source: "(973:0) {:else}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (971:0) {#if rowsToShow.includes(row.indexRef)}
+    // (967:0) {#if rowsToShow.includes(row.indexRef)}
     function create_if_block_4(ctx) {
     	let span;
     	let current;
@@ -2767,8 +2767,8 @@ var app = (function () {
     		c: function create() {
     			span = element("span");
     			create_component(fachevrondown.$$.fragment);
-    			attr_dev(span, "class", "smallest dataArrow svelte-1w7cnc4");
-    			add_location(span, file$8, 971, 0, 16915);
+    			attr_dev(span, "class", "smallest dataArrow svelte-8u0ecn");
+    			add_location(span, file$8, 967, 0, 16805);
     			dispose = listen_dev(span, "mousedown", mousedown_handler_1, false, false, false);
     		},
     		m: function mount(target, anchor) {
@@ -2799,14 +2799,14 @@ var app = (function () {
     		block,
     		id: create_if_block_4.name,
     		type: "if",
-    		source: "(971:0) {#if rowsToShow.includes(row.indexRef)}",
+    		source: "(967:0) {#if rowsToShow.includes(row.indexRef)}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (956:0) {#each testy.childRows as row}
+    // (952:0) {#each testy.childRows as row}
     function create_each_block_1(ctx) {
     	let show_if = /*rowsToShow*/ ctx[5].includes(/*row*/ ctx[53].parentIndexRef) && (!/*row*/ ctx[53].bracket || /*row*/ ctx[53].bracket && /*rowsToShow*/ ctx[5].includes(/*row*/ ctx[53].indexRef));
     	let if_block_anchor;
@@ -2865,14 +2865,14 @@ var app = (function () {
     		block,
     		id: create_each_block_1.name,
     		type: "each",
-    		source: "(956:0) {#each testy.childRows as row}",
+    		source: "(952:0) {#each testy.childRows as row}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (896:0) {#each topLevelObjectArray as testy, i}
+    // (892:0) {#each topLevelObjectArray as testy, i}
     function create_each_block(ctx) {
     	let tr;
     	let td0;
@@ -2916,12 +2916,12 @@ var app = (function () {
     			t6 = space();
     			if (if_block1) if_block1.c();
     			if_block1_anchor = empty();
-    			attr_dev(td0, "class", "link svelte-1w7cnc4");
-    			add_location(td0, file$8, 899, 0, 15410);
-    			add_location(td1, file$8, 911, 0, 15578);
-    			add_location(td2, file$8, 912, 0, 15600);
-    			attr_dev(tr, "class", tr_class_value = "" + (null_to_empty(/*testy*/ ctx[50].class + (/*openIndex*/ ctx[4] === /*i*/ ctx[52] ? " open" : "")) + " svelte-1w7cnc4"));
-    			add_location(tr, file$8, 896, 0, 15297);
+    			attr_dev(td0, "class", "link svelte-8u0ecn");
+    			add_location(td0, file$8, 895, 0, 15300);
+    			add_location(td1, file$8, 907, 0, 15468);
+    			add_location(td2, file$8, 908, 0, 15490);
+    			attr_dev(tr, "class", tr_class_value = "" + (null_to_empty(/*testy*/ ctx[50].class + (/*openIndex*/ ctx[4] === /*i*/ ctx[52] ? " open" : "")) + " svelte-8u0ecn"));
+    			add_location(tr, file$8, 892, 0, 15187);
     			dispose = listen_dev(tr, "mousedown", mousedown_handler, false, false, false);
     		},
     		m: function mount(target, anchor) {
@@ -2968,7 +2968,7 @@ var app = (function () {
     			if ((!current || dirty[0] & /*topLevelObjectArray*/ 512) && t3_value !== (t3_value = /*testy*/ ctx[50].type + "")) set_data_dev(t3, t3_value);
     			if ((!current || dirty[0] & /*topLevelObjectArray*/ 512) && t5_value !== (t5_value = /*testy*/ ctx[50].key + "")) set_data_dev(t5, t5_value);
 
-    			if (!current || dirty[0] & /*topLevelObjectArray, openIndex*/ 528 && tr_class_value !== (tr_class_value = "" + (null_to_empty(/*testy*/ ctx[50].class + (/*openIndex*/ ctx[4] === /*i*/ ctx[52] ? " open" : "")) + " svelte-1w7cnc4"))) {
+    			if (!current || dirty[0] & /*topLevelObjectArray, openIndex*/ 528 && tr_class_value !== (tr_class_value = "" + (null_to_empty(/*testy*/ ctx[50].class + (/*openIndex*/ ctx[4] === /*i*/ ctx[52] ? " open" : "")) + " svelte-8u0ecn"))) {
     				attr_dev(tr, "class", tr_class_value);
     			}
 
@@ -3017,7 +3017,7 @@ var app = (function () {
     		block,
     		id: create_each_block.name,
     		type: "each",
-    		source: "(896:0) {#each topLevelObjectArray as testy, i}",
+    		source: "(892:0) {#each topLevelObjectArray as testy, i}",
     		ctx
     	});
 
@@ -3109,28 +3109,28 @@ var app = (function () {
     			? "toggle toggleShow"
     			: "toggle toggleHide") + " toggle" + /*tabPosition*/ ctx[0] + (/*fade*/ ctx[1]
     			? /*hovering*/ ctx[2] ? " noFade" : " fade"
-    			: " noFade")) + " svelte-1w7cnc4"));
+    			: " noFade")) + " svelte-8u0ecn"));
 
-    			add_location(div0, file$8, 865, 0, 14513);
-    			add_location(br, file$8, 887, 0, 15109);
+    			add_location(div0, file$8, 861, 0, 14403);
+    			add_location(br, file$8, 883, 0, 14999);
     			set_style(col0, "width", "35%");
-    			add_location(col0, file$8, 891, 0, 15167);
+    			add_location(col0, file$8, 887, 0, 15057);
     			set_style(col1, "width", "10%");
-    			add_location(col1, file$8, 892, 0, 15193);
+    			add_location(col1, file$8, 888, 0, 15083);
     			set_style(col2, "width", "55%");
-    			add_location(col2, file$8, 893, 0, 15219);
-    			add_location(colgroup, file$8, 890, 0, 15156);
-    			attr_dev(table, "class", "svelte-1w7cnc4");
-    			add_location(table, file$8, 889, 0, 15148);
+    			add_location(col2, file$8, 889, 0, 15109);
+    			add_location(colgroup, file$8, 886, 0, 15046);
+    			attr_dev(table, "class", "svelte-8u0ecn");
+    			add_location(table, file$8, 885, 0, 15038);
     			attr_dev(div1, "id", "svelteObjectExplorer");
 
     			attr_dev(div1, "class", div1_class_value = "" + (null_to_empty("tree" + (/*toggle*/ ctx[8] ? "" : " tree-hide") + (/*fade*/ ctx[1]
     			? /*hovering*/ ctx[2] ? " noFade" : " fade"
-    			: " noFade")) + " svelte-1w7cnc4"));
+    			: " noFade")) + " svelte-8u0ecn"));
 
-    			add_location(div1, file$8, 881, 0, 14827);
-    			attr_dev(div2, "class", "wrapper svelte-1w7cnc4");
-    			add_location(div2, file$8, 864, 0, 14491);
+    			add_location(div1, file$8, 877, 0, 14717);
+    			attr_dev(div2, "class", "wrapper svelte-8u0ecn");
+    			add_location(div2, file$8, 860, 0, 14381);
 
     			dispose = [
     				listen_dev(div0, "mousedown", /*doToggle*/ ctx[12], false, false, false),
@@ -3198,7 +3198,7 @@ var app = (function () {
     			? "toggle toggleShow"
     			: "toggle toggleHide") + " toggle" + /*tabPosition*/ ctx[0] + (/*fade*/ ctx[1]
     			? /*hovering*/ ctx[2] ? " noFade" : " fade"
-    			: " noFade")) + " svelte-1w7cnc4"))) {
+    			: " noFade")) + " svelte-8u0ecn"))) {
     				attr_dev(div0, "class", div0_class_value);
     			}
 
@@ -3235,7 +3235,7 @@ var app = (function () {
 
     			if (!current || dirty[0] & /*toggle, fade, hovering*/ 262 && div1_class_value !== (div1_class_value = "" + (null_to_empty("tree" + (/*toggle*/ ctx[8] ? "" : " tree-hide") + (/*fade*/ ctx[1]
     			? /*hovering*/ ctx[2] ? " noFade" : " fade"
-    			: " noFade")) + " svelte-1w7cnc4"))) {
+    			: " noFade")) + " svelte-8u0ecn"))) {
     				attr_dev(div1, "class", div1_class_value);
     			}
     		},
@@ -3526,7 +3526,7 @@ var app = (function () {
     			indexRef,
     			parentIndexRef,
     			index,
-    			output: indent_row(code_format_index(optionalIndex) + "'" + str + "'", level + (optionalIndex ? 1 : 0)),
+    			output: indent_row(code_format_index(optionalIndex) + "'" + str + "'", level),
     			type: "String"
     		});
     	}
@@ -3575,7 +3575,7 @@ var app = (function () {
     			indexRef,
     			parentIndexRef,
     			index,
-    			output: indent_row((optionalNewLine ? "" : code_format_index(optionalIndex)) + code_format_index(optionalIndex), level + (optionalIndex ? 1 : 0)),
+    			output: indent_row((optionalNewLine ? "" : code_format_index(optionalIndex)) + code_format_index(optionalIndex), level),
     			type: "Array",
     			len: arr.length,
     			expandable: true
@@ -3586,7 +3586,7 @@ var app = (function () {
     				indexRef,
     				parentIndexRef,
     				index,
-    				output: indent_row("[", level + (optionalIndex ? 2 : 1)),
+    				output: indent_row("[", level + (optionalIndex ? 1 : 0)),
     				bracket: true
     			});
     		}
@@ -3597,7 +3597,7 @@ var app = (function () {
     			indexRef,
     			parentIndexRef,
     			index,
-    			output: indent_row("]", level + (optionalIndex ? 2 : 1)),
+    			output: indent_row("]", level + (optionalIndex ? 1 : 0)),
     			bracket: true
     		});
     	}
@@ -3618,7 +3618,7 @@ var app = (function () {
     			indexRef,
     			parentIndexRef,
     			index,
-    			output: indent_row((optionalNewLine ? "" : code_format_index(optionalIndex)) + code_format_index(optionalIndex), level + (optionalIndex || optionalNewLine ? 1 : 0)),
+    			output: indent_row((optionalNewLine ? "" : code_format_index(optionalIndex)) + code_format_index(optionalIndex), level),
     			type: "Object",
     			len: object.length,
     			expandable: true
@@ -3629,7 +3629,7 @@ var app = (function () {
     				indexRef,
     				parentIndexRef,
     				index,
-    				output: indent_row("{", level + (optionalIndex || optionalNewLine ? 1 : 0)),
+    				output: indent_row("{", level + (optionalIndex ? 1 : 0)),
     				bracket: true
     			});
     		}
@@ -3975,18 +3975,18 @@ var app = (function () {
     			t17 = space();
     			button2 = element("button");
     			button2.textContent = "reset";
-    			add_location(h1, file$9, 52, 0, 1160);
-    			add_location(p0, file$9, 54, 0, 1195);
-    			add_location(p1, file$9, 57, 0, 1222);
-    			add_location(p2, file$9, 62, 0, 1414);
-    			add_location(h20, file$9, 66, 0, 1504);
-    			add_location(h21, file$9, 68, 0, 1560);
+    			add_location(h1, file$9, 58, 0, 1269);
+    			add_location(p0, file$9, 60, 0, 1304);
+    			add_location(p1, file$9, 63, 0, 1331);
+    			add_location(p2, file$9, 68, 0, 1523);
+    			add_location(h20, file$9, 72, 0, 1613);
+    			add_location(h21, file$9, 74, 0, 1669);
     			attr_dev(button0, "id", "decr");
-    			add_location(button0, file$9, 70, 0, 1615);
+    			add_location(button0, file$9, 76, 0, 1724);
     			attr_dev(button1, "id", "incr");
-    			add_location(button1, file$9, 71, 0, 1672);
+    			add_location(button1, file$9, 77, 0, 1781);
     			attr_dev(button2, "id", "reset");
-    			add_location(button2, file$9, 72, 0, 1729);
+    			add_location(button2, file$9, 78, 0, 1838);
 
     			dispose = [
     				listen_dev(button0, "click", count.decrement, false, false, false),
@@ -4132,8 +4132,17 @@ var app = (function () {
     					boolean: true,
     					string: "test",
     					number: 123,
-    					array: ["test1", "test2"],
-    					object: { test1: "test1", test2: "test2" },
+    					array: [[["test1", "test2"], "test2"], "test2"],
+    					object: {
+    						test1: {
+    							test1: {
+    								test1: { test1: "test1", test2: "test2" },
+    								test2: "test2"
+    							},
+    							test2: "test2"
+    						},
+    						test2: "test2"
+    					},
     					arrowfunction: () => {
     						
     					},

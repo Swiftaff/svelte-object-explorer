@@ -24,8 +24,14 @@
       boolean: true,
       string: "test",
       number: 123,
-      array: ["test1", "test2"],
-      object: { test1: "test1", test2: "test2" },
+      array: [[["test1", "test2"], "test2"], "test2"],
+      object: {
+        test1: {
+          test1: { test1: { test1: "test1", test2: "test2" }, test2: "test2" },
+          test2: "test2"
+        },
+        test2: "test2"
+      },
       arrowfunction: () => {},
       function: function test() {
         console.log("test");
