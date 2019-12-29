@@ -36,7 +36,8 @@
     "sirv-cli": "^0.4.5",
     "start-server-and-test": "^1.10.6",
     "svelte": "^3.16.7",
-    "svelte-loader": "^2.13.4"
+    "svelte-loader": "^2.13.4",
+    "svelte-spa-router": "^2.0.0"
   },
   "scripts": {
     "build": "rollup -c",

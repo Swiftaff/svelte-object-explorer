@@ -1,4 +1,5 @@
 <script>
+  import { location, querystring } from "svelte-spa-router";
   import SvelteObjectExplorer from "./Index.svelte";
   import { count } from "./ExampleCustomStore.js";
   let counter = 1;
@@ -38,17 +39,19 @@
     customStoreValue: $count
   };
 
+  let params = new URL(document.location).searchParams;
+  let open = params.get("open");
+  let fade = params.get("fade");
+  let tabPosition = params.get("tabPosition");
+  let rateLimit = params.get("rateLimit");
+
   let string = "< SvelteObjectExplorer {myStore} />";
 </script>
 
-<SvelteObjectExplorer
-  {myStore}
-  open="variousTypes"
-  fade={true}
-  tabPosition="middle"
-  rateLimit={2000} />
+<SvelteObjectExplorer {myStore} {open} {fade} {tabPosition} {rateLimit} />
 
 <h1>Svelte Object Explorer</h1>
+
 <p>
   {@html string}
 </p>

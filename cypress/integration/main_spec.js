@@ -22,37 +22,16 @@ describe("Toggle Main panel", function() {
         cy.get("div.toggle.toggleHide").click();
         cy.get("div.tree.tree-hide").should("not.be.visible");
     });
-
-    it("Show Panel is in the middle, because of prop 'tabPosition=middle'", function() {
-        cy.get("div.toggle.toggleShow.togglemiddle");
-    });
-});
-
-describe("Fade functionality", function() {
-    it("Panel is visible with 0.3 opacity when NOT hovered by mouse", function() {
-        cy.viewport(1000, 600);
-        cy.visit("http://localhost:5000/");
-        cy.get("div.tree").should("have.css", "opacity", "0.3");
-    });
-
-    it("Panel is visible with 1 opacity when HOVERED by mouse", function() {
-        cy.viewport(1000, 600);
-        cy.visit("http://localhost:5000/");
-        cy.get("#svelteObjectExplorer")
-            .trigger("mouseover")
-            .wait(1000)
-            .should("have.css", "opacity", "1");
-    });
 });
 
 describe("Toggle panel objects", function() {
     it("Count of top level test objects should match test data of 4 items", function() {
         cy.viewport(1000, 600);
-        cy.visit("http://localhost:5000/");
+        cy.visit("http://localhost:5000?open=variousTypes");
         cy.get("td.link").should("have.length", 4);
     });
 
-    it("Third test object should be open due to 'open' prop being set to 'variousTypes', showing 12 subitems", function() {
+    it("Test object should be open due to 'open' prop being set to 'variousTypes', showing 12 subitems", function() {
         cy.get("div.row").should("have.length", 12);
     });
 
@@ -66,35 +45,107 @@ describe("Toggle panel objects", function() {
     });
 });
 
-describe("Panel data updates when App data updates", function() {
-    it("Automatic: autocounter should increase automatically (but also waits, to allow for rateLimit prop of 2 seconds)", function() {
-        cy.viewport(1000, 600);
-        cy.visit("http://localhost:5000/");
-        //get value
-        cy.get("td.link")
-            .eq(2)
-            .invoke("text")
-            .then(count1 => {
-                //wait a bit then get same value, it should be the same since rateLimit is in place
-                cy.wait(100);
-                cy.get("td.link")
-                    .eq(2)
-                    .invoke("text")
-                    .then(count2 => {
-                        expect(Number.parseInt(count2)).to.be.equal(Number.parseInt(count1));
+describe("Prop options", function() {
+    describe("Open", function() {
+        it("Open = 'variousTypes', 1 correct panel is open", function() {
+            cy.viewport(1000, 600);
+            cy.visit("http://localhost:5000?open=variousTypes");
+            cy.get("tr.accordion.open")
+                .should("have.length", 1)
+                .contains("variousTypes");
+        });
 
-                        //wait a bit more get same value, it should be greater
-                        cy.wait(5000);
-                        cy.get("td.link")
-                            .eq(2)
-                            .invoke("text")
-                            .then(count3 => {
-                                expect(Number.parseInt(count3)).to.be.greaterThan(Number.parseInt(count1));
-                            });
-                    });
-            });
+        it("Open = null, No panels are open", function() {
+            cy.viewport(1000, 600);
+            cy.visit("http://localhost:5000");
+            cy.get("tr.accordion.open").should("not.exist");
+        });
+
+        it("Open = 'customStoreValue', is not an object or array so no panels are open", function() {
+            cy.viewport(1000, 600);
+            cy.visit("http://localhost:5000?open=variousTypes");
+            cy.get("tr.accordion.open").should("not.exist");
+        });
+
+        it("Open = 'bananaman', is not a valid reference so no panels are open", function() {
+            cy.viewport(1000, 600);
+            cy.visit("http://localhost:5000?open=variousTypes");
+            cy.get("tr.accordion.open").should("not.exist");
+        });
     });
-    it("Manual: Clicking counter buttons should change the manual counter (but also waits, to allow for rateLimit prop of 2 seconds)", function() {
+
+    describe("Fade", function() {
+        describe("Fade = true", function() {
+            it("Panel is visible with 0.3 opacity when NOT mouseover", function() {
+                cy.viewport(1000, 600);
+                cy.visit("http://localhost:5000?fade=true");
+                cy.get("div.tree").should("have.css", "opacity", "0.3");
+            });
+
+            it("Panel is visible with 1 opacity when mouseover (simulates a hover)", function() {
+                cy.viewport(1000, 600);
+                cy.visit("http://localhost:5000?fade=true");
+                cy.get("#svelteObjectExplorer")
+                    .trigger("mouseover")
+                    .wait(1000)
+                    .should("have.css", "opacity", "1");
+            });
+        });
+
+        describe("Fade = false", function() {
+            it("Panel is visible with 1 opacity when NOT mouseover", function() {
+                cy.viewport(1000, 600);
+                cy.visit("http://localhost:5000");
+                cy.get("div.tree").should("have.css", "opacity", "1");
+            });
+
+            it("Panel is visible with 1 opacity when mouseover (simulates a hover)", function() {
+                cy.viewport(1000, 600);
+                cy.visit("http://localhost:5000");
+                cy.get("#svelteObjectExplorer")
+                    .trigger("mouseover")
+                    .wait(1000)
+                    .should("have.css", "opacity", "1");
+            });
+        });
+    });
+
+    describe("tabPosition", function() {
+        it("The 'Show' Panel is in the top, because of prop 'tabPosition=top'", function() {
+            cy.viewport(1000, 600);
+            cy.visit("http://localhost:5000?tabPosition=top");
+            cy.get("div.toggle.toggleShow.toggletop");
+        });
+        it("The 'Show' Panel is in the middle, because of prop 'tabPosition=middle'", function() {
+            cy.viewport(1000, 600);
+            cy.visit("http://localhost:5000?tabPosition=middle");
+            cy.get("div.toggle.toggleShow.togglemiddle");
+        });
+        it("The 'Show' Panel is in the bottom, because of prop 'tabPosition=bottom'", function() {
+            cy.viewport(1000, 600);
+            cy.visit("http://localhost:5000?tabPosition=bottom");
+            cy.get("div.toggle.toggleShow.togglebottom");
+        });
+    });
+
+    describe("rateLimit", function() {
+        it("rateLimit = default 100. Autocounter should increase automatically", function() {
+            testAutomaticCounter("http://localhost:5000/", 0, 500);
+        });
+        it("rateLimit = 500. Autocounter should increase automatically", function() {
+            testAutomaticCounter("http://localhost:5000?rateLimit=500", 100, 1000);
+        });
+        it("rateLimit = 2000. Autocounter should increase automatically", function() {
+            testAutomaticCounter("http://localhost:5000?rateLimit=2000", 100, 5000);
+        });
+    });
+});
+
+describe("Panel data updates when App data updates", function() {
+    it("Automatic: autocounter should increase automatically", function() {
+        testAutomaticCounter("http://localhost:5000/", 0, 100);
+    });
+    it("Manual: Clicking counter buttons should change the manual counter", function() {
         cy.viewport(1000, 600);
         cy.visit("http://localhost:5000/");
         //initially set to 0
@@ -108,7 +159,7 @@ describe("Panel data updates when App data updates", function() {
         //click increase button twice, should equal 2
         cy.get("#incr").click();
         cy.get("#incr").click();
-        cy.wait(5000);
+        cy.wait(100);
         cy.get("td.link")
             .eq(1)
             .invoke("text")
@@ -118,7 +169,7 @@ describe("Panel data updates when App data updates", function() {
 
         //click decrease button once, should equal 1
         cy.get("#decr").click();
-        cy.wait(5000);
+        cy.wait(100);
         cy.get("td.link")
             .eq(1)
             .invoke("text")
@@ -128,7 +179,7 @@ describe("Panel data updates when App data updates", function() {
 
         //click reset button once, should equal 0 again
         cy.get("#decr").click();
-        cy.wait(5000);
+        cy.wait(100);
         cy.get("td.link")
             .eq(1)
             .invoke("text")
@@ -137,3 +188,31 @@ describe("Panel data updates when App data updates", function() {
             });
     });
 });
+
+function testAutomaticCounter(url, firstWait, secondWait) {
+    cy.viewport(1000, 600);
+    cy.visit(url);
+    //get value from 3rd row
+    cy.get("td.link")
+        .eq(2)
+        .invoke("text")
+        .then(count1 => {
+            //wait a bit then get same value, it should be the same since rateLimit is in place
+            cy.wait(firstWait);
+            cy.get("td.link")
+                .eq(2)
+                .invoke("text")
+                .then(count2 => {
+                    expect(Number.parseInt(count2)).to.be.equal(Number.parseInt(count1));
+
+                    //wait a bit more get same value, it should be greater
+                    cy.wait(secondWait);
+                    cy.get("td.link")
+                        .eq(2)
+                        .invoke("text")
+                        .then(count3 => {
+                            expect(Number.parseInt(count3)).to.be.greaterThan(Number.parseInt(count1));
+                        });
+                });
+        });
+}

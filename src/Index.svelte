@@ -89,10 +89,13 @@
     return (
       d.toDateString() +
       " " +
+      d.getUTCHours() +
+      ":" +
+      d.getUTCMinutes() +
+      ":" +
       d.getUTCSeconds() +
-      "s " +
-      d.getUTCMilliseconds() +
-      "ms"
+      ":" +
+      d.getUTCMilliseconds()
     );
   }
 
@@ -861,7 +864,7 @@
 
 <div class="wrapper">
   <div
-    class={(toggle ? 'toggle toggleShow' : 'toggle toggleHide') + ' toggle' + tabPosition + (fade ? (hovering ? ' noFade' : ' fade') : 'noFade')}
+    class={(toggle ? 'toggle toggleShow' : 'toggle toggleHide') + ' toggle' + tabPosition + (fade ? (hovering ? ' noFade' : ' fade') : ' noFade')}
     on:mousedown={doToggle}>
     {#if toggle}
       Hide
@@ -878,11 +881,12 @@
 
   <div
     id="svelteObjectExplorer"
-    class={'tree' + (toggle ? '' : ' tree-hide') + (fade ? (hovering ? ' noFade' : ' fade') : 'noFade')}
+    class={'tree' + (toggle ? '' : ' tree-hide') + (fade ? (hovering ? ' noFade' : ' fade') : ' noFade')}
     on:mouseover={() => (hovering = true)}
     on:mouseleave={() => (hovering = false)}>
-    Data Changes({cache.dataChanges}) View Changes({cache.viewChanges}) Last
-    Updated({cache.formatted})
+    Data Changes({cache.dataChanges}) View Changes({cache.viewChanges})
+    <br />
+    Last Updated({cache.formatted})
     <table>
       <colgroup>
         <col style="width:35%" />
@@ -891,7 +895,7 @@
       </colgroup>
       {#each topLevelObjectArray as testy, i}
         <tr
-          class={testy.class}
+          class={testy.class + (openIndex === i ? ' open' : '')}
           on:mousedown={() => click(i, testy.val, testy.type)}>
           <td class="link">
             {#if testy.class}
