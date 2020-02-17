@@ -3975,18 +3975,18 @@ var app = (function () {
     			t17 = space();
     			button2 = element("button");
     			button2.textContent = "reset";
-    			add_location(h1, file$9, 58, 0, 1269);
-    			add_location(p0, file$9, 60, 0, 1304);
-    			add_location(p1, file$9, 63, 0, 1331);
-    			add_location(p2, file$9, 68, 0, 1523);
-    			add_location(h20, file$9, 72, 0, 1613);
-    			add_location(h21, file$9, 74, 0, 1669);
+    			add_location(h1, file$9, 59, 0, 1311);
+    			add_location(p0, file$9, 61, 0, 1346);
+    			add_location(p1, file$9, 64, 0, 1373);
+    			add_location(p2, file$9, 69, 0, 1565);
+    			add_location(h20, file$9, 73, 0, 1655);
+    			add_location(h21, file$9, 75, 0, 1711);
     			attr_dev(button0, "id", "decr");
-    			add_location(button0, file$9, 76, 0, 1724);
+    			add_location(button0, file$9, 77, 0, 1766);
     			attr_dev(button1, "id", "incr");
-    			add_location(button1, file$9, 77, 0, 1781);
+    			add_location(button1, file$9, 78, 0, 1823);
     			attr_dev(button2, "id", "reset");
-    			add_location(button2, file$9, 78, 0, 1838);
+    			add_location(button2, file$9, 79, 0, 1880);
 
     			dispose = [
     				listen_dev(button0, "click", count.decrement, false, false, false),
@@ -4133,6 +4133,7 @@ var app = (function () {
     					string: "test",
     					number: 123,
     					array: [[["test1", "test2"], "test2"], "test2"],
+    					longarray: new Array(4000).fill("test"),
     					object: {
     						test1: {
     							test1: {

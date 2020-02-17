@@ -25,6 +25,7 @@
       string: "test",
       number: 123,
       array: [[["test1", "test2"], "test2"], "test2"],
+      longarray: new Array(4000).fill("test"),
       object: {
         test1: {
           test1: { test1: { test1: "test1", test2: "test2" }, test2: "test2" },

@@ -14,6 +14,7 @@
   export let fade = false;
   export let rateLimit = 100;
 
+  let isPaused = false;
   let hovering = false;
   let showAll = false;
   let openIndex = null;
@@ -40,6 +41,7 @@
   $: rowsToShow = showAll ? showAllArr : showManuallySelected;
 
   onMount(async () => {
+    console.log(isPaused);
     rowsToShow = showAll ? showAllArr : showManuallySelected;
     //createArray();
     //console.log(JSON.stringify(cache.nyStore));
@@ -75,8 +77,8 @@
         cache.dataUpdated = new Date();
         cache.dataChanges = cache.dataChanges + 1;
       }
-      if (cache.dataUpdated - cache.viewUpdated > rateLimit) {
-        cache.myStore = myStore;
+      if (cache.dataUpdated - cache.viewUpdated > rateLimit && !isPaused) {
+        cache.myStore = JSON.parse(JSON.stringify(myStore));
         cache.viewChanges = cache.viewChanges + 1;
         cache.viewUpdated = new Date();
         cache.formatted = formatDate(cache.viewUpdated);
@@ -856,6 +858,12 @@
     position: absolute;
     left: -9999px;
   }
+
+  .tree button {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+  }
 </style>
 
 <div class="wrapper">
@@ -880,6 +888,23 @@
     class={'tree' + (toggle ? '' : ' tree-hide') + (fade ? (hovering ? ' noFade' : ' fade') : ' noFade')}
     on:mouseover={() => (hovering = true)}
     on:mouseleave={() => (hovering = false)}>
+    {#if isPaused}
+      <button
+        on:mouseup={() => {
+          isPaused = false;
+          console.log(isPaused);
+        }}>
+        un-Pause
+      </button>
+    {:else}
+      <button
+        on:mouseup={() => {
+          isPaused = true;
+          console.log(isPaused);
+        }}>
+        Pause
+      </button>
+    {/if}
     Data Changes({cache.dataChanges}) View Changes({cache.viewChanges})
     <br />
     Last Updated({cache.formatted})
