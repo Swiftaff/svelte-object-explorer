@@ -13,6 +13,7 @@
   export let open = null;
   export let fade = false;
   export let rateLimit = 100;
+  export let initialToggleState = true;
 
   let isPaused = false;
   let hovering = false;
@@ -26,7 +27,7 @@
   let showClipboardText = false;
   let clipboardCode = "";
   let hoverRow = "none";
-  let toggle = true;
+  let toggle = initialToggleState;
   let topLevelObjectArray = [];
   let openedObjectArray = [];
   let cache = {
@@ -35,13 +36,13 @@
     dataUpdated: new Date(),
     viewUpdated: new Date(),
     formatted: "",
-    myStore
+    myStore: null
   };
 
-  $: rowsToShow = showAll ? showAllArr : showManuallySelected;
+  $: if (toggle) rowsToShow = showAll ? showAllArr : showManuallySelected;
 
   onMount(async () => {
-    console.log(isPaused);
+    //console.log(isPaused);
     rowsToShow = showAll ? showAllArr : showManuallySelected;
     //createArray();
     //console.log(JSON.stringify(cache.nyStore));
@@ -73,16 +74,18 @@
 
   function timer() {
     setInterval(() => {
-      if (JSON.stringify(myStore) !== JSON.stringify(cache.myStore)) {
-        cache.dataUpdated = new Date();
-        cache.dataChanges = cache.dataChanges + 1;
-      }
-      if (cache.dataUpdated - cache.viewUpdated > rateLimit && !isPaused) {
-        cache.myStore = JSON.parse(JSON.stringify(myStore));
-        cache.viewChanges = cache.viewChanges + 1;
-        cache.viewUpdated = new Date();
-        cache.formatted = formatDate(cache.viewUpdated);
-        createArray();
+      if (toggle) {
+        if (JSON.stringify(myStore) !== JSON.stringify(cache.myStore)) {
+          cache.dataUpdated = new Date();
+          cache.dataChanges = cache.dataChanges + 1;
+        }
+        if (cache.dataUpdated - cache.viewUpdated > rateLimit && !isPaused) {
+          cache.myStore = JSON.parse(JSON.stringify(myStore));
+          cache.viewChanges = cache.viewChanges + 1;
+          cache.viewUpdated = new Date();
+          cache.formatted = formatDate(cache.viewUpdated);
+          createArray();
+        }
       }
     }, rateLimit);
   }
@@ -159,9 +162,9 @@
     return parentArr;
   }
 
-  function copyToClipboard() {
+  function copyToClipboard(txt) {
     let clipboardEl = document.getElementById("hiddenClipboard");
-    clipboardEl.value = clipboardCode;
+    clipboardEl.value = txt ? JSON.stringify(txt) : JSON.stringify(myStore);
     clipboardEl.select();
     document.execCommand("copy");
     showClipboardText = true;
@@ -651,7 +654,7 @@
 </script>
 
 <style>
-  .wrapper {
+  .svelte-objet-explorer-wrapper {
     position: fixed;
     top: 0px;
     left: 0px;
@@ -866,7 +869,7 @@
   }
 </style>
 
-<div class="wrapper">
+<div class="svelte-objet-explorer-wrapper">
   <div
     class={(toggle ? 'toggle toggleShow' : 'toggle toggleHide') + ' toggle' + tabPosition + (fade ? (hovering ? ' noFade' : ' fade') : ' noFade')}
     on:mousedown={doToggle}>
@@ -882,136 +885,138 @@
       </span>
     {/if}
   </div>
-
-  <div
-    id="svelteObjectExplorer"
-    class={'tree' + (toggle ? '' : ' tree-hide') + (fade ? (hovering ? ' noFade' : ' fade') : ' noFade')}
-    on:mouseover={() => (hovering = true)}
-    on:mouseleave={() => (hovering = false)}>
-    {#if isPaused}
-      <button
-        on:mouseup={() => {
-          isPaused = false;
-          console.log(isPaused);
-        }}>
-        un-Pause
-      </button>
-    {:else}
-      <button
-        on:mouseup={() => {
-          isPaused = true;
-          console.log(isPaused);
-        }}>
-        Pause
-      </button>
-    {/if}
-    Data Changes({cache.dataChanges}) View Changes({cache.viewChanges})
-    <br />
-    Last Updated({cache.formatted})
-    <table>
-      <colgroup>
-        <col style="width:35%" />
-        <col style="width:10%" />
-        <col style="width:55%" />
-      </colgroup>
-      {#each topLevelObjectArray as testy, i}
-        <tr
-          class={testy.class + (openIndex === i ? ' open' : '')}
-          on:mousedown={() => click(i, testy.val, testy.type)}>
-          <td class="link">
-            {#if testy.class}
-              <span class="smaller">
-                {#if openIndex === i}
-                  <FaChevronDown />
-                {:else}
-                  <FaChevronRight />
-                {/if}
-              </span>
-            {/if}
-            {testy.valType}
-          </td>
-          <td>{testy.type}</td>
-          <td>{testy.key}</td>
-        </tr>
-        {#if openIndex === i}
-          <tr>
-            <!-- only used to keep the odd even shading consistent when opening/closing accordion-->
-            <td colspan="3" class="treeVal" />
-          </tr>
-          <tr class="treeVal" on:mouseout={() => (hoverRow = null)}>
-            <td colspan="3" class="treeVal">
-              <!---->
-              <pre>
-                <div
-                  class="toggleShowAll nopointer"
-                  on:mousedown={toggleShowAll}>
-                  {#if showAll}
-                    <span class="smaller">
-                      <FaRegCheckSquare />
-                    </span>
+  {#if toggle}
+    <div
+      id="svelteObjectExplorer"
+      class={'tree' + (toggle ? '' : ' tree-hide') + (fade ? (hovering ? ' noFade' : ' fade') : ' noFade')}
+      on:mouseover={() => (hovering = true)}
+      on:mouseleave={() => (hovering = false)}>
+      {#if isPaused}
+        <button
+          on:mouseup={() => {
+            isPaused = false;
+            console.log(isPaused);
+          }}>
+          un-Pause
+        </button>
+      {:else}
+        <button
+          on:mouseup={() => {
+            isPaused = true;
+            console.log(isPaused);
+          }}>
+          Pause
+        </button>
+      {/if}
+      Data Changes({cache.dataChanges}) View Changes({cache.viewChanges})
+      <br />
+      Last Updated({cache.formatted})
+      <table>
+        <colgroup>
+          <col style="width:35%" />
+          <col style="width:10%" />
+          <col style="width:55%" />
+        </colgroup>
+        {#each topLevelObjectArray as testy, i}
+          <tr
+            class={testy.class + (openIndex === i ? ' open' : '')}
+            on:mousedown={() => click(i, testy.val, testy.type)}>
+            <td class="link">
+              {#if testy.class}
+                <span class="smaller">
+                  {#if openIndex === i}
+                    <FaChevronDown />
                   {:else}
-                    <span class="smaller">
-                      <FaRegSquare />
-                    </span>
+                    <FaChevronRight />
                   {/if}
-                  Show all
-                </div>
-                <div
-                  class="copyToClipbord nopointer"
-                  on:mousedown={copyToClipboard}>
-                  {#if showClipboardText}
-                    <span class="smaller">
-                      <FaClipboardCheck />
-                    </span>
-                    Copied to clipboard!
-                  {:else}
-                    <span class="smaller">
-                      <FaClipboard />
-                    </span>
-                    Copy to clipboard
-                  {/if}
-                  <input id="hiddenClipboard" />
-                </div>
-
-                {#if openIndex === i}
-                  {#each testy.childRows as row}
-                    {#if rowsToShow.includes(row.parentIndexRef) && (!row.bracket || (row.bracket && rowsToShow.includes(row.indexRef)))}
-                      <div
-                        class={hoverRow === row.indexRef || row.parentIndexRef.startsWith(hoverRow) ? 'row hoverRow' : 'row'}
-                        on:mouseover={() => (hoverRow = row.indexRef)}>
-                        <span>
-                          {row.output}
-                          {#if row.type}
-                            <span class="type">{row.type}</span>
-                          {/if}
-                          {#if row.len}
-                            <span class="len">({row.len})</span>
-                          {/if}
-                        </span>
-                        {#if row.expandable}
-                          {#if rowsToShow.includes(row.indexRef)}
-                            <span
-                              class="smallest dataArrow"
-                              on:mousedown={() => rowContract(row.indexRef)}>
-                              <FaChevronDown />
-                            </span>
-                          {:else}
-                            <span
-                              class="smallest dataArrow"
-                              on:mousedown={() => rowExpand(row.indexRef)}>
-                              <FaChevronRight />
-                            </span>
-                          {/if}
-                        {/if}
-                      </div>
-                    {/if}
-                  {/each}
-                {/if}
-              </pre>
+                </span>
+              {/if}
+              {testy.valType}
             </td>
+            <td>{testy.type}</td>
+            <td>{testy.key}</td>
           </tr>
-        {/if}
-      {/each}
-    </table>
-  </div>
+          {#if openIndex === i}
+            <tr>
+              <!-- only used to keep the odd even shading consistent when opening/closing accordion-->
+              <td colspan="3" class="treeVal" />
+            </tr>
+            <tr class="treeVal" on:mouseout={() => (hoverRow = null)}>
+              <td colspan="3" class="treeVal">
+                <!---->
+                <pre>
+                  <div
+                    class="toggleShowAll nopointer"
+                    on:mousedown={toggleShowAll}>
+                    {#if showAll}
+                      <span class="smaller">
+                        <FaRegCheckSquare />
+                      </span>
+                    {:else}
+                      <span class="smaller">
+                        <FaRegSquare />
+                      </span>
+                    {/if}
+                    Show all
+                  </div>
+                  <div
+                    class="copyToClipbord nopointer"
+                    on:mousedown={copyToClipboard}>
+                    {#if showClipboardText}
+                      <span class="smaller">
+                        <FaClipboardCheck />
+                      </span>
+                      Copied to clipboard!
+                    {:else}
+                      <span class="smaller">
+                        <FaClipboard />
+                      </span>
+                      Copy to clipboard
+                    {/if}
+                    <input id="hiddenClipboard" />
+                  </div>
+
+                  {#if openIndex === i}
+                    {#each testy.childRows as row}
+                      {#if rowsToShow.includes(row.parentIndexRef) && (!row.bracket || (row.bracket && rowsToShow.includes(row.indexRef)))}
+                        <div
+                          class={hoverRow === row.indexRef || row.parentIndexRef.startsWith(hoverRow) ? 'row hoverRow' : 'row'}
+                          on:mouseover={() => (hoverRow = row.indexRef)}
+                          on:mousedown={() => console.log(row.indexRef, testy.childRows, rowsToShow)}>
+                          <span>
+                            {row.output}
+                            {#if row.type}
+                              <span class="type">{row.type}</span>
+                            {/if}
+                            {#if row.len}
+                              <span class="len">({row.len})</span>
+                            {/if}
+                          </span>
+                          {#if row.expandable}
+                            {#if rowsToShow.includes(row.indexRef)}
+                              <span
+                                class="smallest dataArrow"
+                                on:mousedown={() => rowContract(row.indexRef)}>
+                                <FaChevronDown />
+                              </span>
+                            {:else}
+                              <span
+                                class="smallest dataArrow"
+                                on:mousedown={() => rowExpand(row.indexRef)}>
+                                <FaChevronRight />
+                              </span>
+                            {/if}
+                          {/if}
+                        </div>
+                      {/if}
+                    {/each}
+                  {/if}
+                </pre>
+              </td>
+            </tr>
+          {/if}
+        {/each}
+      </table>
+    </div>
+  {/if}
 </div>

@@ -11,7 +11,7 @@ describe("Toggle Main panel", function() {
 
     it("Clicking hide button, hides panel", function() {
         cy.get("div.toggle.toggleShow").click();
-        cy.get("div.tree.tree-hide");
+        cy.get("div.toggle.toggleHide");
     });
 
     it("Show button is visible", function() {
@@ -32,16 +32,16 @@ describe("Toggle panel objects", function() {
     });
 
     it("Test object should be open due to 'open' prop being set to 'variousTypes', showing 12 subitems", function() {
-        cy.get("div.row").should("have.length", 12);
+        cy.get("div.row").should("have.length", 50);
     });
 
-    it("Clicking first item, should show first expanded item as an Object (4), showing 6 rows (4 plus first and last)", function() {
+    it("Clicking first item, should show first expanded item as an Object (8), showing 50 rows", function() {
         cy.get("td.link")
             .first()
             .click();
-        cy.get("div.row").should("have.length", 6);
+        cy.get("div.row").should("have.length", 50);
         cy.get("td.treeVal").contains("Object");
-        cy.get("td.treeVal").contains("(4)");
+        cy.get("td.treeVal").contains("(8)");
     });
 });
 
@@ -63,13 +63,13 @@ describe("Prop options", function() {
 
         it("Open = 'customStoreValue', is not an object or array so no panels are open", function() {
             cy.viewport(1000, 600);
-            cy.visit("http://localhost:5000?open=variousTypes");
+            cy.visit("http://localhost:5000?open=customStoreValue");
             cy.get("tr.accordion.open").should("not.exist");
         });
 
         it("Open = 'bananaman', is not a valid reference so no panels are open", function() {
             cy.viewport(1000, 600);
-            cy.visit("http://localhost:5000?open=variousTypes");
+            cy.visit("http://localhost:5000?open=bananaman");
             cy.get("tr.accordion.open").should("not.exist");
         });
     });

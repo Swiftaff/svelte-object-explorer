@@ -41,6 +41,7 @@ Include **svelte-object-explorer** in the script section of any svelte file, but
  tabPosition = "top" //optional
  open = "dataFromProps" //optional
  rateLimit = {1000} //optional, default 100
+ initialToggleState = {true} //optional, default true
 />
 // ...
 // the rest of your app
@@ -64,6 +65,8 @@ Include **svelte-object-explorer** in the script section of any svelte file, but
 `open` is an optional string, the name of one of the objects you supplied in myStore, to auto-expand it on load
 
 `rateLimit` is an optional integer, for the rate at which the view should update (to avoid it getting bogged down by very fast data updates. The default is 100 (milliseconds)
+
+`initialToggleState` is an optional boolean, for whether the tab is open (true) or closed (false) on startup
 
 > It's not clever, it's not pretty...
 
