@@ -21,4 +21,4 @@ function domParser() {
     return arr;
 }
 
-export default { domParser, removeWhitespace };
+export default { domParser };

@@ -1,5 +1,6 @@
 <script>
     import { onMount } from "svelte";
+    import TabButton from "../src/TabButton.svelte";
     import FaChevronRight from "svelte-icons/fa/FaChevronRight.svelte";
     import FaChevronDown from "svelte-icons/fa/FaChevronDown.svelte";
     import FaChevronUp from "svelte-icons/fa/FaChevronUp.svelte";
@@ -134,25 +135,7 @@
 </script>
 
 <div class="svelte-objet-explorer-wrapper">
-    <div
-        class={(toggle ? "toggle toggleShow" : "toggle toggleHide") +
-            " toggle" +
-            tabPosition +
-            (fade ? (hovering ? " noFade" : " fade") : " noFade")}
-        on:mousedown={doToggle}
-    >
-        {#if toggle}
-            Hide
-            <span class="smaller">
-                <FaChevronDown />
-            </span>
-        {:else}
-            Show
-            <span class="smaller">
-                <FaChevronUp />
-            </span>
-        {/if}
-    </div>
+    <TabButton {toggle} {tabPosition} {fade} {hovering} {doToggle} />
     {#if toggle}
         <div
             id="svelteObjectExplorer"
