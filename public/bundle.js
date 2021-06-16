@@ -1670,6 +1670,385 @@ var app = (function () {
     	}
     }
 
+    function domParser() {
+        // parses the dom from body downwards into a simplified ast, e.g.
+        // { class: "classname", tag: "H1", children: [el, el, el] }
+
+        let html = document.body;
+        console.log(html);
+        let arr = getTag(html);
+        console.log(arr);
+
+        function getTag(el) {
+            if (el.tagName && el.tagName !== "SCRIPT" && !el.className.includes("svelte-objet-explorer-wrapper ")) {
+                return { class: el.className, tag: el.tagName, children: getChildren(el) };
+            } else {
+                return null;
+            }
+        }
+
+        function getChildren(el) {
+            return [...el.childNodes].map(getTag).filter((t) => t !== null);
+        }
+        return arr;
+    }
+
+    var lib = { domParser, removeWhitespace };
+
+    const indentSpaces = 2;
+
+    function code_format_null(indexRef, parentIndexRef, index, parentArr, level, optionalIndex) {
+        parentArr.push({
+            indexRef,
+            parentIndexRef,
+            index,
+            output: indent_row(code_format_index(optionalIndex) + "null", level),
+            type: "Null",
+        });
+    }
+
+    function code_format_undefined(indexRef, parentIndexRef, index, parentArr, level, optionalIndex) {
+        parentArr.push({
+            indexRef,
+            parentIndexRef,
+            index,
+            output: indent_row(code_format_index(optionalIndex) + "undefined", level),
+            type: "Undefined",
+        });
+    }
+
+    function code_format_boolean(indexRef, parentIndexRef, index, parentArr, bool, level, optionalIndex) {
+        parentArr.push({
+            indexRef,
+            parentIndexRef,
+            index,
+            output: indent_row(code_format_index(optionalIndex) + (bool ? "true" : "false"), level),
+            type: "Boolean",
+        });
+    }
+
+    function code_format_string(indexRef, parentIndexRef, index, parentArr, str, level, optionalIndex) {
+        parentArr.push({
+            indexRef,
+            parentIndexRef,
+            index,
+            output: indent_row(code_format_index(optionalIndex) + "'" + str + "'", level),
+            type: "String",
+        });
+    }
+
+    function code_format_number(indexRef, parentIndexRef, index, parentArr, num, level, optionalIndex) {
+        parentArr.push({
+            indexRef,
+            parentIndexRef,
+            index,
+            output: indent_row(code_format_index(optionalIndex) + num, level),
+            type: "Number",
+        });
+    }
+
+    function code_format_symbol(indexRef, parentIndexRef, index, parentArr, sym, level, optionalIndex) {
+        parentArr.push({
+            indexRef,
+            parentIndexRef,
+            index,
+            output: indent_row(code_format_index(optionalIndex) + "'" + sym.toString() + "'", level),
+            type: "Symbol",
+        });
+    }
+
+    function code_format_function(indexRef, parentIndexRef, index, parentArr, fn, level, optionalIndex) {
+        parentArr.push({
+            indexRef,
+            parentIndexRef,
+            index,
+            output: indent_row(code_format_index(optionalIndex) + "'" + fn.name + "'", level),
+            type: "Function",
+        });
+    }
+
+    function code_format_array(indexRef, parentIndexRef, index, parentArr, arr, level, optionalIndex, optionalNewLine) {
+        parentArr.push({
+            indexRef,
+            parentIndexRef,
+            index,
+            output: indent_row(
+                (optionalNewLine ? "" : code_format_index(optionalIndex)) + code_format_index(optionalIndex),
+                level
+            ),
+            type: "Array",
+            len: arr.length,
+            expandable: true,
+        });
+        if (optionalNewLine) {
+            parentArr.push({
+                indexRef,
+                parentIndexRef,
+                index,
+                output: indent_row("[", level + (optionalIndex ? 1 : 0)),
+                bracket: true,
+            });
+        }
+        arr.map((value, arrIndex) =>
+            formatByType(
+                indexRef + "." + arrIndex,
+                indexRef,
+                arrIndex,
+                parentArr,
+                value,
+                level + (optionalIndex ? 2 : 1),
+                arrIndex,
+                true
+            )
+        );
+        parentArr.push({
+            indexRef,
+            parentIndexRef,
+            index,
+            output: indent_row("]", level + (optionalIndex ? 1 : 0)),
+            bracket: true,
+        });
+    }
+
+    function code_format_array_long(
+        indexRef,
+        parentIndexRef,
+        index,
+        parentArr,
+        arr,
+        level,
+        optionalIndex,
+        optionalNewLine
+    ) {
+        code_format_string(
+            indexRef,
+            parentIndexRef,
+            index,
+            parentArr,
+            "Array is very long (" + value.length + ")",
+            level,
+            optionalIndex
+        );
+        for (let i = 0; i < value.length; i += 100) {
+            let end = i + 100 > value.length - 1 ? value.length : i + 99;
+            let tempArr = value.slice(i, end);
+            code_format_array(
+                indexRef + "." + i,
+                parentIndexRef,
+                index,
+                parentArr,
+                tempArr,
+                level + 1,
+                optionalIndex + " (" + i + " to " + end + ")",
+                optionalNewLine
+            );
+        }
+    }
+
+    function code_format_object(indexRef, parentIndexRef, index, parentArr, obj, level, optionalIndex, optionalNewLine) {
+        let object = Object.entries(obj);
+        parentArr.push({
+            indexRef,
+            parentIndexRef,
+            index,
+            output: indent_row(
+                (optionalNewLine ? "" : code_format_index(optionalIndex)) + code_format_index(optionalIndex),
+                level
+            ),
+            type: "Object",
+            len: object.length,
+            expandable: true,
+        });
+        if (optionalNewLine) {
+            parentArr.push({
+                indexRef,
+                parentIndexRef,
+                index,
+                output: indent_row("{", level + (optionalIndex ? 1 : 0)),
+                bracket: true,
+            });
+        }
+        object.forEach(([key, value], objIndex) => {
+            formatByType(
+                indexRef + "." + objIndex,
+                indexRef,
+                objIndex,
+                parentArr,
+                value,
+                level + (optionalIndex || optionalNewLine ? 2 : 1),
+                key,
+                true
+            );
+        });
+        parentArr.push({
+            indexRef,
+            parentIndexRef,
+            index,
+            output: indent_row("}", level + (optionalIndex || optionalNewLine ? 1 : 0)),
+            bracket: true,
+        });
+    }
+
+    function code_format_unknown(indexRef, parentIndexRef, index, parentArr, level, optionalIndex) {
+        parentArr.push({
+            indexRef,
+            parentIndexRef,
+            index,
+            output: indent_row(code_format_index(optionalIndex) + "!!unknown!!", level),
+        });
+    }
+
+    function code_format_index(optionalIndex) {
+        return typeof optionalIndex !== "undefined" ? optionalIndex + ": " : "";
+    }
+
+    function indent_row(row, level) {
+        return " ".repeat(level * indentSpaces) + row;
+    }
+
+    //formatByType("0.0", "0", 0, parentArr, object, 0);
+    function formatByType(
+        //
+        indexRef,
+        parentIndexRef, //e.g. "1.1.2.3"
+        index, // e.g. 4, if this item is 1.1.2.3.4
+        //
+        parentArr,
+        value,
+        level,
+        optionalIndex,
+        optionalNewLine
+    ) {
+        //console.log("formatByType", value);
+        if (value === null) code_format_null(indexRef, parentIndexRef, index, parentArr, level, optionalIndex);
+        else if (typeof value === "undefined")
+            code_format_undefined(indexRef, parentIndexRef, index, parentArr, level, optionalIndex);
+        else if (typeof value === "boolean")
+            code_format_boolean(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex);
+        else if (typeof value === "string")
+            code_format_string(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex);
+        else if (typeof value === "number")
+            code_format_number(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex);
+        else if (typeof value === "symbol")
+            code_format_symbol(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex);
+        else if (typeof value === "function")
+            code_format_function(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex);
+        else if (Array.isArray(value))
+            if (value.length > 100) {
+                code_format_array_long(
+                    indexRef,
+                    parentIndexRef,
+                    index,
+                    parentArr,
+                    value,
+                    level,
+                    optionalIndex,
+                    optionalNewLine
+                );
+            } else {
+                code_format_array(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex, optionalNewLine);
+            }
+        else if (typeof value === "object")
+            code_format_object(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex, optionalNewLine);
+        else code_format_unknown(indexRef, parentIndexRef, index, parentArr, level, optionalIndex);
+    }
+
+    function valueFormatterToArr(object) {
+        //console.log("valueFormatterToArr");
+        let parentArr = []; //[{ output: '   test:"test"', type: "string" }];
+        formatByType("0.0", "0", 0, parentArr, object, 0); // <- make this assign to parentArr specifically instead of with JS magic
+
+        return parentArr;
+    }
+
+    function transform_data(cache) {
+        let tempArr = [];
+        for (const key in cache.myStore) {
+            if (cache.myStore.hasOwnProperty(key)) {
+                let tempItem = {
+                    key,
+                    val: cache.myStore[key],
+                    type: getType(cache.myStore[key]),
+                };
+                tempItem.class = displayClass(tempItem);
+                tempItem.valType = displayValType(tempItem.val);
+                tempItem.childRows = valueFormatterToArr(tempItem.val);
+                tempArr.push(tempItem);
+            }
+        }
+        tempArr.sort(sort_byKey);
+        tempArr = tempArr.map((item, index) => {
+            return { ...item, index };
+        });
+        return tempArr;
+    }
+
+    function displayValType(val) {
+        if (val === null) {
+            return "null";
+        } else if (getType(val) === "function") {
+            return "fn()";
+        } else if (getType(val) === "object") {
+            return Object.entries(val).length ? "view Obj..." : "{ }";
+        } else if (getType(val) === "array") {
+            return val.length ? "view Arr..." : "[ ]";
+        } else if (getType(val) === "boolean") {
+            return val ? "true" : "false";
+        } else if (getType(val) === "string") {
+            return val;
+        } else if (getType(val) === "number") {
+            return JSON.stringify(val);
+        }
+    }
+
+    function getType(val) {
+        return Array.isArray(val) ? "array" : typeof val;
+    }
+
+    function displayClass(testy) {
+        let isObject = testy.val ? Object.entries(testy.val).length : false;
+        let accordion = testy.type !== "string" ? "accordion" : "";
+        return testy.val !== [] && testy.val !== null && isObject ? accordion + " tree_" + testy.type : "";
+    }
+
+    function sort_byKey(a, b) {
+        var nameA = a.key.toUpperCase(); // ignore upper and lowercase
+        var nameB = b.key.toUpperCase(); // ignore upper and lowercase
+        if (nameA < nameB) {
+            return -1;
+        }
+        if (nameA > nameB) {
+            return 1;
+        }
+
+        // else name are equal
+        return 0;
+    }
+
+    function getOpenIndex(arr, open, openIndexSetOnce) {
+        console.log(arr);
+        let i = null;
+        if (arr && arr.length) {
+            arr.map((item, index) => {
+                if (item.key === open && (item.type === "object" || item.type == "array")) i = index;
+            });
+        }
+        return i;
+    }
+
+    function getAllIndexes(arrayToMap, openIndex) {
+        //update the showallarray with all rows from parentArr
+        //console.log(arrayToMap, openIndex);
+        let arr = [];
+        if (openIndex && arrayToMap[openIndex] && arrayToMap[openIndex].childRows)
+            arrayToMap[openIndex].childRows.map((row) => {
+                arr.push(row.index);
+            });
+        return arr;
+    }
+
+    var transform_data$1 = { transform_data, getOpenIndex, getAllIndexes };
+
     /* src/Index.svelte generated by Svelte v3.18.2 */
 
     const { Object: Object_1, console: console_1 } = globals;
@@ -1677,18 +2056,18 @@ var app = (function () {
 
     function get_each_context_1(ctx, list, i) {
     	const child_ctx = ctx.slice();
-    	child_ctx[61] = list[i];
+    	child_ctx[43] = list[i];
     	return child_ctx;
     }
 
     function get_each_context(ctx, list, i) {
     	const child_ctx = ctx.slice();
-    	child_ctx[58] = list[i];
-    	child_ctx[60] = i;
+    	child_ctx[40] = list[i];
+    	child_ctx[42] = i;
     	return child_ctx;
     }
 
-    // (524:0) {:else}
+    // (149:0) {:else}
     function create_else_block_5(ctx) {
     	let t;
     	let span;
@@ -1701,7 +2080,7 @@ var app = (function () {
     			span = element("span");
     			create_component(fachevronup.$$.fragment);
     			attr_dev(span, "class", "smaller svelte-1y2qsdu");
-    			add_location(span, file$8, 525, 0, 12549);
+    			add_location(span, file$8, 150, 0, 3787);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, t, anchor);
@@ -1729,14 +2108,14 @@ var app = (function () {
     		block,
     		id: create_else_block_5.name,
     		type: "else",
-    		source: "(524:0) {:else}",
+    		source: "(149:0) {:else}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (519:0) {#if toggle}
+    // (144:0) {#if toggle}
     function create_if_block_13(ctx) {
     	let t;
     	let span;
@@ -1749,7 +2128,7 @@ var app = (function () {
     			span = element("span");
     			create_component(fachevrondown.$$.fragment);
     			attr_dev(span, "class", "smaller svelte-1y2qsdu");
-    			add_location(span, file$8, 520, 0, 12487);
+    			add_location(span, file$8, 145, 0, 3725);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, t, anchor);
@@ -1777,14 +2156,14 @@ var app = (function () {
     		block,
     		id: create_if_block_13.name,
     		type: "if",
-    		source: "(519:0) {#if toggle}",
+    		source: "(144:0) {#if toggle}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (531:0) {#if toggle}
+    // (156:0) {#if toggle}
     function create_if_block$1(ctx) {
     	let div;
     	let t0;
@@ -1855,23 +2234,23 @@ var app = (function () {
     				each_blocks[i].c();
     			}
 
-    			add_location(br, file$8, 557, 0, 13116);
+    			add_location(br, file$8, 182, 0, 4354);
     			set_style(col0, "width", "35%");
-    			add_location(col0, file$8, 561, 0, 13174);
+    			add_location(col0, file$8, 186, 0, 4412);
     			set_style(col1, "width", "10%");
-    			add_location(col1, file$8, 562, 0, 13200);
+    			add_location(col1, file$8, 187, 0, 4438);
     			set_style(col2, "width", "55%");
-    			add_location(col2, file$8, 563, 0, 13226);
-    			add_location(colgroup, file$8, 560, 0, 13163);
+    			add_location(col2, file$8, 188, 0, 4464);
+    			add_location(colgroup, file$8, 185, 0, 4401);
     			attr_dev(table, "class", "svelte-1y2qsdu");
-    			add_location(table, file$8, 559, 0, 13155);
+    			add_location(table, file$8, 184, 0, 4393);
     			attr_dev(div, "id", "svelteObjectExplorer");
 
     			attr_dev(div, "class", div_class_value = "" + (null_to_empty("tree" + (/*toggle*/ ctx[9] ? "" : " tree-hide") + (/*fade*/ ctx[1]
     			? /*hovering*/ ctx[3] ? " noFade" : " fade"
     			: " noFade")) + " svelte-1y2qsdu"));
 
-    			add_location(div, file$8, 531, 0, 12622);
+    			add_location(div, file$8, 156, 0, 3860);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -1901,8 +2280,8 @@ var app = (function () {
     			current = true;
 
     			dispose = [
-    				listen_dev(div, "mouseover", /*mouseover_handler_1*/ ctx[56], false, false, false),
-    				listen_dev(div, "mouseleave", /*mouseleave_handler*/ ctx[57], false, false, false)
+    				listen_dev(div, "mouseover", /*mouseover_handler_1*/ ctx[38], false, false, false),
+    				listen_dev(div, "mouseleave", /*mouseleave_handler*/ ctx[39], false, false, false)
     			];
     		},
     		p: function update(ctx, dirty) {
@@ -1985,14 +2364,14 @@ var app = (function () {
     		block,
     		id: create_if_block$1.name,
     		type: "if",
-    		source: "(531:0) {#if toggle}",
+    		source: "(156:0) {#if toggle}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (547:0) {:else}
+    // (172:0) {:else}
     function create_else_block_4(ctx) {
     	let button;
     	let dispose;
@@ -2002,11 +2381,11 @@ var app = (function () {
     			button = element("button");
     			button.textContent = "Pause";
     			attr_dev(button, "class", "svelte-1y2qsdu");
-    			add_location(button, file$8, 547, 0, 12953);
+    			add_location(button, file$8, 172, 0, 4191);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, button, anchor);
-    			dispose = listen_dev(button, "mouseup", /*mouseup_handler_1*/ ctx[49], false, false, false);
+    			dispose = listen_dev(button, "mouseup", /*mouseup_handler_1*/ ctx[31], false, false, false);
     		},
     		p: noop,
     		d: function destroy(detaching) {
@@ -2019,14 +2398,14 @@ var app = (function () {
     		block,
     		id: create_else_block_4.name,
     		type: "else",
-    		source: "(547:0) {:else}",
+    		source: "(172:0) {:else}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (538:0) {#if isPaused}
+    // (163:0) {#if isPaused}
     function create_if_block_12(ctx) {
     	let button;
     	let dispose;
@@ -2036,11 +2415,11 @@ var app = (function () {
     			button = element("button");
     			button.textContent = "un-Pause";
     			attr_dev(button, "class", "svelte-1y2qsdu");
-    			add_location(button, file$8, 538, 0, 12852);
+    			add_location(button, file$8, 163, 0, 4090);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, button, anchor);
-    			dispose = listen_dev(button, "mouseup", /*mouseup_handler*/ ctx[48], false, false, false);
+    			dispose = listen_dev(button, "mouseup", /*mouseup_handler*/ ctx[30], false, false, false);
     		},
     		p: noop,
     		d: function destroy(detaching) {
@@ -2053,14 +2432,14 @@ var app = (function () {
     		block,
     		id: create_if_block_12.name,
     		type: "if",
-    		source: "(538:0) {#if isPaused}",
+    		source: "(163:0) {#if isPaused}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (572:0) {#if testy.class}
+    // (197:0) {#if testy.class}
     function create_if_block_10(ctx) {
     	let span;
     	let current_block_type_index;
@@ -2070,7 +2449,7 @@ var app = (function () {
     	const if_blocks = [];
 
     	function select_block_type_2(ctx, dirty) {
-    		if (/*openIndex*/ ctx[5] === /*i*/ ctx[60]) return 0;
+    		if (/*openIndex*/ ctx[5] === /*i*/ ctx[42]) return 0;
     		return 1;
     	}
 
@@ -2082,7 +2461,7 @@ var app = (function () {
     			span = element("span");
     			if_block.c();
     			attr_dev(span, "class", "smaller svelte-1y2qsdu");
-    			add_location(span, file$8, 572, 0, 13454);
+    			add_location(span, file$8, 197, 0, 4692);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, span, anchor);
@@ -2131,14 +2510,14 @@ var app = (function () {
     		block,
     		id: create_if_block_10.name,
     		type: "if",
-    		source: "(572:0) {#if testy.class}",
+    		source: "(197:0) {#if testy.class}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (576:0) {:else}
+    // (201:0) {:else}
     function create_else_block_3(ctx) {
     	let current;
     	const fachevronright = new FaChevronRight({ $$inline: true });
@@ -2169,14 +2548,14 @@ var app = (function () {
     		block,
     		id: create_else_block_3.name,
     		type: "else",
-    		source: "(576:0) {:else}",
+    		source: "(201:0) {:else}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (574:0) {#if openIndex === i}
+    // (199:0) {#if openIndex === i}
     function create_if_block_11(ctx) {
     	let current;
     	const fachevrondown = new FaChevronDown({ $$inline: true });
@@ -2207,14 +2586,14 @@ var app = (function () {
     		block,
     		id: create_if_block_11.name,
     		type: "if",
-    		source: "(574:0) {#if openIndex === i}",
+    		source: "(199:0) {#if openIndex === i}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (586:0) {#if openIndex === i}
+    // (211:0) {#if openIndex === i}
     function create_if_block_1(ctx) {
     	let tr0;
     	let td0;
@@ -2256,7 +2635,7 @@ var app = (function () {
 
     	current_block_type_index_1 = select_block_type_4(ctx);
     	if_block1 = if_blocks_1[current_block_type_index_1] = if_block_creators_1[current_block_type_index_1](ctx);
-    	let if_block2 = /*openIndex*/ ctx[5] === /*i*/ ctx[60] && create_if_block_2(ctx);
+    	let if_block2 = /*openIndex*/ ctx[5] === /*i*/ ctx[42] && create_if_block_2(ctx);
 
     	const block = {
     		c: function create() {
@@ -2279,23 +2658,23 @@ var app = (function () {
     			t5 = space();
     			attr_dev(td0, "colspan", "3");
     			attr_dev(td0, "class", "treeVal svelte-1y2qsdu");
-    			add_location(td0, file$8, 588, 0, 13751);
+    			add_location(td0, file$8, 213, 0, 4989);
     			attr_dev(tr0, "class", "svelte-1y2qsdu");
-    			add_location(tr0, file$8, 586, 0, 13657);
+    			add_location(tr0, file$8, 211, 0, 4895);
     			attr_dev(div0, "class", "toggleShowAll nopointer svelte-1y2qsdu");
-    			add_location(div0, file$8, 594, 0, 13898);
+    			add_location(div0, file$8, 219, 0, 5136);
     			attr_dev(input, "id", "hiddenClipboard");
     			attr_dev(input, "class", "svelte-1y2qsdu");
-    			add_location(input, file$8, 622, 0, 14354);
+    			add_location(input, file$8, 247, 0, 5592);
     			attr_dev(div1, "class", "copyToClipbord nopointer svelte-1y2qsdu");
-    			add_location(div1, file$8, 608, 0, 14108);
+    			add_location(div1, file$8, 233, 0, 5346);
     			attr_dev(pre, "class", "svelte-1y2qsdu");
-    			add_location(pre, file$8, 593, 0, 13892);
+    			add_location(pre, file$8, 218, 0, 5130);
     			attr_dev(td1, "colspan", "3");
     			attr_dev(td1, "class", "treeVal svelte-1y2qsdu");
-    			add_location(td1, file$8, 591, 0, 13851);
+    			add_location(td1, file$8, 216, 0, 5089);
     			attr_dev(tr1, "class", "treeVal svelte-1y2qsdu");
-    			add_location(tr1, file$8, 590, 0, 13792);
+    			add_location(tr1, file$8, 215, 0, 5030);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, tr0, anchor);
@@ -2320,7 +2699,7 @@ var app = (function () {
     			dispose = [
     				listen_dev(div0, "mousedown", /*toggleShowAll*/ ctx[12], false, false, false),
     				listen_dev(div1, "mousedown", /*copyToClipboard*/ ctx[16], false, false, false),
-    				listen_dev(tr1, "mouseout", /*mouseout_handler*/ ctx[55], false, false, false)
+    				listen_dev(tr1, "mouseout", /*mouseout_handler*/ ctx[37], false, false, false)
     			];
     		},
     		p: function update(ctx, dirty) {
@@ -2368,7 +2747,7 @@ var app = (function () {
     				if_block1.m(div1, t3);
     			}
 
-    			if (/*openIndex*/ ctx[5] === /*i*/ ctx[60]) {
+    			if (/*openIndex*/ ctx[5] === /*i*/ ctx[42]) {
     				if (if_block2) {
     					if_block2.p(ctx, dirty);
     					transition_in(if_block2, 1);
@@ -2416,14 +2795,14 @@ var app = (function () {
     		block,
     		id: create_if_block_1.name,
     		type: "if",
-    		source: "(586:0) {#if openIndex === i}",
+    		source: "(211:0) {#if openIndex === i}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (602:0) {:else}
+    // (227:0) {:else}
     function create_else_block_2(ctx) {
     	let span;
     	let current;
@@ -2434,7 +2813,7 @@ var app = (function () {
     			span = element("span");
     			create_component(faregsquare.$$.fragment);
     			attr_dev(span, "class", "smaller svelte-1y2qsdu");
-    			add_location(span, file$8, 602, 0, 14039);
+    			add_location(span, file$8, 227, 0, 5277);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, span, anchor);
@@ -2460,14 +2839,14 @@ var app = (function () {
     		block,
     		id: create_else_block_2.name,
     		type: "else",
-    		source: "(602:0) {:else}",
+    		source: "(227:0) {:else}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (598:0) {#if showAll}
+    // (223:0) {#if showAll}
     function create_if_block_9(ctx) {
     	let span;
     	let current;
@@ -2478,7 +2857,7 @@ var app = (function () {
     			span = element("span");
     			create_component(faregchecksquare.$$.fragment);
     			attr_dev(span, "class", "smaller svelte-1y2qsdu");
-    			add_location(span, file$8, 598, 0, 13979);
+    			add_location(span, file$8, 223, 0, 5217);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, span, anchor);
@@ -2504,14 +2883,14 @@ var app = (function () {
     		block,
     		id: create_if_block_9.name,
     		type: "if",
-    		source: "(598:0) {#if showAll}",
+    		source: "(223:0) {#if showAll}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (617:0) {:else}
+    // (242:0) {:else}
     function create_else_block_1(ctx) {
     	let span;
     	let t;
@@ -2524,7 +2903,7 @@ var app = (function () {
     			create_component(faclipboard.$$.fragment);
     			t = text("\nCopy to clipboard");
     			attr_dev(span, "class", "smaller svelte-1y2qsdu");
-    			add_location(span, file$8, 617, 0, 14283);
+    			add_location(span, file$8, 242, 0, 5521);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, span, anchor);
@@ -2552,14 +2931,14 @@ var app = (function () {
     		block,
     		id: create_else_block_1.name,
     		type: "else",
-    		source: "(617:0) {:else}",
+    		source: "(242:0) {:else}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (612:0) {#if showClipboardText}
+    // (237:0) {#if showClipboardText}
     function create_if_block_8(ctx) {
     	let span;
     	let t;
@@ -2572,7 +2951,7 @@ var app = (function () {
     			create_component(faclipboardcheck.$$.fragment);
     			t = text("\nCopied to clipboard!");
     			attr_dev(span, "class", "smaller svelte-1y2qsdu");
-    			add_location(span, file$8, 612, 0, 14202);
+    			add_location(span, file$8, 237, 0, 5440);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, span, anchor);
@@ -2600,18 +2979,18 @@ var app = (function () {
     		block,
     		id: create_if_block_8.name,
     		type: "if",
-    		source: "(612:0) {#if showClipboardText}",
+    		source: "(237:0) {#if showClipboardText}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (626:0) {#if openIndex === i}
+    // (251:0) {#if openIndex === i}
     function create_if_block_2(ctx) {
     	let each_1_anchor;
     	let current;
-    	let each_value_1 = /*testy*/ ctx[58].childRows;
+    	let each_value_1 = /*testy*/ ctx[40].childRows;
     	let each_blocks = [];
 
     	for (let i = 0; i < each_value_1.length; i += 1) {
@@ -2640,7 +3019,7 @@ var app = (function () {
     		},
     		p: function update(ctx, dirty) {
     			if (dirty[0] & /*hoverRow, topLevelObjectArray, rowsToShow, rowContract, rowExpand*/ 50496) {
-    				each_value_1 = /*testy*/ ctx[58].childRows;
+    				each_value_1 = /*testy*/ ctx[40].childRows;
     				let i;
 
     				for (i = 0; i < each_value_1.length; i += 1) {
@@ -2694,18 +3073,18 @@ var app = (function () {
     		block,
     		id: create_if_block_2.name,
     		type: "if",
-    		source: "(626:0) {#if openIndex === i}",
+    		source: "(251:0) {#if openIndex === i}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (628:0) {#if rowsToShow.includes(row.parentIndexRef) && (!row.bracket || (row.bracket && rowsToShow.includes(row.indexRef)))}
+    // (253:0) {#if rowsToShow.includes(row.parentIndexRef) && (!row.bracket || (row.bracket && rowsToShow.includes(row.indexRef)))}
     function create_if_block_3(ctx) {
     	let div;
     	let span;
-    	let t0_value = /*row*/ ctx[61].output + "";
+    	let t0_value = /*row*/ ctx[43].output + "";
     	let t0;
     	let t1;
     	let t2;
@@ -2714,16 +3093,16 @@ var app = (function () {
     	let div_class_value;
     	let current;
     	let dispose;
-    	let if_block0 = /*row*/ ctx[61].type && create_if_block_7(ctx);
-    	let if_block1 = /*row*/ ctx[61].len && create_if_block_6(ctx);
-    	let if_block2 = /*row*/ ctx[61].expandable && create_if_block_4(ctx);
+    	let if_block0 = /*row*/ ctx[43].type && create_if_block_7(ctx);
+    	let if_block1 = /*row*/ ctx[43].len && create_if_block_6(ctx);
+    	let if_block2 = /*row*/ ctx[43].expandable && create_if_block_4(ctx);
 
     	function mouseover_handler(...args) {
-    		return /*mouseover_handler*/ ctx[53](/*row*/ ctx[61], ...args);
+    		return /*mouseover_handler*/ ctx[35](/*row*/ ctx[43], ...args);
     	}
 
     	function mousedown_handler_3(...args) {
-    		return /*mousedown_handler_3*/ ctx[54](/*row*/ ctx[61], /*testy*/ ctx[58], ...args);
+    		return /*mousedown_handler_3*/ ctx[36](/*row*/ ctx[43], /*testy*/ ctx[40], ...args);
     	}
 
     	const block = {
@@ -2738,13 +3117,13 @@ var app = (function () {
     			t3 = text("\n");
     			if (if_block2) if_block2.c();
     			t4 = text("\n");
-    			add_location(span, file$8, 632, 0, 14795);
+    			add_location(span, file$8, 257, 0, 6033);
 
-    			attr_dev(div, "class", div_class_value = "" + (null_to_empty(/*hoverRow*/ ctx[8] === /*row*/ ctx[61].indexRef || /*row*/ ctx[61].parentIndexRef.startsWith(/*hoverRow*/ ctx[8])
+    			attr_dev(div, "class", div_class_value = "" + (null_to_empty(/*hoverRow*/ ctx[8] === /*row*/ ctx[43].indexRef || /*row*/ ctx[43].parentIndexRef.startsWith(/*hoverRow*/ ctx[8])
     			? "row hoverRow"
     			: "row") + " svelte-1y2qsdu"));
 
-    			add_location(div, file$8, 628, 0, 14564);
+    			add_location(div, file$8, 253, 0, 5802);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -2766,9 +3145,9 @@ var app = (function () {
     		},
     		p: function update(new_ctx, dirty) {
     			ctx = new_ctx;
-    			if ((!current || dirty[0] & /*topLevelObjectArray*/ 1024) && t0_value !== (t0_value = /*row*/ ctx[61].output + "")) set_data_dev(t0, t0_value);
+    			if ((!current || dirty[0] & /*topLevelObjectArray*/ 1024) && t0_value !== (t0_value = /*row*/ ctx[43].output + "")) set_data_dev(t0, t0_value);
 
-    			if (/*row*/ ctx[61].type) {
+    			if (/*row*/ ctx[43].type) {
     				if (if_block0) {
     					if_block0.p(ctx, dirty);
     				} else {
@@ -2781,7 +3160,7 @@ var app = (function () {
     				if_block0 = null;
     			}
 
-    			if (/*row*/ ctx[61].len) {
+    			if (/*row*/ ctx[43].len) {
     				if (if_block1) {
     					if_block1.p(ctx, dirty);
     				} else {
@@ -2794,7 +3173,7 @@ var app = (function () {
     				if_block1 = null;
     			}
 
-    			if (/*row*/ ctx[61].expandable) {
+    			if (/*row*/ ctx[43].expandable) {
     				if (if_block2) {
     					if_block2.p(ctx, dirty);
     					transition_in(if_block2, 1);
@@ -2814,7 +3193,7 @@ var app = (function () {
     				check_outros();
     			}
 
-    			if (!current || dirty[0] & /*hoverRow, topLevelObjectArray*/ 1280 && div_class_value !== (div_class_value = "" + (null_to_empty(/*hoverRow*/ ctx[8] === /*row*/ ctx[61].indexRef || /*row*/ ctx[61].parentIndexRef.startsWith(/*hoverRow*/ ctx[8])
+    			if (!current || dirty[0] & /*hoverRow, topLevelObjectArray*/ 1280 && div_class_value !== (div_class_value = "" + (null_to_empty(/*hoverRow*/ ctx[8] === /*row*/ ctx[43].indexRef || /*row*/ ctx[43].parentIndexRef.startsWith(/*hoverRow*/ ctx[8])
     			? "row hoverRow"
     			: "row") + " svelte-1y2qsdu"))) {
     				attr_dev(div, "class", div_class_value);
@@ -2842,17 +3221,17 @@ var app = (function () {
     		block,
     		id: create_if_block_3.name,
     		type: "if",
-    		source: "(628:0) {#if rowsToShow.includes(row.parentIndexRef) && (!row.bracket || (row.bracket && rowsToShow.includes(row.indexRef)))}",
+    		source: "(253:0) {#if rowsToShow.includes(row.parentIndexRef) && (!row.bracket || (row.bracket && rowsToShow.includes(row.indexRef)))}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (635:0) {#if row.type}
+    // (260:0) {#if row.type}
     function create_if_block_7(ctx) {
     	let span;
-    	let t_value = /*row*/ ctx[61].type + "";
+    	let t_value = /*row*/ ctx[43].type + "";
     	let t;
 
     	const block = {
@@ -2860,14 +3239,14 @@ var app = (function () {
     			span = element("span");
     			t = text(t_value);
     			attr_dev(span, "class", "type svelte-1y2qsdu");
-    			add_location(span, file$8, 635, 0, 14830);
+    			add_location(span, file$8, 260, 0, 6068);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, span, anchor);
     			append_dev(span, t);
     		},
     		p: function update(ctx, dirty) {
-    			if (dirty[0] & /*topLevelObjectArray*/ 1024 && t_value !== (t_value = /*row*/ ctx[61].type + "")) set_data_dev(t, t_value);
+    			if (dirty[0] & /*topLevelObjectArray*/ 1024 && t_value !== (t_value = /*row*/ ctx[43].type + "")) set_data_dev(t, t_value);
     		},
     		d: function destroy(detaching) {
     			if (detaching) detach_dev(span);
@@ -2878,18 +3257,18 @@ var app = (function () {
     		block,
     		id: create_if_block_7.name,
     		type: "if",
-    		source: "(635:0) {#if row.type}",
+    		source: "(260:0) {#if row.type}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (638:0) {#if row.len}
+    // (263:0) {#if row.len}
     function create_if_block_6(ctx) {
     	let span;
     	let t0;
-    	let t1_value = /*row*/ ctx[61].len + "";
+    	let t1_value = /*row*/ ctx[43].len + "";
     	let t1;
     	let t2;
 
@@ -2900,7 +3279,7 @@ var app = (function () {
     			t1 = text(t1_value);
     			t2 = text(")");
     			attr_dev(span, "class", "len svelte-1y2qsdu");
-    			add_location(span, file$8, 638, 0, 14887);
+    			add_location(span, file$8, 263, 0, 6125);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, span, anchor);
@@ -2909,7 +3288,7 @@ var app = (function () {
     			append_dev(span, t2);
     		},
     		p: function update(ctx, dirty) {
-    			if (dirty[0] & /*topLevelObjectArray*/ 1024 && t1_value !== (t1_value = /*row*/ ctx[61].len + "")) set_data_dev(t1, t1_value);
+    			if (dirty[0] & /*topLevelObjectArray*/ 1024 && t1_value !== (t1_value = /*row*/ ctx[43].len + "")) set_data_dev(t1, t1_value);
     		},
     		d: function destroy(detaching) {
     			if (detaching) detach_dev(span);
@@ -2920,14 +3299,14 @@ var app = (function () {
     		block,
     		id: create_if_block_6.name,
     		type: "if",
-    		source: "(638:0) {#if row.len}",
+    		source: "(263:0) {#if row.len}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (642:0) {#if row.expandable}
+    // (267:0) {#if row.expandable}
     function create_if_block_4(ctx) {
     	let show_if;
     	let current_block_type_index;
@@ -2938,7 +3317,7 @@ var app = (function () {
     	const if_blocks = [];
 
     	function select_block_type_5(ctx, dirty) {
-    		if (dirty[0] & /*rowsToShow, topLevelObjectArray*/ 1088) show_if = !!/*rowsToShow*/ ctx[6].includes(/*row*/ ctx[61].indexRef);
+    		if (dirty[0] & /*rowsToShow, topLevelObjectArray*/ 1088) show_if = !!/*rowsToShow*/ ctx[6].includes(/*row*/ ctx[43].indexRef);
     		if (show_if) return 0;
     		return 1;
     	}
@@ -3000,14 +3379,14 @@ var app = (function () {
     		block,
     		id: create_if_block_4.name,
     		type: "if",
-    		source: "(642:0) {#if row.expandable}",
+    		source: "(267:0) {#if row.expandable}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (649:0) {:else}
+    // (274:0) {:else}
     function create_else_block(ctx) {
     	let span;
     	let current;
@@ -3015,7 +3394,7 @@ var app = (function () {
     	const fachevronright = new FaChevronRight({ $$inline: true });
 
     	function mousedown_handler_2(...args) {
-    		return /*mousedown_handler_2*/ ctx[52](/*row*/ ctx[61], ...args);
+    		return /*mousedown_handler_2*/ ctx[34](/*row*/ ctx[43], ...args);
     	}
 
     	const block = {
@@ -3023,7 +3402,7 @@ var app = (function () {
     			span = element("span");
     			create_component(fachevronright.$$.fragment);
     			attr_dev(span, "class", "smallest dataArrow svelte-1y2qsdu");
-    			add_location(span, file$8, 649, 0, 15114);
+    			add_location(span, file$8, 274, 0, 6352);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, span, anchor);
@@ -3054,14 +3433,14 @@ var app = (function () {
     		block,
     		id: create_else_block.name,
     		type: "else",
-    		source: "(649:0) {:else}",
+    		source: "(274:0) {:else}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (643:0) {#if rowsToShow.includes(row.indexRef)}
+    // (268:0) {#if rowsToShow.includes(row.indexRef)}
     function create_if_block_5(ctx) {
     	let span;
     	let current;
@@ -3069,7 +3448,7 @@ var app = (function () {
     	const fachevrondown = new FaChevronDown({ $$inline: true });
 
     	function mousedown_handler_1(...args) {
-    		return /*mousedown_handler_1*/ ctx[51](/*row*/ ctx[61], ...args);
+    		return /*mousedown_handler_1*/ ctx[33](/*row*/ ctx[43], ...args);
     	}
 
     	const block = {
@@ -3077,7 +3456,7 @@ var app = (function () {
     			span = element("span");
     			create_component(fachevrondown.$$.fragment);
     			attr_dev(span, "class", "smallest dataArrow svelte-1y2qsdu");
-    			add_location(span, file$8, 643, 0, 14999);
+    			add_location(span, file$8, 268, 0, 6237);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, span, anchor);
@@ -3108,16 +3487,16 @@ var app = (function () {
     		block,
     		id: create_if_block_5.name,
     		type: "if",
-    		source: "(643:0) {#if rowsToShow.includes(row.indexRef)}",
+    		source: "(268:0) {#if rowsToShow.includes(row.indexRef)}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (627:0) {#each testy.childRows as row}
+    // (252:0) {#each testy.childRows as row}
     function create_each_block_1(ctx) {
-    	let show_if = /*rowsToShow*/ ctx[6].includes(/*row*/ ctx[61].parentIndexRef) && (!/*row*/ ctx[61].bracket || /*row*/ ctx[61].bracket && /*rowsToShow*/ ctx[6].includes(/*row*/ ctx[61].indexRef));
+    	let show_if = /*rowsToShow*/ ctx[6].includes(/*row*/ ctx[43].parentIndexRef) && (!/*row*/ ctx[43].bracket || /*row*/ ctx[43].bracket && /*rowsToShow*/ ctx[6].includes(/*row*/ ctx[43].indexRef));
     	let if_block_anchor;
     	let current;
     	let if_block = show_if && create_if_block_3(ctx);
@@ -3133,7 +3512,7 @@ var app = (function () {
     			current = true;
     		},
     		p: function update(ctx, dirty) {
-    			if (dirty[0] & /*rowsToShow, topLevelObjectArray*/ 1088) show_if = /*rowsToShow*/ ctx[6].includes(/*row*/ ctx[61].parentIndexRef) && (!/*row*/ ctx[61].bracket || /*row*/ ctx[61].bracket && /*rowsToShow*/ ctx[6].includes(/*row*/ ctx[61].indexRef));
+    			if (dirty[0] & /*rowsToShow, topLevelObjectArray*/ 1088) show_if = /*rowsToShow*/ ctx[6].includes(/*row*/ ctx[43].parentIndexRef) && (!/*row*/ ctx[43].bracket || /*row*/ ctx[43].bracket && /*rowsToShow*/ ctx[6].includes(/*row*/ ctx[43].indexRef));
 
     			if (show_if) {
     				if (if_block) {
@@ -3174,40 +3553,40 @@ var app = (function () {
     		block,
     		id: create_each_block_1.name,
     		type: "each",
-    		source: "(627:0) {#each testy.childRows as row}",
+    		source: "(252:0) {#each testy.childRows as row}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (566:0) {#each topLevelObjectArray as testy, i}
+    // (191:0) {#each topLevelObjectArray as testy, i}
     function create_each_block(ctx) {
     	let tr;
     	let td0;
     	let t0;
-    	let t1_value = /*testy*/ ctx[58].valType + "";
+    	let t1_value = /*testy*/ ctx[40].valType + "";
     	let t1;
     	let t2;
     	let td1;
-    	let t3_value = /*testy*/ ctx[58].type + "";
+    	let t3_value = /*testy*/ ctx[40].type + "";
     	let t3;
     	let t4;
     	let td2;
-    	let t5_value = /*testy*/ ctx[58].key + "";
+    	let t5_value = /*testy*/ ctx[40].key + "";
     	let t5;
     	let tr_class_value;
     	let t6;
     	let if_block1_anchor;
     	let current;
     	let dispose;
-    	let if_block0 = /*testy*/ ctx[58].class && create_if_block_10(ctx);
+    	let if_block0 = /*testy*/ ctx[40].class && create_if_block_10(ctx);
 
     	function mousedown_handler(...args) {
-    		return /*mousedown_handler*/ ctx[50](/*i*/ ctx[60], /*testy*/ ctx[58], ...args);
+    		return /*mousedown_handler*/ ctx[32](/*i*/ ctx[42], /*testy*/ ctx[40], ...args);
     	}
 
-    	let if_block1 = /*openIndex*/ ctx[5] === /*i*/ ctx[60] && create_if_block_1(ctx);
+    	let if_block1 = /*openIndex*/ ctx[5] === /*i*/ ctx[42] && create_if_block_1(ctx);
 
     	const block = {
     		c: function create() {
@@ -3226,11 +3605,11 @@ var app = (function () {
     			if (if_block1) if_block1.c();
     			if_block1_anchor = empty();
     			attr_dev(td0, "class", "link svelte-1y2qsdu");
-    			add_location(td0, file$8, 570, 0, 13418);
-    			add_location(td1, file$8, 582, 0, 13586);
-    			add_location(td2, file$8, 583, 0, 13608);
-    			attr_dev(tr, "class", tr_class_value = "" + (null_to_empty(/*testy*/ ctx[58].class + (/*openIndex*/ ctx[5] === /*i*/ ctx[60] ? " open" : "")) + " svelte-1y2qsdu"));
-    			add_location(tr, file$8, 566, 0, 13304);
+    			add_location(td0, file$8, 195, 0, 4656);
+    			add_location(td1, file$8, 207, 0, 4824);
+    			add_location(td2, file$8, 208, 0, 4846);
+    			attr_dev(tr, "class", tr_class_value = "" + (null_to_empty(/*testy*/ ctx[40].class + (/*openIndex*/ ctx[5] === /*i*/ ctx[42] ? " open" : "")) + " svelte-1y2qsdu"));
+    			add_location(tr, file$8, 191, 0, 4542);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, tr, anchor);
@@ -3253,7 +3632,7 @@ var app = (function () {
     		p: function update(new_ctx, dirty) {
     			ctx = new_ctx;
 
-    			if (/*testy*/ ctx[58].class) {
+    			if (/*testy*/ ctx[40].class) {
     				if (if_block0) {
     					if_block0.p(ctx, dirty);
     					transition_in(if_block0, 1);
@@ -3273,15 +3652,15 @@ var app = (function () {
     				check_outros();
     			}
 
-    			if ((!current || dirty[0] & /*topLevelObjectArray*/ 1024) && t1_value !== (t1_value = /*testy*/ ctx[58].valType + "")) set_data_dev(t1, t1_value);
-    			if ((!current || dirty[0] & /*topLevelObjectArray*/ 1024) && t3_value !== (t3_value = /*testy*/ ctx[58].type + "")) set_data_dev(t3, t3_value);
-    			if ((!current || dirty[0] & /*topLevelObjectArray*/ 1024) && t5_value !== (t5_value = /*testy*/ ctx[58].key + "")) set_data_dev(t5, t5_value);
+    			if ((!current || dirty[0] & /*topLevelObjectArray*/ 1024) && t1_value !== (t1_value = /*testy*/ ctx[40].valType + "")) set_data_dev(t1, t1_value);
+    			if ((!current || dirty[0] & /*topLevelObjectArray*/ 1024) && t3_value !== (t3_value = /*testy*/ ctx[40].type + "")) set_data_dev(t3, t3_value);
+    			if ((!current || dirty[0] & /*topLevelObjectArray*/ 1024) && t5_value !== (t5_value = /*testy*/ ctx[40].key + "")) set_data_dev(t5, t5_value);
 
-    			if (!current || dirty[0] & /*topLevelObjectArray, openIndex*/ 1056 && tr_class_value !== (tr_class_value = "" + (null_to_empty(/*testy*/ ctx[58].class + (/*openIndex*/ ctx[5] === /*i*/ ctx[60] ? " open" : "")) + " svelte-1y2qsdu"))) {
+    			if (!current || dirty[0] & /*topLevelObjectArray, openIndex*/ 1056 && tr_class_value !== (tr_class_value = "" + (null_to_empty(/*testy*/ ctx[40].class + (/*openIndex*/ ctx[5] === /*i*/ ctx[42] ? " open" : "")) + " svelte-1y2qsdu"))) {
     				attr_dev(tr, "class", tr_class_value);
     			}
 
-    			if (/*openIndex*/ ctx[5] === /*i*/ ctx[60]) {
+    			if (/*openIndex*/ ctx[5] === /*i*/ ctx[42]) {
     				if (if_block1) {
     					if_block1.p(ctx, dirty);
     					transition_in(if_block1, 1);
@@ -3326,7 +3705,7 @@ var app = (function () {
     		block,
     		id: create_each_block.name,
     		type: "each",
-    		source: "(566:0) {#each topLevelObjectArray as testy, i}",
+    		source: "(191:0) {#each topLevelObjectArray as testy, i}",
     		ctx
     	});
 
@@ -3368,9 +3747,9 @@ var app = (function () {
     			? /*hovering*/ ctx[3] ? " noFade" : " fade"
     			: " noFade")) + " svelte-1y2qsdu"));
 
-    			add_location(div0, file$8, 511, 0, 12295);
+    			add_location(div0, file$8, 136, 0, 3533);
     			attr_dev(div1, "class", "svelte-objet-explorer-wrapper svelte-1y2qsdu");
-    			add_location(div1, file$8, 510, 0, 12251);
+    			add_location(div1, file$8, 135, 0, 3489);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -3465,75 +3844,6 @@ var app = (function () {
     	return block;
     }
 
-    function formatDate(d) {
-    	return d.toDateString() + " " + d.getUTCHours() + ":" + d.getUTCMinutes() + ":" + d.getUTCSeconds() + ":" + d.getUTCMilliseconds();
-    }
-
-    function getAllIndexes(arrayToMap, openIndex) {
-    	//update the showallarray with all rows from parentArr
-    	//console.log(arrayToMap, openIndex);
-    	let arr = [];
-
-    	if (openIndex && arrayToMap[openIndex] && arrayToMap[openIndex].childRows) arrayToMap[openIndex].childRows.map(row => {
-    		arr.push(row.index);
-    	});
-
-    	return arr;
-    }
-
-    function sort_byKey(a, b) {
-    	var nameA = a.key.toUpperCase(); // ignore upper and lowercase
-    	var nameB = b.key.toUpperCase(); // ignore upper and lowercase
-
-    	if (nameA < nameB) {
-    		return -1;
-    	}
-
-    	if (nameA > nameB) {
-    		return 1;
-    	}
-
-    	// else name are equal
-    	return 0;
-    }
-
-    function getType(val) {
-    	return Array.isArray(val) ? "array" : typeof val;
-    }
-
-    function displayValType(val) {
-    	if (val === null) {
-    		return "null";
-    	} else if (getType(val) === "function") {
-    		return "fn()";
-    	} else if (getType(val) === "object") {
-    		return Object.entries(val).length ? "view Obj..." : "{ }";
-    	} else if (getType(val) === "array") {
-    		return val.length ? "view Arr..." : "[ ]";
-    	} else if (getType(val) === "boolean") {
-    		return val ? "true" : "false";
-    	} else if (getType(val) === "string") {
-    		return val;
-    	} else if (getType(val) === "number") {
-    		return JSON.stringify(val);
-    	}
-    }
-
-    function displayClass(testy) {
-    	let isObject = testy.val ? Object.entries(testy.val).length : false;
-    	let accordion = testy.type !== "string" ? "accordion" : "";
-
-    	return testy.val !== [] && testy.val !== null && isObject
-    	? accordion + " tree_" + testy.type
-    	: "";
-    }
-
-    function code_format_index(optionalIndex) {
-    	return typeof optionalIndex !== "undefined"
-    	? optionalIndex + ": "
-    	: "";
-    }
-
     function instance$8($$self, $$props, $$invalidate) {
     	let { myStore } = $$props;
     	let { tabPosition = "top" } = $$props;
@@ -3546,7 +3856,6 @@ var app = (function () {
     	let showAll = false;
     	let openIndex = null;
     	let openIndexSetOnce = false;
-    	let indentSpaces = 2;
     	let showAllArr = []; //populated later with all row references
     	let showManuallySelected = ["0", "0.0"];
     	let rowsToShow = [];
@@ -3566,39 +3875,49 @@ var app = (function () {
     		myStore: null
     	};
 
+    	let mainLoop;
+
     	onMount(async () => {
     		//console.log(isPaused);
     		$$invalidate(6, rowsToShow = showAll ? showAllArr : showManuallySelected);
 
-    		domParser();
+    		$$invalidate(18, myStore = lib.domParser());
+    		mainLoop = timer();
     	});
 
-    	let mainLoop = timer();
+    	function timer() {
+    		setInterval(
+    			() => {
+    				refreshDataAndCache();
+    			},
+    			rateLimit
+    		);
+    	}
 
-    	function domParser() {
-    		let html = document.body;
-    		console.log(html);
-    		let arr = getTag(html);
-    		console.log(arr);
-    	} //myStore = arr;
+    	function refreshDataAndCache() {
+    		if (toggle) {
+    			if (JSON.stringify(myStore) !== JSON.stringify(cache.myStore)) {
+    				$$invalidate(11, cache.dataUpdated = new Date(), cache);
+    				$$invalidate(11, cache.dataChanges = cache.dataChanges + 1, cache);
+    			}
 
-    	function getTag(el) {
-    		if (el.tagName && el.tagName !== "SCRIPT" && !el.className.includes("svelte-objet-explorer-wrapper ")) {
-    			return {
-    				class: el.className,
-    				tag: el.tagName,
-    				children: getChildren(el)
-    			};
-    		} else {
-    			return null;
+    			if (cache.dataUpdated - cache.viewUpdated > rateLimit && !isPaused) {
+    				$$invalidate(11, cache.myStore = JSON.parse(JSON.stringify(myStore)), cache);
+    				$$invalidate(11, cache.viewChanges = cache.viewChanges + 1, cache);
+    				$$invalidate(11, cache.viewUpdated = new Date(), cache);
+    				$$invalidate(11, cache.formatted = formatDate(cache.viewUpdated), cache);
+    				$$invalidate(10, topLevelObjectArray = transform_data$1.transform_data(cache)); //this should trigger a redraw
+    				if (!openIndexSetOnce) $$invalidate(5, openIndex = transform_data$1.getOpenIndex(topLevelObjectArray, open, openIndexSetOnce));
+    				$$invalidate(22, showAllArr = transform_data$1.getAllIndexes(topLevelObjectArray, openIndex));
+    			}
+    		}
+
+    		function formatDate(d) {
+    			return d.toDateString() + " " + d.getUTCHours() + ":" + d.getUTCMinutes() + ":" + d.getUTCSeconds() + ":" + d.getUTCMilliseconds();
     		}
     	}
 
-    	function getChildren(el) {
-    		return [...el.childNodes].map(getTag).filter(t => t !== null);
-    	}
-
-    	//------- functions
+    	// UI functions
     	function toggleShowAll() {
     		$$invalidate(4, showAll = !showAll);
     	}
@@ -3609,84 +3928,12 @@ var app = (function () {
 
     	function rowContract(rowIndex) {
     		$$invalidate(4, showAll = false);
-    		$$invalidate(24, showManuallySelected = showManuallySelected.filter(row => !row.startsWith(rowIndex)));
+    		$$invalidate(23, showManuallySelected = showManuallySelected.filter(row => !row.startsWith(rowIndex)));
     	}
 
     	function rowExpand(rowIndex) {
-    		$$invalidate(24, showManuallySelected = showManuallySelected.filter(row => row !== rowIndex));
+    		$$invalidate(23, showManuallySelected = showManuallySelected.filter(row => row !== rowIndex));
     		showManuallySelected.push(rowIndex);
-    	}
-
-    	function timer() {
-    		setInterval(
-    			() => {
-    				if (toggle) {
-    					if (JSON.stringify(myStore) !== JSON.stringify(cache.myStore)) {
-    						$$invalidate(11, cache.dataUpdated = new Date(), cache);
-    						$$invalidate(11, cache.dataChanges = cache.dataChanges + 1, cache);
-    					}
-
-    					if (cache.dataUpdated - cache.viewUpdated > rateLimit && !isPaused) {
-    						$$invalidate(11, cache.myStore = JSON.parse(JSON.stringify(myStore)), cache);
-    						$$invalidate(11, cache.viewChanges = cache.viewChanges + 1, cache);
-    						$$invalidate(11, cache.viewUpdated = new Date(), cache);
-    						$$invalidate(11, cache.formatted = formatDate(cache.viewUpdated), cache);
-    						createArray();
-    					}
-    				}
-    			},
-    			rateLimit
-    		);
-    	}
-
-    	function createArray() {
-    		let tempArr = [];
-
-    		for (const key in cache.myStore) {
-    			if (cache.myStore.hasOwnProperty(key)) {
-    				let tempItem = {
-    					key,
-    					val: cache.myStore[key],
-    					type: getType(cache.myStore[key])
-    				};
-
-    				tempItem.class = displayClass(tempItem);
-    				tempItem.valType = displayValType(tempItem.val);
-    				tempItem.childRows = valueFormatterToArr(tempItem.val);
-    				tempArr.push(tempItem);
-    			}
-    		}
-
-    		tempArr.sort(sort_byKey);
-
-    		tempArr = tempArr.map((item, index) => {
-    			return { ...item, index };
-    		});
-
-    		$$invalidate(10, topLevelObjectArray = tempArr); //this should trigger a redraw
-    		if (!openIndexSetOnce) $$invalidate(5, openIndex = getOpenIndex(topLevelObjectArray));
-    		$$invalidate(23, showAllArr = getAllIndexes(tempArr, openIndex));
-    	}
-
-    	function getOpenIndex(arr) {
-    		let i = null;
-
-    		if (arr && arr.length) {
-    			arr.map((item, index) => {
-    				if (item.key === open && (item.type === "object" || item.type == "array")) i = index;
-    				openIndexSetOnce = true;
-    			});
-    		}
-
-    		return i;
-    	}
-
-    	function valueFormatterToArr(object) {
-    		//console.log("valueFormatterToArr");
-    		let parentArr = []; //[{ output: 'test:"test"', type: "string" }];
-
-    		formatByType("0.0", "0", 0, parentArr, object, 0); // <- make this assign to parentArr specifically instead of with JS magic
-    		return parentArr;
     	}
 
     	function copyToClipboard(txt) {
@@ -3713,203 +3960,6 @@ var app = (function () {
     				$$invalidate(5, openIndex = index);
     			}
     		}
-    	}
-
-    	function code_format_null(indexRef, parentIndexRef, index, parentArr, level, optionalIndex) {
-    		parentArr.push({
-    			indexRef,
-    			parentIndexRef,
-    			index,
-    			output: indent_row(code_format_index(optionalIndex) + "null", level),
-    			type: "Null"
-    		});
-    	}
-
-    	function code_format_undefined(indexRef, parentIndexRef, index, parentArr, level, optionalIndex) {
-    		parentArr.push({
-    			indexRef,
-    			parentIndexRef,
-    			index,
-    			output: indent_row(code_format_index(optionalIndex) + "undefined", level),
-    			type: "Undefined"
-    		});
-    	}
-
-    	function code_format_boolean(indexRef, parentIndexRef, index, parentArr, bool, level, optionalIndex) {
-    		parentArr.push({
-    			indexRef,
-    			parentIndexRef,
-    			index,
-    			output: indent_row(code_format_index(optionalIndex) + (bool ? "true" : "false"), level),
-    			type: "Boolean"
-    		});
-    	}
-
-    	function code_format_string(indexRef, parentIndexRef, index, parentArr, str, level, optionalIndex) {
-    		parentArr.push({
-    			indexRef,
-    			parentIndexRef,
-    			index,
-    			output: indent_row(code_format_index(optionalIndex) + "'" + str + "'", level),
-    			type: "String"
-    		});
-    	}
-
-    	function code_format_number(indexRef, parentIndexRef, index, parentArr, num, level, optionalIndex) {
-    		parentArr.push({
-    			indexRef,
-    			parentIndexRef,
-    			index,
-    			output: indent_row(code_format_index(optionalIndex) + num, level),
-    			type: "Number"
-    		});
-    	}
-
-    	function code_format_symbol(indexRef, parentIndexRef, index, parentArr, sym, level, optionalIndex) {
-    		parentArr.push({
-    			indexRef,
-    			parentIndexRef,
-    			index,
-    			output: indent_row(code_format_index(optionalIndex) + "'" + sym.toString() + "'", level),
-    			type: "Symbol"
-    		});
-    	}
-
-    	function code_format_function(indexRef, parentIndexRef, index, parentArr, fn, level, optionalIndex) {
-    		parentArr.push({
-    			indexRef,
-    			parentIndexRef,
-    			index,
-    			output: indent_row(code_format_index(optionalIndex) + "'" + fn.name + "'", level),
-    			type: "Function"
-    		});
-    	}
-
-    	function code_format_array(
-    		indexRef,
-    	parentIndexRef,
-    	index,
-    	parentArr,
-    	arr,
-    	level,
-    	optionalIndex,
-    	optionalNewLine
-    	) {
-    		parentArr.push({
-    			indexRef,
-    			parentIndexRef,
-    			index,
-    			output: indent_row((optionalNewLine ? "" : code_format_index(optionalIndex)) + code_format_index(optionalIndex), level),
-    			type: "Array",
-    			len: arr.length,
-    			expandable: true
-    		});
-
-    		if (optionalNewLine) {
-    			parentArr.push({
-    				indexRef,
-    				parentIndexRef,
-    				index,
-    				output: indent_row("[", level + (optionalIndex ? 1 : 0)),
-    				bracket: true
-    			});
-    		}
-
-    		arr.map((value, arrIndex) => formatByType(indexRef + "." + arrIndex, indexRef, arrIndex, parentArr, value, level + (optionalIndex ? 2 : 1), arrIndex, true));
-
-    		parentArr.push({
-    			indexRef,
-    			parentIndexRef,
-    			index,
-    			output: indent_row("]", level + (optionalIndex ? 1 : 0)),
-    			bracket: true
-    		});
-    	}
-
-    	function code_format_object(
-    		indexRef,
-    	parentIndexRef,
-    	index,
-    	parentArr,
-    	obj,
-    	level,
-    	optionalIndex,
-    	optionalNewLine
-    	) {
-    		let object = Object.entries(obj);
-
-    		parentArr.push({
-    			indexRef,
-    			parentIndexRef,
-    			index,
-    			output: indent_row((optionalNewLine ? "" : code_format_index(optionalIndex)) + code_format_index(optionalIndex), level),
-    			type: "Object",
-    			len: object.length,
-    			expandable: true
-    		});
-
-    		if (optionalNewLine) {
-    			parentArr.push({
-    				indexRef,
-    				parentIndexRef,
-    				index,
-    				output: indent_row("{", level + (optionalIndex ? 1 : 0)),
-    				bracket: true
-    			});
-    		}
-
-    		object.forEach(([key, value], objIndex) => {
-    			formatByType(indexRef + "." + objIndex, indexRef, objIndex, parentArr, value, level + (optionalIndex || optionalNewLine ? 2 : 1), key, true);
-    		});
-
-    		parentArr.push({
-    			indexRef,
-    			parentIndexRef,
-    			index,
-    			output: indent_row("}", level + (optionalIndex || optionalNewLine ? 1 : 0)),
-    			bracket: true
-    		});
-    	}
-
-    	function code_format_unknown(indexRef, parentIndexRef, index, parentArr, level, optionalIndex) {
-    		parentArr.push({
-    			indexRef,
-    			parentIndexRef,
-    			index,
-    			output: indent_row(code_format_index(optionalIndex) + "!!unknown!!", level)
-    		});
-    	}
-
-    	function indent_row(row, level) {
-    		return (" ").repeat(level * indentSpaces) + row;
-    	}
-
-    	//formatByType("0.0", "0", 0, parentArr, object, 0);
-    	function formatByType(
-    		//
-    		indexRef,
-    	parentIndexRef,
-    	index,
-    	//
-    		parentArr,
-    	value,
-    	level,
-    	optionalIndex,
-    	optionalNewLine
-    	) {
-    		//console.log("formatByType", value);
-    		if (value === null) code_format_null(indexRef, parentIndexRef, index, parentArr, level, optionalIndex); else if (typeof value === "undefined") code_format_undefined(indexRef, parentIndexRef, index, parentArr, level, optionalIndex); else if (typeof value === "boolean") code_format_boolean(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex); else if (typeof value === "string") code_format_string(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex); else if (typeof value === "number") code_format_number(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex); else if (typeof value === "symbol") code_format_symbol(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex); else if (typeof value === "function") code_format_function(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex); else if (Array.isArray(value)) if (value.length > 100) {
-    			code_format_string(indexRef, parentIndexRef, index, parentArr, "Array is very long (" + value.length + ")", level, optionalIndex); //e.g. "1.1.2.3"
-    			// e.g. 4, if this item is 1.1.2.3.4
-
-    			for (let i = 0; i < value.length; i += 100) {
-    				let end = i + 100 > value.length - 1 ? value.length : i + 99;
-    				let tempArr = value.slice(i, end);
-    				code_format_array(indexRef + "." + i, parentIndexRef, index, parentArr, tempArr, level + 1, optionalIndex + " (" + i + " to " + end + ")", optionalNewLine);
-    			}
-    		} else {
-    			code_format_array(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex, optionalNewLine);
-    		} else if (typeof value === "object") code_format_object(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex, optionalNewLine); else code_format_unknown(indexRef, parentIndexRef, index, parentArr, level, optionalIndex);
     	}
 
     	const writable_props = ["myStore", "tabPosition", "open", "fade", "rateLimit", "initialToggleState"];
@@ -3959,7 +4009,6 @@ var app = (function () {
     			showAll,
     			openIndex,
     			openIndexSetOnce,
-    			indentSpaces,
     			showAllArr,
     			showManuallySelected,
     			rowsToShow,
@@ -3986,9 +4035,8 @@ var app = (function () {
     		if ("showAll" in $$props) $$invalidate(4, showAll = $$props.showAll);
     		if ("openIndex" in $$props) $$invalidate(5, openIndex = $$props.openIndex);
     		if ("openIndexSetOnce" in $$props) openIndexSetOnce = $$props.openIndexSetOnce;
-    		if ("indentSpaces" in $$props) indentSpaces = $$props.indentSpaces;
-    		if ("showAllArr" in $$props) $$invalidate(23, showAllArr = $$props.showAllArr);
-    		if ("showManuallySelected" in $$props) $$invalidate(24, showManuallySelected = $$props.showManuallySelected);
+    		if ("showAllArr" in $$props) $$invalidate(22, showAllArr = $$props.showAllArr);
+    		if ("showManuallySelected" in $$props) $$invalidate(23, showManuallySelected = $$props.showManuallySelected);
     		if ("rowsToShow" in $$props) $$invalidate(6, rowsToShow = $$props.rowsToShow);
     		if ("showClipboardText" in $$props) $$invalidate(7, showClipboardText = $$props.showClipboardText);
     		if ("clipboardCode" in $$props) clipboardCode = $$props.clipboardCode;
@@ -4001,7 +4049,7 @@ var app = (function () {
     	};
 
     	$$self.$$.update = () => {
-    		if ($$self.$$.dirty[0] & /*toggle, showAll, showAllArr, showManuallySelected*/ 25166352) {
+    		if ($$self.$$.dirty[0] & /*toggle, showAll, showAllArr, showManuallySelected*/ 12583440) {
     			 if (toggle) $$invalidate(6, rowsToShow = showAll ? showAllArr : showManuallySelected);
     		}
     	};
@@ -4029,32 +4077,14 @@ var app = (function () {
     		open,
     		rateLimit,
     		initialToggleState,
-    		openIndexSetOnce,
     		showAllArr,
     		showManuallySelected,
-    		indentSpaces,
+    		mainLoop,
+    		openIndexSetOnce,
     		clipboardCode,
     		openedObjectArray,
-    		mainLoop,
-    		domParser,
-    		getTag,
-    		getChildren,
     		timer,
-    		createArray,
-    		getOpenIndex,
-    		valueFormatterToArr,
-    		code_format_null,
-    		code_format_undefined,
-    		code_format_boolean,
-    		code_format_string,
-    		code_format_number,
-    		code_format_symbol,
-    		code_format_function,
-    		code_format_array,
-    		code_format_object,
-    		code_format_unknown,
-    		indent_row,
-    		formatByType,
+    		refreshDataAndCache,
     		mouseup_handler,
     		mouseup_handler_1,
     		mousedown_handler,
@@ -4086,7 +4116,7 @@ var app = (function () {
     				rateLimit: 20,
     				initialToggleState: 21
     			},
-    			[-1, -1, -1]
+    			[-1, -1]
     		);
 
     		dispatch_dev("SvelteRegisterComponent", {
@@ -4197,7 +4227,7 @@ var app = (function () {
 
     	const svelteobjectexplorer = new Index({
     			props: {
-    				myStore: /*myStore*/ ctx[1],
+    				myStore: /*myStore*/ ctx[2],
     				open: /*open*/ ctx[3],
     				fade: /*fade*/ ctx[4],
     				tabPosition: /*tabPosition*/ ctx[5],
@@ -4216,7 +4246,7 @@ var app = (function () {
     			p0 = element("p");
     			t3 = space();
     			p1 = element("p");
-    			p1.textContent = "Provides a simple to use, quick a dirty hideable list of whatever data you\nwish to temporarily view whilst you are developing your app, rather than\nconsole.logging or debugging.";
+    			p1.textContent = "Provides a simple to use, quick a dirty hideable list of whatever data you wish to temporarily view whilst you are\ndeveloping your app, rather than console.logging or debugging.";
     			t5 = space();
     			p2 = element("p");
     			p2.textContent = "Displays most kinds of data: array, object, string, number, boolean, symbol";
@@ -4227,7 +4257,7 @@ var app = (function () {
     			t10 = space();
     			h21 = element("h2");
     			t11 = text("Manual counter from custom store: ");
-    			t12 = text(/*$count*/ ctx[2]);
+    			t12 = text(/*$count*/ ctx[1]);
     			t13 = space();
     			button0 = element("button");
     			button0.textContent = "-";
@@ -4237,18 +4267,18 @@ var app = (function () {
     			t17 = space();
     			button2 = element("button");
     			button2.textContent = "reset";
-    			add_location(h1, file$9, 59, 0, 1252);
-    			add_location(p0, file$9, 61, 0, 1285);
-    			add_location(p1, file$9, 64, 0, 1309);
-    			add_location(p2, file$9, 69, 0, 1496);
-    			add_location(h20, file$9, 73, 0, 1582);
-    			add_location(h21, file$9, 75, 0, 1636);
+    			add_location(h1, file$9, 57, 0, 1244);
+    			add_location(p0, file$9, 59, 0, 1277);
+    			add_location(p1, file$9, 62, 0, 1301);
+    			add_location(p2, file$9, 66, 0, 1488);
+    			add_location(h20, file$9, 68, 0, 1572);
+    			add_location(h21, file$9, 70, 0, 1626);
     			attr_dev(button0, "id", "decr");
-    			add_location(button0, file$9, 77, 0, 1689);
+    			add_location(button0, file$9, 72, 0, 1679);
     			attr_dev(button1, "id", "incr");
-    			add_location(button1, file$9, 78, 0, 1745);
+    			add_location(button1, file$9, 73, 0, 1735);
     			attr_dev(button2, "id", "reset");
-    			add_location(button2, file$9, 79, 0, 1801);
+    			add_location(button2, file$9, 74, 0, 1791);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -4287,11 +4317,8 @@ var app = (function () {
     			];
     		},
     		p: function update(ctx, [dirty]) {
-    			const svelteobjectexplorer_changes = {};
-    			if (dirty & /*myStore*/ 2) svelteobjectexplorer_changes.myStore = /*myStore*/ ctx[1];
-    			svelteobjectexplorer.$set(svelteobjectexplorer_changes);
     			if (!current || dirty & /*counter*/ 1) set_data_dev(t9, /*counter*/ ctx[0]);
-    			if (!current || dirty & /*$count*/ 4) set_data_dev(t12, /*$count*/ ctx[2]);
+    			if (!current || dirty & /*$count*/ 2) set_data_dev(t12, /*$count*/ ctx[1]);
     		},
     		i: function intro(local) {
     			if (current) return;
@@ -4340,7 +4367,7 @@ var app = (function () {
     function instance$9($$self, $$props, $$invalidate) {
     	let $count;
     	validate_store(count, "count");
-    	component_subscribe($$self, count, $$value => $$invalidate(2, $count = $$value));
+    	component_subscribe($$self, count, $$value => $$invalidate(1, $count = $$value));
     	let counter = 1;
 
     	let array = [
@@ -4362,7 +4389,39 @@ var app = (function () {
     	}
 
     	incr();
-    	let myStore;
+
+    	let myStore = {
+    		variousTypes: {
+    			boolean: true,
+    			string: "test",
+    			number: 123,
+    			array: [[["test1", "test2"], "test2"], "test2"],
+    			longarray: new Array(4000).fill("test"),
+    			object: {
+    				test1: {
+    					test1: {
+    						test1: { test1: "test1", test2: "test2" },
+    						test2: "test2"
+    					},
+    					test2: "test2"
+    				},
+    				test2: "test2"
+    			},
+    			arrowfunction: () => {
+    				
+    			},
+    			function: function test() {
+    				console.log("test");
+    			},
+    			symbol: Symbol(),
+    			null: null,
+    			undefined: typeof bananaman
+    		},
+    		SvelteVariable: counter,
+    		customStore: count,
+    		customStoreValue: $count
+    	};
+
     	let params = new URL(document.location).searchParams;
     	let open = params.get("open");
     	let fade = params.get("fade");
@@ -4377,7 +4436,7 @@ var app = (function () {
     	$$self.$inject_state = $$props => {
     		if ("counter" in $$props) $$invalidate(0, counter = $$props.counter);
     		if ("array" in $$props) array = $$props.array;
-    		if ("myStore" in $$props) $$invalidate(1, myStore = $$props.myStore);
+    		if ("myStore" in $$props) $$invalidate(2, myStore = $$props.myStore);
     		if ("params" in $$props) params = $$props.params;
     		if ("open" in $$props) $$invalidate(3, open = $$props.open);
     		if ("fade" in $$props) $$invalidate(4, fade = $$props.fade);
@@ -4387,43 +4446,7 @@ var app = (function () {
     		if ("$count" in $$props) count.set($count = $$props.$count);
     	};
 
-    	$$self.$$.update = () => {
-    		if ($$self.$$.dirty & /*counter, $count*/ 5) {
-    			 $$invalidate(1, myStore = {
-    				variousTypes: {
-    					boolean: true,
-    					string: "test",
-    					number: 123,
-    					array: [[["test1", "test2"], "test2"], "test2"],
-    					longarray: new Array(4000).fill("test"),
-    					object: {
-    						test1: {
-    							test1: {
-    								test1: { test1: "test1", test2: "test2" },
-    								test2: "test2"
-    							},
-    							test2: "test2"
-    						},
-    						test2: "test2"
-    					},
-    					arrowfunction: () => {
-    						
-    					},
-    					function: function test() {
-    						console.log("test");
-    					},
-    					symbol: Symbol(),
-    					null: null,
-    					undefined: typeof bananaman
-    				},
-    				SvelteVariable: counter,
-    				customStore: count,
-    				customStoreValue: $count
-    			});
-    		}
-    	};
-
-    	return [counter, myStore, $count, open, fade, tabPosition, rateLimit, string];
+    	return [counter, $count, myStore, open, fade, tabPosition, rateLimit, string];
     }
 
     class Example extends SvelteComponentDev {
