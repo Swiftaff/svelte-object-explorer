@@ -192,6 +192,59 @@ function code_format_object(indexRef, parentIndexRef, index, parentArr, obj, lev
     });
 }
 
+function code_format_svelte_explorer_tag(
+    indexRef,
+    parentIndexRef,
+    index,
+    parentArr,
+    obj,
+    level,
+    optionalIndex,
+    optionalNewLine
+) {
+    let object = Object.entries(obj);
+    parentArr.push({
+        indexRef,
+        parentIndexRef,
+        index,
+        output: indent_row(
+            (optionalNewLine ? "" : code_format_index(optionalIndex)) + code_format_index(optionalIndex),
+            level
+        ),
+        type: "Tag",
+        len: object.length,
+        expandable: true,
+    });
+    if (optionalNewLine) {
+        parentArr.push({
+            indexRef,
+            parentIndexRef,
+            index,
+            output: indent_row("{", level + (optionalIndex ? 1 : 0)),
+            bracket: true,
+        });
+    }
+    object.forEach(([key, value], objIndex) => {
+        formatByType(
+            indexRef + "." + objIndex,
+            indexRef,
+            objIndex,
+            parentArr,
+            value,
+            level + (optionalIndex || optionalNewLine ? 2 : 1),
+            key,
+            true
+        );
+    });
+    parentArr.push({
+        indexRef,
+        parentIndexRef,
+        index,
+        output: indent_row("}", level + (optionalIndex || optionalNewLine ? 1 : 0)),
+        bracket: true,
+    });
+}
+
 function code_format_unknown(indexRef, parentIndexRef, index, parentArr, level, optionalIndex) {
     parentArr.push({
         indexRef,
@@ -251,9 +304,31 @@ function formatByType(
         } else {
             code_format_array(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex, optionalNewLine);
         }
-    else if (typeof value === "object")
-        code_format_object(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex, optionalNewLine);
-    else code_format_unknown(indexRef, parentIndexRef, index, parentArr, level, optionalIndex);
+    else if (typeof value === "object") {
+        if (value["svelte-explorer-tag"]) {
+            code_format_svelte_explorer_tag(
+                indexRef,
+                parentIndexRef,
+                index,
+                parentArr,
+                value,
+                level,
+                optionalIndex,
+                optionalNewLine
+            );
+        } else {
+            code_format_object(
+                indexRef,
+                parentIndexRef,
+                index,
+                parentArr,
+                value,
+                level,
+                optionalIndex,
+                optionalNewLine
+            );
+        }
+    } else code_format_unknown(indexRef, parentIndexRef, index, parentArr, level, optionalIndex);
 }
 
 export default function valueFormatterToArr(object) {

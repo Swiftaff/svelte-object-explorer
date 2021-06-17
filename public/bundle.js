@@ -2822,7 +2822,7 @@ var app = (function () {
 
     function domParser() {
         // parses the dom from body downwards into a simplified ast, e.g.
-        // { class: "classname", tag: "H1", children: [el, el, el] }
+        // { class: "classname", "svelte-explorer-tag": "H1", children: [el, el, el] }
 
         let html = document.body;
         console.log(html);
@@ -2831,7 +2831,7 @@ var app = (function () {
 
         function getTag(el) {
             if (el.tagName && el.tagName !== "SCRIPT" && !el.className.includes("svelte-objet-explorer-wrapper ")) {
-                return { class: el.className, tag: el.tagName, children: getChildren(el) };
+                return { class: el.className, "svelte-explorer-tag": el.tagName, children: getChildren(el) };
             } else {
                 return null;
             }
@@ -3039,6 +3039,59 @@ var app = (function () {
         });
     }
 
+    function code_format_svelte_explorer_tag(
+        indexRef,
+        parentIndexRef,
+        index,
+        parentArr,
+        obj,
+        level,
+        optionalIndex,
+        optionalNewLine
+    ) {
+        let object = Object.entries(obj);
+        parentArr.push({
+            indexRef,
+            parentIndexRef,
+            index,
+            output: indent_row(
+                (optionalNewLine ? "" : code_format_index(optionalIndex)) + code_format_index(optionalIndex),
+                level
+            ),
+            type: "Tag",
+            len: object.length,
+            expandable: true,
+        });
+        if (optionalNewLine) {
+            parentArr.push({
+                indexRef,
+                parentIndexRef,
+                index,
+                output: indent_row("{", level + (optionalIndex ? 1 : 0)),
+                bracket: true,
+            });
+        }
+        object.forEach(([key, value], objIndex) => {
+            formatByType(
+                indexRef + "." + objIndex,
+                indexRef,
+                objIndex,
+                parentArr,
+                value,
+                level + (optionalIndex || optionalNewLine ? 2 : 1),
+                key,
+                true
+            );
+        });
+        parentArr.push({
+            indexRef,
+            parentIndexRef,
+            index,
+            output: indent_row("}", level + (optionalIndex || optionalNewLine ? 1 : 0)),
+            bracket: true,
+        });
+    }
+
     function code_format_unknown(indexRef, parentIndexRef, index, parentArr, level, optionalIndex) {
         parentArr.push({
             indexRef,
@@ -3098,9 +3151,31 @@ var app = (function () {
             } else {
                 code_format_array(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex, optionalNewLine);
             }
-        else if (typeof value === "object")
-            code_format_object(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex, optionalNewLine);
-        else code_format_unknown(indexRef, parentIndexRef, index, parentArr, level, optionalIndex);
+        else if (typeof value === "object") {
+            if (value["svelte-explorer-tag"]) {
+                code_format_svelte_explorer_tag(
+                    indexRef,
+                    parentIndexRef,
+                    index,
+                    parentArr,
+                    value,
+                    level,
+                    optionalIndex,
+                    optionalNewLine
+                );
+            } else {
+                code_format_object(
+                    indexRef,
+                    parentIndexRef,
+                    index,
+                    parentArr,
+                    value,
+                    level,
+                    optionalIndex,
+                    optionalNewLine
+                );
+            }
+        } else code_format_unknown(indexRef, parentIndexRef, index, parentArr, level, optionalIndex);
     }
 
     function valueFormatterToArr(object) {
