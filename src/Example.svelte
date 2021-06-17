@@ -10,9 +10,9 @@
     ];
 
     function incr() {
-        setInterval(() => {
-            counter++;
-        }, 100);
+        //setInterval(() => {
+        //    counter++;
+        //}, 100);
     }
 
     incr();

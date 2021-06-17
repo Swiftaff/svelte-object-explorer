@@ -1,13 +1,11 @@
 <script>
     import { onMount } from "svelte";
     import TabButton from "../src/TabButton.svelte";
-    import FaChevronRight from "svelte-icons/fa/FaChevronRight.svelte";
-    import FaChevronDown from "svelte-icons/fa/FaChevronDown.svelte";
-    import FaChevronUp from "svelte-icons/fa/FaChevronUp.svelte";
-    import FaRegCheckSquare from "svelte-icons/fa/FaRegCheckSquare.svelte";
-    import FaRegSquare from "svelte-icons/fa/FaRegSquare.svelte";
-    import FaClipboard from "svelte-icons/fa/FaClipboard.svelte";
-    import FaClipboardCheck from "svelte-icons/fa/FaClipboardCheck.svelte";
+    import PauseButton from "../src/PauseButton.svelte";
+    import CacheDisplay from "../src/CacheDisplay.svelte";
+    import TopLevelObjectRow from "../src/TopLevelObjectRow.svelte";
+    import ChevronButtons from "../src/ChevronButtons.svelte";
+    import RowText from "../src/RowText.svelte";
     import lib from "../src/lib.js";
     import transform_data from "../src/transform_data.js";
 
@@ -27,12 +25,9 @@
     let showAllArr = []; //populated later with all row references
     let showManuallySelected = ["0", "0.0"];
     let rowsToShow = [];
-    let showClipboardText = false;
-    let clipboardCode = "";
     let hoverRow = "none";
     let toggle = initialToggleState;
     let topLevelObjectArray = [];
-    let openedObjectArray = [];
     let cache = {
         dataChanges: 0,
         viewChanges: 0,
@@ -94,9 +89,6 @@
 
     // UI functions
 
-    function toggleShowAll() {
-        showAll = !showAll;
-    }
     function doToggle() {
         toggle = !toggle;
     }
@@ -111,17 +103,6 @@
         showManuallySelected.push(rowIndex);
     }
 
-    function copyToClipboard(txt) {
-        let clipboardEl = document.getElementById("hiddenClipboard");
-        clipboardEl.value = txt ? JSON.stringify(txt) : JSON.stringify(myStore);
-        clipboardEl.select();
-        document.execCommand("copy");
-        showClipboardText = true;
-        setTimeout(() => {
-            showClipboardText = false;
-        }, 2000);
-    }
-
     function click(index, val, type) {
         //console.log("click", index, val, type, openIndex);
         if ((Object.entries(val).length && type === "object") || (val.length && type === "array")) {
@@ -131,6 +112,16 @@
                 openIndex = index;
             }
         }
+    }
+
+    function unpause() {
+        isPaused = false;
+        console.log(isPaused);
+    }
+
+    function pause() {
+        isPaused = true;
+        console.log(isPaused);
     }
 </script>
 
@@ -143,55 +134,17 @@
             on:mouseover={() => (hovering = true)}
             on:mouseleave={() => (hovering = false)}
         >
-            {#if isPaused}
-                <button
-                    on:mouseup={() => {
-                        isPaused = false;
-                        console.log(isPaused);
-                    }}
-                >
-                    un-Pause
-                </button>
-            {:else}
-                <button
-                    on:mouseup={() => {
-                        isPaused = true;
-                        console.log(isPaused);
-                    }}
-                >
-                    Pause
-                </button>
-            {/if}
-            Data Changes({cache.dataChanges}) View Changes({cache.viewChanges})
-            <br />
-            Last Updated({cache.formatted})
+            <PauseButton {isPaused} {pause} {unpause} />
+            <CacheDisplay {cache} />
             <table>
                 <colgroup>
                     <col style="width:35%" />
                     <col style="width:10%" />
                     <col style="width:55%" />
                 </colgroup>
-                {#each topLevelObjectArray as testy, i}
-                    <tr
-                        class={testy.class + (openIndex === i ? " open" : "")}
-                        on:mousedown={() => click(i, testy.val, testy.type)}
-                    >
-                        <td class="link">
-                            {#if testy.class}
-                                <span class="smaller">
-                                    {#if openIndex === i}
-                                        <FaChevronDown />
-                                    {:else}
-                                        <FaChevronRight />
-                                    {/if}
-                                </span>
-                            {/if}
-                            {testy.valType}
-                        </td>
-                        <td>{testy.type}</td>
-                        <td>{testy.key}</td>
-                    </tr>
-                    {#if openIndex === i}
+                {#each topLevelObjectArray as topLevelObject, topLevelObject_index}
+                    <TopLevelObjectRow {topLevelObject} {topLevelObject_index} {openIndex} {click} />
+                    {#if openIndex === topLevelObject_index}
                         <tr>
                             <!-- only used to keep the odd even shading consistent when opening/closing accordion-->
                             <td colspan="3" class="treeVal" />
@@ -200,68 +153,18 @@
                             <td colspan="3" class="treeVal">
                                 <!---->
                                 <pre>
-                                  <div
-                                    class="toggleShowAll nopointer"
-                                    on:mousedown={toggleShowAll}>
-                                    {#if showAll}
-                                      <span class="smaller">
-                                        <FaRegCheckSquare />
-                                      </span>
-                                    {:else}
-                                      <span class="smaller">
-                                        <FaRegSquare />
-                                      </span>
-                                    {/if}
-                                    Show all
-                                  </div>
-                                  <div
-                                    class="copyToClipbord nopointer"
-                                    on:mousedown={copyToClipboard}>
-                                    {#if showClipboardText}
-                                      <span class="smaller">
-                                        <FaClipboardCheck />
-                                      </span>
-                                      Copied to clipboard!
-                                    {:else}
-                                      <span class="smaller">
-                                        <FaClipboard />
-                                      </span>
-                                      Copy to clipboard
-                                    {/if}
-                                    <input id="hiddenClipboard" />
-                                  </div>
-
-                                  {#if openIndex === i}
-                                    {#each testy.childRows as row}
-                                      {#if rowsToShow.includes(row.parentIndexRef) && (!row.bracket || (row.bracket && rowsToShow.includes(row.indexRef)))}
+                                  {#if openIndex === topLevelObject_index}
+                                    {#each topLevelObject.childRows as row}
+                                      {#if (
+                                        rowsToShow.includes(row.parentIndexRef) &&
+                                        (!row.bracket || (row.bracket && rowsToShow.includes(row.indexRef)))
+                                      )}
                                         <div
                                           class={hoverRow === row.indexRef || row.parentIndexRef.startsWith(hoverRow) ? 'row hoverRow' : 'row'}
                                           on:mouseover={() => (hoverRow = row.indexRef)}
-                                          on:mousedown={() => console.log(row.indexRef, testy.childRows, rowsToShow)}>
-                                          <span>
-                                            {row.output}
-                                            {#if row.type}
-                                              <span class="type">{row.type}</span>
-                                            {/if}
-                                            {#if row.len}
-                                              <span class="len">({row.len})</span>
-                                            {/if}
-                                          </span>
-                                          {#if row.expandable}
-                                            {#if rowsToShow.includes(row.indexRef)}
-                                              <span
-                                                class="smallest dataArrow"
-                                                on:mousedown={() => rowContract(row.indexRef)}>
-                                                <FaChevronDown />
-                                              </span>
-                                            {:else}
-                                              <span
-                                                class="smallest dataArrow"
-                                                on:mousedown={() => rowExpand(row.indexRef)}>
-                                                <FaChevronRight />
-                                              </span>
-                                            {/if}
-                                          {/if}
+                                          on:mousedown={() => console.log(row.indexRef, topLevelObject.childRows, rowsToShow)}>
+                                          <RowText {row} />
+                                          <ChevronButtons {row} {rowsToShow} {rowContract} {rowExpand} />
                                         </div>
                                       {/if}
                                     {/each}
@@ -343,90 +246,10 @@
         color: white;
     }
 
-    .toggle:hover {
-        pointer-events: all;
-        opacity: 1;
-    }
-
-    .toggle {
-        pointer-events: all;
-        cursor: pointer;
-        position: fixed;
-        width: 70px;
-        height: 20px;
-        text-align: center;
-        transform: rotate(-90deg);
-        background-color: #aaa;
-        z-index: 10000000;
-
-        margin: 0;
-        font-size: 14px;
-        line-height: 1.3em;
-    }
-
-    .toggletop {
-        top: 25px;
-    }
-
-    .togglemiddle {
-        top: calc(50vh - 25px);
-    }
-
-    .togglebottom {
-        bottom: 25px;
-    }
-
-    .toggleShow {
-        pointer-events: all;
-        transition: 0.2s;
-        right: 475px;
-    }
-
-    .toggleHide {
-        pointer-events: all;
-        transition: 0.2s;
-        right: -25px;
-    }
-
-    .accordion {
-        background-color: #666 !important;
-        color: white;
-    }
-
     pre {
         margin: 0px;
         white-space: normal;
         padding: 0px;
-    }
-
-    .icon1 {
-        width: 15px;
-        height: 15px;
-    }
-
-    .smaller {
-        width: 15px;
-        height: 15px;
-        display: inline-block;
-        position: relative;
-        top: 2px;
-    }
-
-    .smallest {
-        width: 15px;
-        height: 15px;
-        display: inline-block;
-        position: relative;
-        top: 2px;
-        color: green;
-    }
-
-    .link {
-        cursor: pointer;
-    }
-
-    .link:hover {
-        background-color: #888;
     }
 
     .row {
@@ -442,52 +265,7 @@
         background-color: #aaa;
     }
 
-    .dataArrow {
-        position: absolute;
-        left: 0px;
-        cursor: pointer;
-    }
-
-    .dataArrow:hover {
-        color: black;
-    }
-
-    .len {
-        color: black;
-        position: absolute;
-        right: 70px;
-        top: 0px;
-    }
-
-    .type {
-        color: green;
-        position: absolute;
-        top: 0px;
-        right: 5px;
-    }
-
-    .nopointer {
-        cursor: pointer;
-        user-select: none;
-    }
-
     .hoverRow {
         background-color: #68f !important;
-    }
-
-    .toggleShowAll,
-    .copyToClipbord {
-        display: inline;
-    }
-
-    #hiddenClipboard {
-        position: absolute;
-        left: -9999px;
-    }
-
-    .tree button {
-        position: absolute;
-        top: 3px;
-        right: 3px;
     }
 </style>
