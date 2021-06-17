@@ -2611,8 +2611,114 @@ var app = (function () {
 
     const file$9 = "src/RowText.svelte";
 
-    // (7:0) {#if row.type}
-    function create_if_block_1$2(ctx) {
+    // (7:0) {:else}
+    function create_else_block$4(ctx) {
+    	let span;
+    	let t0_value = /*row*/ ctx[0].output + "";
+    	let t0;
+    	let t1;
+    	let t2;
+    	let if_block0 = /*row*/ ctx[0].type && create_if_block_2(ctx);
+    	let if_block1 = /*row*/ ctx[0].len && create_if_block_1$2(ctx);
+
+    	const block = {
+    		c: function create() {
+    			span = element("span");
+    			t0 = text(t0_value);
+    			t1 = space();
+    			if (if_block0) if_block0.c();
+    			t2 = space();
+    			if (if_block1) if_block1.c();
+    			add_location(span, file$9, 7, 0, 79);
+    		},
+    		m: function mount(target, anchor) {
+    			insert_dev(target, span, anchor);
+    			append_dev(span, t0);
+    			append_dev(span, t1);
+    			if (if_block0) if_block0.m(span, null);
+    			append_dev(span, t2);
+    			if (if_block1) if_block1.m(span, null);
+    		},
+    		p: function update(ctx, dirty) {
+    			if (dirty & /*row*/ 1 && t0_value !== (t0_value = /*row*/ ctx[0].output + "")) set_data_dev(t0, t0_value);
+
+    			if (/*row*/ ctx[0].type) {
+    				if (if_block0) {
+    					if_block0.p(ctx, dirty);
+    				} else {
+    					if_block0 = create_if_block_2(ctx);
+    					if_block0.c();
+    					if_block0.m(span, t2);
+    				}
+    			} else if (if_block0) {
+    				if_block0.d(1);
+    				if_block0 = null;
+    			}
+
+    			if (/*row*/ ctx[0].len) {
+    				if (if_block1) {
+    					if_block1.p(ctx, dirty);
+    				} else {
+    					if_block1 = create_if_block_1$2(ctx);
+    					if_block1.c();
+    					if_block1.m(span, null);
+    				}
+    			} else if (if_block1) {
+    				if_block1.d(1);
+    				if_block1 = null;
+    			}
+    		},
+    		d: function destroy(detaching) {
+    			if (detaching) detach_dev(span);
+    			if (if_block0) if_block0.d();
+    			if (if_block1) if_block1.d();
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_else_block$4.name,
+    		type: "else",
+    		source: "(7:0) {:else}",
+    		ctx
+    	});
+
+    	return block;
+    }
+
+    // (5:0) {#if row.type === "Tag"}
+    function create_if_block$5(ctx) {
+    	let t_value = /*row*/ ctx[0].tag + "";
+    	let t;
+
+    	const block = {
+    		c: function create() {
+    			t = text(t_value);
+    		},
+    		m: function mount(target, anchor) {
+    			insert_dev(target, t, anchor);
+    		},
+    		p: function update(ctx, dirty) {
+    			if (dirty & /*row*/ 1 && t_value !== (t_value = /*row*/ ctx[0].tag + "")) set_data_dev(t, t_value);
+    		},
+    		d: function destroy(detaching) {
+    			if (detaching) detach_dev(t);
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_if_block$5.name,
+    		type: "if",
+    		source: "(5:0) {#if row.type === \\\"Tag\\\"}",
+    		ctx
+    	});
+
+    	return block;
+    }
+
+    // (10:0) {#if row.type}
+    function create_if_block_2(ctx) {
     	let span;
     	let t_value = /*row*/ ctx[0].type + "";
     	let t;
@@ -2622,7 +2728,7 @@ var app = (function () {
     			span = element("span");
     			t = text(t_value);
     			attr_dev(span, "class", "type svelte-1j5usoi");
-    			add_location(span, file$9, 7, 0, 71);
+    			add_location(span, file$9, 10, 0, 114);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, span, anchor);
@@ -2638,17 +2744,17 @@ var app = (function () {
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_if_block_1$2.name,
+    		id: create_if_block_2.name,
     		type: "if",
-    		source: "(7:0) {#if row.type}",
+    		source: "(10:0) {#if row.type}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (10:0) {#if row.len}
-    function create_if_block$5(ctx) {
+    // (13:0) {#if row.len}
+    function create_if_block_1$2(ctx) {
     	let span;
     	let t0;
     	let t1_value = /*row*/ ctx[0].len + "";
@@ -2662,7 +2768,7 @@ var app = (function () {
     			t1 = text(t1_value);
     			t2 = text(")");
     			attr_dev(span, "class", "len svelte-1j5usoi");
-    			add_location(span, file$9, 10, 0, 128);
+    			add_location(span, file$9, 13, 0, 171);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, span, anchor);
@@ -2680,9 +2786,9 @@ var app = (function () {
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_if_block$5.name,
+    		id: create_if_block_1$2.name,
     		type: "if",
-    		source: "(10:0) {#if row.len}",
+    		source: "(13:0) {#if row.len}",
     		ctx
     	});
 
@@ -2690,70 +2796,46 @@ var app = (function () {
     }
 
     function create_fragment$9(ctx) {
-    	let span;
-    	let t0_value = /*row*/ ctx[0].output + "";
-    	let t0;
-    	let t1;
-    	let t2;
-    	let if_block0 = /*row*/ ctx[0].type && create_if_block_1$2(ctx);
-    	let if_block1 = /*row*/ ctx[0].len && create_if_block$5(ctx);
+    	let if_block_anchor;
+
+    	function select_block_type(ctx, dirty) {
+    		if (/*row*/ ctx[0].type === "Tag") return create_if_block$5;
+    		return create_else_block$4;
+    	}
+
+    	let current_block_type = select_block_type(ctx);
+    	let if_block = current_block_type(ctx);
 
     	const block = {
     		c: function create() {
-    			span = element("span");
-    			t0 = text(t0_value);
-    			t1 = space();
-    			if (if_block0) if_block0.c();
-    			t2 = space();
-    			if (if_block1) if_block1.c();
-    			add_location(span, file$9, 4, 0, 36);
+    			if_block.c();
+    			if_block_anchor = empty();
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
     		},
     		m: function mount(target, anchor) {
-    			insert_dev(target, span, anchor);
-    			append_dev(span, t0);
-    			append_dev(span, t1);
-    			if (if_block0) if_block0.m(span, null);
-    			append_dev(span, t2);
-    			if (if_block1) if_block1.m(span, null);
+    			if_block.m(target, anchor);
+    			insert_dev(target, if_block_anchor, anchor);
     		},
     		p: function update(ctx, [dirty]) {
-    			if (dirty & /*row*/ 1 && t0_value !== (t0_value = /*row*/ ctx[0].output + "")) set_data_dev(t0, t0_value);
+    			if (current_block_type === (current_block_type = select_block_type(ctx)) && if_block) {
+    				if_block.p(ctx, dirty);
+    			} else {
+    				if_block.d(1);
+    				if_block = current_block_type(ctx);
 
-    			if (/*row*/ ctx[0].type) {
-    				if (if_block0) {
-    					if_block0.p(ctx, dirty);
-    				} else {
-    					if_block0 = create_if_block_1$2(ctx);
-    					if_block0.c();
-    					if_block0.m(span, t2);
+    				if (if_block) {
+    					if_block.c();
+    					if_block.m(if_block_anchor.parentNode, if_block_anchor);
     				}
-    			} else if (if_block0) {
-    				if_block0.d(1);
-    				if_block0 = null;
-    			}
-
-    			if (/*row*/ ctx[0].len) {
-    				if (if_block1) {
-    					if_block1.p(ctx, dirty);
-    				} else {
-    					if_block1 = create_if_block$5(ctx);
-    					if_block1.c();
-    					if_block1.m(span, null);
-    				}
-    			} else if (if_block1) {
-    				if_block1.d(1);
-    				if_block1 = null;
     			}
     		},
     		i: noop,
     		o: noop,
     		d: function destroy(detaching) {
-    			if (detaching) detach_dev(span);
-    			if (if_block0) if_block0.d();
-    			if (if_block1) if_block1.d();
+    			if_block.d(detaching);
+    			if (detaching) detach_dev(if_block_anchor);
     		}
     	};
 
@@ -2845,7 +2927,7 @@ var app = (function () {
 
     var lib = { domParser };
 
-    const indentSpaces = 2;
+    const indentSpaces = 0.5;
 
     function code_format_null(indexRef, parentIndexRef, index, parentArr, level, optionalIndex) {
         parentArr.push({
@@ -2918,27 +3000,30 @@ var app = (function () {
     }
 
     function code_format_array(indexRef, parentIndexRef, index, parentArr, arr, level, optionalIndex, optionalNewLine) {
-        parentArr.push({
-            indexRef,
-            parentIndexRef,
-            index,
-            output: indent_row(
-                (optionalNewLine ? "" : code_format_index(optionalIndex)) + code_format_index(optionalIndex),
-                level
-            ),
-            type: "Array",
-            len: arr.length,
-            expandable: true,
-        });
-        if (optionalNewLine) {
+        if (optionalIndex !== "children") {
             parentArr.push({
                 indexRef,
                 parentIndexRef,
-                index,
-                output: indent_row("[", level + (optionalIndex ? 1 : 0)),
-                bracket: true,
+                index: index,
+                output: indent_row(
+                    (optionalNewLine ? "" : code_format_index(optionalIndex)) + code_format_index(optionalIndex),
+                    level
+                ),
+                type: "Array",
+                len: arr.length,
+                expandable: true,
             });
+            if (optionalNewLine) {
+                parentArr.push({
+                    indexRef,
+                    parentIndexRef,
+                    index,
+                    output: indent_row("[", level + (optionalIndex ? 1 : 0)),
+                    bracket: true,
+                });
+            }
         }
+
         arr.map((value, arrIndex) =>
             formatByType(
                 indexRef + "." + arrIndex,
@@ -2951,13 +3036,15 @@ var app = (function () {
                 true
             )
         );
-        parentArr.push({
-            indexRef,
-            parentIndexRef,
-            index,
-            output: indent_row("]", level + (optionalIndex ? 1 : 0)),
-            bracket: true,
-        });
+        if (optionalIndex !== "children") {
+            parentArr.push({
+                indexRef,
+                parentIndexRef,
+                index,
+                output: indent_row("]", level + (optionalIndex ? 1 : 0)),
+                bracket: true,
+            });
+        }
     }
 
     function code_format_array_long(
@@ -3059,36 +3146,24 @@ var app = (function () {
                 level
             ),
             type: "Tag",
+            tag: indent_row("<" + obj["svelte-explorer-tag"].toLowerCase() + ">", level),
             len: object.length,
             expandable: true,
         });
-        if (optionalNewLine) {
-            parentArr.push({
-                indexRef,
-                parentIndexRef,
-                index,
-                output: indent_row("{", level + (optionalIndex ? 1 : 0)),
-                bracket: true,
-            });
-        }
+
         object.forEach(([key, value], objIndex) => {
-            formatByType(
-                indexRef + "." + objIndex,
-                indexRef,
-                objIndex,
-                parentArr,
-                value,
-                level + (optionalIndex || optionalNewLine ? 2 : 1),
-                key,
-                true
-            );
-        });
-        parentArr.push({
-            indexRef,
-            parentIndexRef,
-            index,
-            output: indent_row("}", level + (optionalIndex || optionalNewLine ? 1 : 0)),
-            bracket: true,
+            if (key === "children") {
+                formatByType(
+                    indexRef, // + "." + objIndex,
+                    indexRef,
+                    objIndex,
+                    parentArr,
+                    value,
+                    level,
+                    key,
+                    true
+                );
+            }
         });
     }
 
@@ -3182,7 +3257,7 @@ var app = (function () {
         //console.log("valueFormatterToArr");
         let parentArr = []; //[{ output: '   test:"test"', type: "string" }];
         formatByType("0.0", "0", 0, parentArr, object, 0); // <- make this assign to parentArr specifically instead of with JS magic
-
+        console.log(parentArr);
         return parentArr;
     }
 
@@ -3491,7 +3566,7 @@ var app = (function () {
     	let t1;
     	let current;
     	let dispose;
-    	let if_block = /*openIndex*/ ctx[4] === /*topLevelObject_index*/ ctx[34] && create_if_block_2(ctx);
+    	let if_block = /*openIndex*/ ctx[4] === /*topLevelObject_index*/ ctx[34] && create_if_block_2$1(ctx);
 
     	const block = {
     		c: function create() {
@@ -3534,7 +3609,7 @@ var app = (function () {
     					if_block.p(ctx, dirty);
     					transition_in(if_block, 1);
     				} else {
-    					if_block = create_if_block_2(ctx);
+    					if_block = create_if_block_2$1(ctx);
     					if_block.c();
     					transition_in(if_block, 1);
     					if_block.m(pre, null);
@@ -3579,7 +3654,7 @@ var app = (function () {
     }
 
     // (156:0) {#if openIndex === topLevelObject_index}
-    function create_if_block_2(ctx) {
+    function create_if_block_2$1(ctx) {
     	let each_1_anchor;
     	let current;
     	let each_value_1 = /*topLevelObject*/ ctx[32].childRows;
@@ -3663,7 +3738,7 @@ var app = (function () {
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_if_block_2.name,
+    		id: create_if_block_2$1.name,
     		type: "if",
     		source: "(156:0) {#if openIndex === topLevelObject_index}",
     		ctx
@@ -4348,19 +4423,25 @@ var app = (function () {
     	let p0;
     	let t3;
     	let p1;
+    	let t4;
+    	let span2;
     	let t5;
+    	let span1;
+    	let t6;
+    	let span0;
+    	let t8;
     	let p2;
-    	let t7;
-    	let h20;
     	let t10;
-    	let h21;
-    	let t11;
-    	let t12;
+    	let h20;
     	let t13;
-    	let button0;
+    	let h21;
+    	let t14;
     	let t15;
+    	let t16;
+    	let button0;
+    	let t18;
     	let button1;
-    	let t17;
+    	let t20;
     	let button2;
     	let current;
     	let dispose;
@@ -4386,38 +4467,47 @@ var app = (function () {
     			p0 = element("p");
     			t3 = space();
     			p1 = element("p");
-    			p1.textContent = "Provides a simple to use, quick a dirty hideable list of whatever data you wish to temporarily view whilst you are\ndeveloping your app, rather than console.logging or debugging.";
-    			t5 = space();
+    			t4 = text("Provides a simple to use, quick a dirty hideable list of whatever data you wish to temporarily view whilst you are\ndeveloping your app, rather than console.logging or debugging.\n");
+    			span2 = element("span");
+    			t5 = text("level 1");
+    			span1 = element("span");
+    			t6 = text("level 2");
+    			span0 = element("span");
+    			span0.textContent = "level 3";
+    			t8 = space();
     			p2 = element("p");
     			p2.textContent = "Displays most kinds of data: array, object, string, number, boolean, symbol";
-    			t7 = space();
+    			t10 = space();
     			h20 = element("h2");
     			h20.textContent = `Autocounter from component state: ${/*counter*/ ctx[1]}`;
-    			t10 = space();
-    			h21 = element("h2");
-    			t11 = text("Manual counter from custom store: ");
-    			t12 = text(/*$count*/ ctx[0]);
     			t13 = space();
+    			h21 = element("h2");
+    			t14 = text("Manual counter from custom store: ");
+    			t15 = text(/*$count*/ ctx[0]);
+    			t16 = space();
     			button0 = element("button");
     			button0.textContent = "-";
-    			t15 = space();
+    			t18 = space();
     			button1 = element("button");
     			button1.textContent = "+";
-    			t17 = space();
+    			t20 = space();
     			button2 = element("button");
     			button2.textContent = "reset";
     			add_location(h1, file$b, 57, 0, 1250);
     			add_location(p0, file$b, 59, 0, 1283);
+    			add_location(span0, file$b, 65, 26, 1515);
+    			add_location(span1, file$b, 65, 13, 1502);
+    			add_location(span2, file$b, 65, 0, 1489);
     			add_location(p1, file$b, 62, 0, 1307);
-    			add_location(p2, file$b, 66, 0, 1494);
-    			add_location(h20, file$b, 68, 0, 1578);
-    			add_location(h21, file$b, 70, 0, 1632);
+    			add_location(p2, file$b, 67, 0, 1555);
+    			add_location(h20, file$b, 69, 0, 1639);
+    			add_location(h21, file$b, 71, 0, 1693);
     			attr_dev(button0, "id", "decr");
-    			add_location(button0, file$b, 72, 0, 1685);
+    			add_location(button0, file$b, 73, 0, 1746);
     			attr_dev(button1, "id", "incr");
-    			add_location(button1, file$b, 73, 0, 1741);
+    			add_location(button1, file$b, 74, 0, 1802);
     			attr_dev(button2, "id", "reset");
-    			add_location(button2, file$b, 74, 0, 1797);
+    			add_location(button2, file$b, 75, 0, 1858);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -4431,19 +4521,25 @@ var app = (function () {
     			p0.innerHTML = /*string*/ ctx[7];
     			insert_dev(target, t3, anchor);
     			insert_dev(target, p1, anchor);
-    			insert_dev(target, t5, anchor);
+    			append_dev(p1, t4);
+    			append_dev(p1, span2);
+    			append_dev(span2, t5);
+    			append_dev(span2, span1);
+    			append_dev(span1, t6);
+    			append_dev(span1, span0);
+    			insert_dev(target, t8, anchor);
     			insert_dev(target, p2, anchor);
-    			insert_dev(target, t7, anchor);
-    			insert_dev(target, h20, anchor);
     			insert_dev(target, t10, anchor);
-    			insert_dev(target, h21, anchor);
-    			append_dev(h21, t11);
-    			append_dev(h21, t12);
+    			insert_dev(target, h20, anchor);
     			insert_dev(target, t13, anchor);
+    			insert_dev(target, h21, anchor);
+    			append_dev(h21, t14);
+    			append_dev(h21, t15);
+    			insert_dev(target, t16, anchor);
     			insert_dev(target, button0, anchor);
-    			insert_dev(target, t15, anchor);
+    			insert_dev(target, t18, anchor);
     			insert_dev(target, button1, anchor);
-    			insert_dev(target, t17, anchor);
+    			insert_dev(target, t20, anchor);
     			insert_dev(target, button2, anchor);
     			current = true;
 
@@ -4454,7 +4550,7 @@ var app = (function () {
     			];
     		},
     		p: function update(ctx, [dirty]) {
-    			if (!current || dirty & /*$count*/ 1) set_data_dev(t12, /*$count*/ ctx[0]);
+    			if (!current || dirty & /*$count*/ 1) set_data_dev(t15, /*$count*/ ctx[0]);
     		},
     		i: function intro(local) {
     			if (current) return;
@@ -4473,17 +4569,17 @@ var app = (function () {
     			if (detaching) detach_dev(p0);
     			if (detaching) detach_dev(t3);
     			if (detaching) detach_dev(p1);
-    			if (detaching) detach_dev(t5);
+    			if (detaching) detach_dev(t8);
     			if (detaching) detach_dev(p2);
-    			if (detaching) detach_dev(t7);
-    			if (detaching) detach_dev(h20);
     			if (detaching) detach_dev(t10);
-    			if (detaching) detach_dev(h21);
+    			if (detaching) detach_dev(h20);
     			if (detaching) detach_dev(t13);
+    			if (detaching) detach_dev(h21);
+    			if (detaching) detach_dev(t16);
     			if (detaching) detach_dev(button0);
-    			if (detaching) detach_dev(t15);
+    			if (detaching) detach_dev(t18);
     			if (detaching) detach_dev(button1);
-    			if (detaching) detach_dev(t17);
+    			if (detaching) detach_dev(t20);
     			if (detaching) detach_dev(button2);
     			run_all(dispose);
     		}

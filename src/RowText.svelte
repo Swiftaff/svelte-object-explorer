@@ -2,15 +2,19 @@
     export let row;
 </script>
 
-<span>
-    {row.output}
-    {#if row.type}
-        <span class="type">{row.type}</span>
-    {/if}
-    {#if row.len}
-        <span class="len">({row.len})</span>
-    {/if}
-</span>
+{#if row.type === "Tag"}
+    {row.tag}
+{:else}
+    <span>
+        {row.output}
+        {#if row.type}
+            <span class="type">{row.type}</span>
+        {/if}
+        {#if row.len}
+            <span class="len">({row.len})</span>
+        {/if}
+    </span>
+{/if}
 
 <style>
     .len {

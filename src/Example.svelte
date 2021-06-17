@@ -63,6 +63,7 @@
 <p>
     Provides a simple to use, quick a dirty hideable list of whatever data you wish to temporarily view whilst you are
     developing your app, rather than console.logging or debugging.
+    <span>level 1<span>level 2<span>level 3</span></span></span>
 </p>
 <p>Displays most kinds of data: array, object, string, number, boolean, symbol</p>
 

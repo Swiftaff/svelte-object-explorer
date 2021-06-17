@@ -1,4 +1,4 @@
-const indentSpaces = 2;
+const indentSpaces = 0.5;
 
 function code_format_null(indexRef, parentIndexRef, index, parentArr, level, optionalIndex) {
     parentArr.push({
@@ -71,27 +71,30 @@ function code_format_function(indexRef, parentIndexRef, index, parentArr, fn, le
 }
 
 function code_format_array(indexRef, parentIndexRef, index, parentArr, arr, level, optionalIndex, optionalNewLine) {
-    parentArr.push({
-        indexRef,
-        parentIndexRef,
-        index,
-        output: indent_row(
-            (optionalNewLine ? "" : code_format_index(optionalIndex)) + code_format_index(optionalIndex),
-            level
-        ),
-        type: "Array",
-        len: arr.length,
-        expandable: true,
-    });
-    if (optionalNewLine) {
+    if (optionalIndex !== "children") {
         parentArr.push({
             indexRef,
             parentIndexRef,
-            index,
-            output: indent_row("[", level + (optionalIndex ? 1 : 0)),
-            bracket: true,
+            index: index,
+            output: indent_row(
+                (optionalNewLine ? "" : code_format_index(optionalIndex)) + code_format_index(optionalIndex),
+                level
+            ),
+            type: "Array",
+            len: arr.length,
+            expandable: true,
         });
+        if (optionalNewLine) {
+            parentArr.push({
+                indexRef,
+                parentIndexRef,
+                index,
+                output: indent_row("[", level + (optionalIndex ? 1 : 0)),
+                bracket: true,
+            });
+        }
     }
+
     arr.map((value, arrIndex) =>
         formatByType(
             indexRef + "." + arrIndex,
@@ -104,13 +107,15 @@ function code_format_array(indexRef, parentIndexRef, index, parentArr, arr, leve
             true
         )
     );
-    parentArr.push({
-        indexRef,
-        parentIndexRef,
-        index,
-        output: indent_row("]", level + (optionalIndex ? 1 : 0)),
-        bracket: true,
-    });
+    if (optionalIndex !== "children") {
+        parentArr.push({
+            indexRef,
+            parentIndexRef,
+            index,
+            output: indent_row("]", level + (optionalIndex ? 1 : 0)),
+            bracket: true,
+        });
+    }
 }
 
 function code_format_array_long(
@@ -212,36 +217,24 @@ function code_format_svelte_explorer_tag(
             level
         ),
         type: "Tag",
+        tag: indent_row("<" + obj["svelte-explorer-tag"].toLowerCase() + ">", level),
         len: object.length,
         expandable: true,
     });
-    if (optionalNewLine) {
-        parentArr.push({
-            indexRef,
-            parentIndexRef,
-            index,
-            output: indent_row("{", level + (optionalIndex ? 1 : 0)),
-            bracket: true,
-        });
-    }
+
     object.forEach(([key, value], objIndex) => {
-        formatByType(
-            indexRef + "." + objIndex,
-            indexRef,
-            objIndex,
-            parentArr,
-            value,
-            level + (optionalIndex || optionalNewLine ? 2 : 1),
-            key,
-            true
-        );
-    });
-    parentArr.push({
-        indexRef,
-        parentIndexRef,
-        index,
-        output: indent_row("}", level + (optionalIndex || optionalNewLine ? 1 : 0)),
-        bracket: true,
+        if (key === "children") {
+            formatByType(
+                indexRef, // + "." + objIndex,
+                indexRef,
+                objIndex,
+                parentArr,
+                value,
+                level,
+                key,
+                true
+            );
+        }
     });
 }
 
@@ -335,6 +328,6 @@ export default function valueFormatterToArr(object) {
     //console.log("valueFormatterToArr");
     let parentArr = []; //[{ output: '   test:"test"', type: "string" }];
     formatByType("0.0", "0", 0, parentArr, object, 0); // <- make this assign to parentArr specifically instead of with JS magic
-
+    console.log(parentArr);
     return parentArr;
 }
