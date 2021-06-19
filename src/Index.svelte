@@ -43,7 +43,7 @@
     onMount(async () => {
         //console.log(isPaused);
         rowsToShow = showAll ? showAllArr : showManuallySelected;
-        myStore = lib.domParser();
+        if (!myStore) myStore = lib.domParser();
         mainLoop = timer();
     });
 
@@ -125,7 +125,7 @@
     }
 </script>
 
-<div class="svelte-objet-explorer-wrapper">
+<div class="svelte-object-explorer-wrapper">
     <TabButton {toggle} {tabPosition} {fade} {hovering} {doToggle} />
     {#if toggle}
         <div
@@ -180,7 +180,7 @@
 </div>
 
 <style>
-    .svelte-objet-explorer-wrapper {
+    .svelte-object-explorer-wrapper {
         position: fixed;
         top: 0px;
         left: 0px;
