@@ -29,7 +29,7 @@
 </div>
 
 <style>
-    .svelte-objet-explorer-wrapper {
+    .svelte-object-explorer-wrapper {
         position: fixed;
         top: 0px;
         left: 0px;

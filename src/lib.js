@@ -8,7 +8,7 @@ function domParser() {
     console.log(arr);
 
     function getTag(el) {
-        if (el.tagName && el.tagName !== "SCRIPT" && !el.className.includes("svelte-objet-explorer-wrapper ")) {
+        if (el.tagName && el.tagName !== "SCRIPT" && !el.className.includes("svelte-object-explorer-wrapper ")) {
             return { class: el.className, "svelte-explorer-tag": el.tagName, children: getChildren(el) };
         } else {
             return null;
