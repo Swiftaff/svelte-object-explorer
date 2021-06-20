@@ -1,4 +1,5 @@
-const indentSpaces = 1;
+const indentSpaces = 2;
+const long_array_max = 10;
 
 export default function convertObjectToArrayOfOutputPanelRows({ key, val }) {
     let arr = [];
@@ -13,6 +14,7 @@ function appendRowsByType(row_settings, arr) {
     let type = getTypeName(row_settings.val);
     let new_settings = { ...row_settings, type };
     if (type === "object") appendRowsForObject(new_settings, arr);
+    if (type === "array") appendRowsForArray(new_settings, arr);
     if (type === "string") appendRowForString(new_settings, arr);
 }
 
@@ -36,11 +38,53 @@ function getTypeName(value) {
 
 function appendRowsForObject(row_settings, arr) {
     const children = Object.entries(row_settings.val);
-    arr.push(getRowForBracketOpen(row_settings, children, "{}", "object"));
+    const brackets = "{}";
+    arr.push(getRowForBracketOpen(row_settings, children, brackets, "object"));
     children.forEach(([k, v], i) => {
         appendRowsByType(getRowsForChild(row_settings, k, v, i), arr);
     });
-    arr.push(getRowForBracketClose(row_settings, "}"));
+    arr.push(getRowForBracketClose(row_settings, brackets[1]));
+}
+
+function appendRowsForArray(row_settings, arr) {
+    if (row_settings.val.length <= long_array_max) {
+        appendRowsForArraySmall(row_settings, arr);
+    } else {
+        appendRowsForArrayLarge(row_settings, arr);
+    }
+}
+
+function appendRowsForArrayLarge(row_settings, arr) {
+    const children = row_settings.val;
+    console.log(children);
+    console.log();
+    let index = 0;
+    const brackets = "[]";
+    arr.push(getRowForBracketOpen(row_settings, children, brackets, "array"));
+    for (let i = 0; i < children.length; i += long_array_max) {
+        const end = i + long_array_max > children.length - 1 ? children.length : i + long_array_max - 1;
+        const childSubArray = children.slice(i, end);
+        const rowsForChildSubArray = getRowsForChild(row_settings, index, childSubArray, index);
+        appendRowsByType(rowsForChildSubArray, arr);
+        console.log("loop", i, childSubArray, rowsForChildSubArray);
+        index++;
+    }
+    arr.push(getRowForBracketClose(row_settings, brackets[1]));
+}
+
+function appendRowsForArraySmall(row_settings, arr) {
+    const children = row_settings.val;
+    const brackets = "[]";
+    arr.push(getRowForBracketOpen(row_settings, children, brackets, "array"));
+    for (let i = 0; i < children.length; i++) {
+        appendRowsByType(getRowsForChild(row_settings, i, children[i], i), arr);
+    }
+    arr.push(getRowForBracketClose(row_settings, brackets[1]));
+}
+
+function appendRowForString(row_settings, arr) {
+    let { key, val, level, ...rest } = row_settings;
+    arr.push({ ...rest, output: indent_row(key + ": " + val, level), type: "string" });
 }
 
 function getRowForBracketOpen(row_settings, children, brackets, type) {
@@ -60,11 +104,6 @@ function getRowsForChild(row_settings, key, val, index) {
     const parentIndexRef = row_settings.indexRef;
     const level = row_settings.level + 1;
     return { indexRef, parentIndexRef, index, key, val, level };
-}
-
-function appendRowForString(row_settings, arr) {
-    let { key, val, level, ...rest } = row_settings;
-    arr.push({ ...rest, output: indent_row(key + ": " + val, level), type: "string" });
 }
 
 // --- old below
@@ -206,6 +245,7 @@ function code_format_function(row_object, parentArr, fn) {
     });
 }
 
+/*
 function code_format_array(row_object, parentArr, arr) {
     //indexRef, parentIndexRef, index, parentArr, arr, level, optionalIndex, optionalNewLine
     if (optionalIndex !== "children") {
@@ -252,6 +292,7 @@ function code_format_array(row_object, parentArr, arr) {
         });
     }
 }
+*/
 
 function code_format_array_long(
     row_object,

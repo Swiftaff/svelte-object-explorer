@@ -19,9 +19,18 @@
     let myStore = {
         string1: "testy",
         string2: "testy",
+        array: [[["test1", "test2"], "test2"], "test2"],
+        longarray: new Array(450).fill("test"),
+        object: {
+            test1: {
+                test1: { test1: { test1: "test1", test2: "test2" }, test2: "test2" },
+                test2: "test2",
+            },
+            test2: "test2",
+        },
         variousTypes: {
             //boolean: true,
-            string2: "test",
+            string: "test",
             /*
             number: 123,
             array: [[["test1", "test2"], "test2"], "test2"],
