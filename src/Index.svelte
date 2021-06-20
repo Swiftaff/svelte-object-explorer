@@ -19,7 +19,7 @@
     let isPaused = false;
     let hovering = false;
     let showAll = false;
-    let openIndex = null;
+    let openIndex = 0; // opens the relevant row if an object or array. 0 = 1st row
     let openIndexSetOnce = false;
 
     let showAllArr = []; //populated later with all row references
@@ -66,8 +66,8 @@
                 cache.formatted = formatDate(cache.viewUpdated);
 
                 topLevelObjectArray = transform_data.transform_data(cache); //this should trigger a redraw
-                if (!openIndexSetOnce)
-                    openIndex = transform_data.getOpenIndex(topLevelObjectArray, open, openIndexSetOnce);
+                //if (!openIndexSetOnce)
+                //    openIndex = transform_data.getOpenIndex(topLevelObjectArray, open, openIndexSetOnce);
                 showAllArr = transform_data.getAllIndexes(topLevelObjectArray, openIndex);
             }
         }
@@ -104,7 +104,7 @@
     }
 
     function click(index, val, type) {
-        //console.log("click", index, val, type, openIndex);
+        console.log("click", index, val, type, openIndex);
         if ((Object.entries(val).length && type === "object") || (val.length && type === "array")) {
             if (openIndex === index) {
                 openIndex = null;
@@ -137,27 +137,17 @@
             <PauseButton {isPaused} {pause} {unpause} />
             <CacheDisplay {cache} />
             <table>
-                <colgroup>
-                    <col style="width:35%" />
-                    <col style="width:10%" />
-                    <col style="width:55%" />
-                </colgroup>
                 {#each topLevelObjectArray as topLevelObject, topLevelObject_index}
-                    <TopLevelObjectRow {topLevelObject} {topLevelObject_index} {openIndex} {click} />
                     {#if openIndex === topLevelObject_index}
-                        <tr>
-                            <!-- only used to keep the odd even shading consistent when opening/closing accordion-->
-                            <td colspan="3" class="treeVal" />
-                        </tr>
                         <tr class="treeVal" on:mouseout={() => (hoverRow = null)}>
-                            <td colspan="3" class="treeVal">
+                            <td class="treeVal">
                                 <!---->
                                 <pre>
                                   {#if openIndex === topLevelObject_index}
                                     {#each topLevelObject.childRows as row}
                                       {#if (
                                         rowsToShow.includes(row.parentIndexRef) &&
-                                        (!row.bracket || (row.bracket && rowsToShow.includes(row.indexRef)))
+                                        (!row.bracket || (row.bracket && (row.expandable || rowsToShow.includes(row.indexRef))))
                                       )}
                                         <div
                                           class={hoverRow === row.indexRef || row.parentIndexRef.startsWith(hoverRow) ? 'row hoverRow' : 'row'}
