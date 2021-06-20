@@ -1,7 +1,8 @@
 const indentSpaces = 1;
 
 export default function convertObjectToArrayOfOutputPanelRows({ key, val }) {
-    let arr = []; // [{indexRef, parentIndexRef, output, type, bracket(optional), expandable(optional)}]
+    let arr = [];
+    // [{indexRef, parentIndexRef, output, type, bracket(optional), expandable(optional), len(optional)}]
     let row_settings = { indexRef: "0.0", parentIndexRef: "0", key, val, level: 0 };
     appendRowsByType(row_settings, arr);
     console.log("outputRowsArray", arr);
@@ -19,47 +20,46 @@ function getTypeName(value) {
     let type = getNullOrOtherType(value);
     console.log("type", type);
     return type;
-}
 
-function getNullOrOtherType(value) {
-    return value === null ? "null" : getObjectOrStandardType(value);
-}
+    function getNullOrOtherType(value) {
+        return value === null ? "null" : getObjectOrStandardType(value);
+    }
 
-function getObjectOrStandardType(value) {
-    return typeof value === "object" ? getArrayOrObject(value) : typeof value;
-}
+    function getObjectOrStandardType(value) {
+        return typeof value === "object" ? getArrayOrObject(value) : typeof value;
+    }
 
-function getArrayOrObject(value) {
-    return Array.isArray(value) ? "array" : "object";
+    function getArrayOrObject(value) {
+        return Array.isArray(value) ? "array" : "object";
+    }
 }
 
 function appendRowsForObject(row_settings, arr) {
-    arr.push(getRowForBracketOpen(row_settings));
-    Object.entries(row_settings.val).forEach(([k, v], i) => {
+    const children = Object.entries(row_settings.val);
+    arr.push(getRowForBracketOpen(row_settings, children, "{}", "object"));
+    children.forEach(([k, v], i) => {
         appendRowsByType(getRowsForChild(row_settings, k, v, i), arr);
     });
-    arr.push(getRowForBracketClose(row_settings));
+    arr.push(getRowForBracketClose(row_settings, "}"));
 }
 
-function getRowForBracketOpen(row_settings) {
-    const output = indent_row(row_settings.key + ": {", row_settings.level);
-    return { ...row_settings, output, type: "object", bracket: true, expandable: true };
+function getRowForBracketOpen(row_settings, children, brackets, type) {
+    //const items = children.length + " item" + (children.length > 1 ? "s" : "");
+    const text = row_settings.key + ": " + brackets; //brackets[0] + " " + items + " " + brackets[1];
+    const output = indent_row(text, row_settings.level);
+    return { ...row_settings, output, type, bracket: true, expandable: true, len: children.length };
+}
+
+function getRowForBracketClose(row_settings, close_bracket) {
+    const output = indent_row(close_bracket, row_settings.level);
+    return { ...row_settings, output, type: "", bracket: true };
 }
 
 function getRowsForChild(row_settings, key, val, index) {
-    return {
-        indexRef: row_settings.indexRef + "." + index,
-        parentIndexRef: row_settings.indexRef,
-        index,
-        key,
-        val,
-        level: row_settings.level + 1,
-    };
-}
-
-function getRowForBracketClose(row_settings) {
-    const output = indent_row("}", row_settings.level);
-    return { ...row_settings, output, type: "", bracket: true };
+    const indexRef = row_settings.indexRef + "." + index;
+    const parentIndexRef = row_settings.indexRef;
+    const level = row_settings.level + 1;
+    return { indexRef, parentIndexRef, index, key, val, level };
 }
 
 function appendRowForString(row_settings, arr) {
@@ -88,8 +88,8 @@ function formatByType(
         code_format_undefined(indexRef, parentIndexRef, index, parentArr, level, optionalIndex);
     else if (typeof value === "boolean")
         code_format_boolean(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex);
-    else if (typeof value === "string")
-        code_format_string(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex);
+    //else if (typeof value === "string")
+    //    code_format_string(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex);
     else if (typeof value === "number")
         code_format_number(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex);
     else if (typeof value === "symbol")
@@ -111,7 +111,7 @@ function formatByType(
         } else {
             code_format_array(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex, optionalNewLine);
         }
-    else if (typeof value === "object") {
+    /*else if (typeof value === "object") {
         if (value["svelte-explorer-tag"]) {
             code_format_svelte_explorer_tag(
                 indexRef,
@@ -135,7 +135,8 @@ function formatByType(
                 optionalNewLine
             );
         }
-    } else code_format_unknown(indexRef, parentIndexRef, index, parentArr, level, optionalIndex);
+    
+    }*/ else code_format_unknown(indexRef, parentIndexRef, index, parentArr, level, optionalIndex);
 }
 
 function get_indent(row_object, type) {

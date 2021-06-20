@@ -153,7 +153,7 @@
                                           class={hoverRow === row.indexRef || row.parentIndexRef.startsWith(hoverRow) ? 'row hoverRow' : 'row'}
                                           on:mouseover={() => (hoverRow = row.indexRef)}
                                           on:mousedown={() => console.log(row.indexRef, topLevelObject.childRows, rowsToShow)}>
-                                          <RowText {row} />
+                                          <RowText {row} isExpanded={(row.expandable && rowsToShow.includes(row.indexRef))} />
                                           <ChevronButtons {row} {rowsToShow} {rowContract} {rowExpand} />
                                         </div>
                                       {/if}
