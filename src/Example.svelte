@@ -1,5 +1,4 @@
 <script>
-    import { location, querystring } from "svelte-spa-router";
     import SvelteObjectExplorer from "./Index.svelte";
     import { count } from "./ExampleCustomStore.js";
     let counter = 1;
@@ -18,9 +17,12 @@
     incr();
 
     let myStore = {
+        string1: "testy",
+        string2: "testy",
         variousTypes: {
-            boolean: true,
-            string: "test",
+            //boolean: true,
+            string2: "test",
+            /*
             number: 123,
             array: [[["test1", "test2"], "test2"], "test2"],
             longarray: new Array(4000).fill("test"),
@@ -38,10 +40,11 @@
             symbol: Symbol(),
             null: null,
             undefined: typeof bananaman,
+          */
         },
-        SvelteVariable: counter,
-        customStore: count,
-        customStoreValue: $count,
+        //SvelteVariable: counter,
+        //customStore: count,
+        //customStoreValue: $count,
     };
 
     let params = new URL(document.location).searchParams;

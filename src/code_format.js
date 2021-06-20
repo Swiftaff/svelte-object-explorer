@@ -1,81 +1,215 @@
-const indentSpaces = 0.5;
+const indentSpaces = 1;
 
-function code_format_null(indexRef, parentIndexRef, index, parentArr, level, optionalIndex) {
-    parentArr.push({
-        indexRef,
-        parentIndexRef,
+export default function convertObjectToArrayOfOutputPanelRows({ key, val }) {
+    let arr = []; // [{indexRef, parentIndexRef, output, type, bracket(optional), expandable(optional)}]
+    let row_settings = { indexRef: "0.0", parentIndexRef: "0", key, val, level: 0 };
+    appendRowsByType(row_settings, arr);
+    console.log("outputRowsArray", arr);
+    return arr;
+}
+
+function appendRowsByType(row_settings, arr) {
+    let type = getTypeName(row_settings.val);
+    let new_settings = { ...row_settings, type };
+    if (type === "object") appendRowsForObject(new_settings, arr);
+    if (type === "string") appendRowForString(new_settings, arr);
+}
+
+function getTypeName(value) {
+    let type = getNullOrOtherType(value);
+    console.log("type", type);
+    return type;
+}
+
+function getNullOrOtherType(value) {
+    return value === null ? "null" : getObjectOrStandardType(value);
+}
+
+function getObjectOrStandardType(value) {
+    return typeof value === "object" ? getArrayOrObject(value) : typeof value;
+}
+
+function getArrayOrObject(value) {
+    return Array.isArray(value) ? "array" : "object";
+}
+
+function appendRowsForObject(row_settings, arr) {
+    arr.push(getRowForBracketOpen(row_settings));
+    Object.entries(row_settings.val).forEach(([k, v], i) => {
+        appendRowsByType(getRowsForChild(row_settings, k, v, i), arr);
+    });
+    arr.push(getRowForBracketClose(row_settings));
+}
+
+function getRowForBracketOpen(row_settings) {
+    const output = indent_row(row_settings.key + ": {", row_settings.level);
+    return { ...row_settings, output, type: "object", bracket: true, expandable: true };
+}
+
+function getRowsForChild(row_settings, key, val, index) {
+    return {
+        indexRef: row_settings.indexRef + "." + index,
+        parentIndexRef: row_settings.indexRef,
         index,
-        output: indent_row(code_format_index(optionalIndex) + "null", level),
+        key,
+        val,
+        level: row_settings.level + 1,
+    };
+}
+
+function getRowForBracketClose(row_settings) {
+    const output = indent_row("}", row_settings.level);
+    return { ...row_settings, output, type: "", bracket: true };
+}
+
+function appendRowForString(row_settings, arr) {
+    let { key, val, level, ...rest } = row_settings;
+    arr.push({ ...rest, output: indent_row(key + ": " + val, level), type: "string" });
+}
+
+// --- old below
+
+//formatByType("0.0", "0", 0, parentArr, object, 0);
+function formatByType(
+    //
+    indexRef,
+    parentIndexRef, //e.g. "1.1.2.3"
+    index, // e.g. 4, if this item is 1.1.2.3.4
+    //
+    parentArr,
+    value,
+    level,
+    optionalIndex,
+    optionalNewLine
+) {
+    //console.log("formatByType", value);
+    if (value === null) code_format_null(indexRef, parentIndexRef, index, parentArr, level, optionalIndex);
+    else if (typeof value === "undefined")
+        code_format_undefined(indexRef, parentIndexRef, index, parentArr, level, optionalIndex);
+    else if (typeof value === "boolean")
+        code_format_boolean(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex);
+    else if (typeof value === "string")
+        code_format_string(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex);
+    else if (typeof value === "number")
+        code_format_number(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex);
+    else if (typeof value === "symbol")
+        code_format_symbol(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex);
+    else if (typeof value === "function")
+        code_format_function(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex);
+    else if (Array.isArray(value))
+        if (value.length > 100) {
+            code_format_array_long(
+                indexRef,
+                parentIndexRef,
+                index,
+                parentArr,
+                value,
+                level,
+                optionalIndex,
+                optionalNewLine
+            );
+        } else {
+            code_format_array(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex, optionalNewLine);
+        }
+    else if (typeof value === "object") {
+        if (value["svelte-explorer-tag"]) {
+            code_format_svelte_explorer_tag(
+                indexRef,
+                parentIndexRef,
+                index,
+                parentArr,
+                value,
+                level,
+                optionalIndex,
+                optionalNewLine
+            );
+        } else {
+            code_format_object(
+                indexRef,
+                parentIndexRef,
+                index,
+                parentArr,
+                value,
+                level,
+                optionalIndex,
+                optionalNewLine
+            );
+        }
+    } else code_format_unknown(indexRef, parentIndexRef, index, parentArr, level, optionalIndex);
+}
+
+function get_indent(row_object, type) {
+    return indent_row(code_format_index(row_object.optionalIndex) + type, row_object.level);
+}
+
+function code_format_null(row_object, parentArr) {
+    //indexRef, parentIndexRef, index, parentArr, level, optionalIndex
+    parentArr.push({
+        ...row_object,
+        output: get_indent(row_object, "null"),
         type: "Null",
     });
 }
 
-function code_format_undefined(indexRef, parentIndexRef, index, parentArr, level, optionalIndex) {
+function code_format_undefined(row_object, parentArr) {
+    //indexRef, parentIndexRef, index, parentArr, level, optionalIndex
     parentArr.push({
-        indexRef,
-        parentIndexRef,
-        index,
-        output: indent_row(code_format_index(optionalIndex) + "undefined", level),
+        ...row_object,
+        output: get_indent(row_object, "undefined"),
         type: "Undefined",
     });
 }
 
-function code_format_boolean(indexRef, parentIndexRef, index, parentArr, bool, level, optionalIndex) {
+function code_format_boolean(row_object, parentArr, bool) {
+    //indexRef, parentIndexRef, index, parentArr, bool, level, optionalIndex
     parentArr.push({
-        indexRef,
-        parentIndexRef,
-        index,
-        output: indent_row(code_format_index(optionalIndex) + (bool ? "true" : "false"), level),
+        ...row_object,
+        output: get_indent(row_object, bool ? "true" : "false"),
         type: "Boolean",
     });
 }
 
-function code_format_string(indexRef, parentIndexRef, index, parentArr, str, level, optionalIndex) {
+function code_format_string(row_object, parentArr, str) {
+    //indexRef, parentIndexRef, index, parentArr, str, level, optionalIndex
     parentArr.push({
-        indexRef,
-        parentIndexRef,
-        index,
-        output: indent_row(code_format_index(optionalIndex) + "'" + str + "'", level),
+        ...row_object,
+        output: get_indent(row_object, "'" + str + "'"),
         type: "String",
     });
 }
 
-function code_format_number(indexRef, parentIndexRef, index, parentArr, num, level, optionalIndex) {
+function code_format_number(row_object, parentArr, num) {
+    //indexRef, parentIndexRef, index, parentArr, num, level, optionalIndex
     parentArr.push({
-        indexRef,
-        parentIndexRef,
-        index,
-        output: indent_row(code_format_index(optionalIndex) + num, level),
+        ...row_object,
+        output: get_indent(row_object, num),
         type: "Number",
     });
 }
 
-function code_format_symbol(indexRef, parentIndexRef, index, parentArr, sym, level, optionalIndex) {
+function code_format_symbol(row_object, parentArr, sym) {
+    //indexRef, parentIndexRef, index, parentArr, sym, level, optionalIndex
     parentArr.push({
-        indexRef,
-        parentIndexRef,
-        index,
-        output: indent_row(code_format_index(optionalIndex) + "'" + sym.toString() + "'", level),
+        ...row_object,
+        output: get_indent(row_object, "'" + sym.toString() + "'"),
         type: "Symbol",
     });
 }
 
-function code_format_function(indexRef, parentIndexRef, index, parentArr, fn, level, optionalIndex) {
+function code_format_function(row_object, parentArr, fn) {
+    //indexRef, parentIndexRef, index, parentArr, fn, level, optionalIndex
     parentArr.push({
-        indexRef,
-        parentIndexRef,
-        index,
-        output: indent_row(code_format_index(optionalIndex) + "'" + fn.name + "'", level),
+        ...row_object,
+        output: get_indent(row_object, "'" + fn.name + "'"),
         type: "Function",
     });
 }
 
-function code_format_array(indexRef, parentIndexRef, index, parentArr, arr, level, optionalIndex, optionalNewLine) {
+function code_format_array(row_object, parentArr, arr) {
+    //indexRef, parentIndexRef, index, parentArr, arr, level, optionalIndex, optionalNewLine
     if (optionalIndex !== "children") {
         parentArr.push({
-            indexRef,
-            parentIndexRef,
-            index: index,
+            ...row_object,
             output: indent_row(
                 (optionalNewLine ? "" : code_format_index(optionalIndex)) + code_format_index(optionalIndex),
                 level
@@ -119,36 +253,25 @@ function code_format_array(indexRef, parentIndexRef, index, parentArr, arr, leve
 }
 
 function code_format_array_long(
-    indexRef,
-    parentIndexRef,
-    index,
+    row_object,
     parentArr,
-    arr,
-    level,
-    optionalIndex,
-    optionalNewLine
+    arr
+    //TODO update in line with normal array when done
 ) {
-    code_format_string(
-        indexRef,
-        parentIndexRef,
-        index,
-        parentArr,
-        "Array is very long (" + value.length + ")",
-        level,
-        optionalIndex
-    );
-    for (let i = 0; i < value.length; i += 100) {
-        let end = i + 100 > value.length - 1 ? value.length : i + 99;
-        let tempArr = value.slice(i, end);
+    //indexRef, parentIndexRef, index, parentArr, arr, level, optionalIndex, optionalNewLine
+    code_format_string(row_object, parentArr, "Array is very long (" + arr.length + ")");
+    for (let i = 0; i < arr.length; i += 100) {
+        let end = i + 100 > arr.length - 1 ? arr.length : i + 99;
+        let tempArr = arr.slice(i, end);
         code_format_array(
-            indexRef + "." + i,
-            parentIndexRef,
-            index,
+            {
+                ...row_object,
+                indexRef: row_object.indexRef + "." + i,
+                level: row_object.level + 1,
+                optionalIndex: row_object.optionalIndex + " (" + i + " to " + end + ")",
+            },
             parentArr,
-            tempArr,
-            level + 1,
-            optionalIndex + " (" + i + " to " + end + ")",
-            optionalNewLine
+            tempArr
         );
     }
 }
@@ -253,81 +376,4 @@ function code_format_index(optionalIndex) {
 
 function indent_row(row, level) {
     return " ".repeat(level * indentSpaces) + row;
-}
-
-//formatByType("0.0", "0", 0, parentArr, object, 0);
-function formatByType(
-    //
-    indexRef,
-    parentIndexRef, //e.g. "1.1.2.3"
-    index, // e.g. 4, if this item is 1.1.2.3.4
-    //
-    parentArr,
-    value,
-    level,
-    optionalIndex,
-    optionalNewLine
-) {
-    //console.log("formatByType", value);
-    if (value === null) code_format_null(indexRef, parentIndexRef, index, parentArr, level, optionalIndex);
-    else if (typeof value === "undefined")
-        code_format_undefined(indexRef, parentIndexRef, index, parentArr, level, optionalIndex);
-    else if (typeof value === "boolean")
-        code_format_boolean(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex);
-    else if (typeof value === "string")
-        code_format_string(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex);
-    else if (typeof value === "number")
-        code_format_number(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex);
-    else if (typeof value === "symbol")
-        code_format_symbol(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex);
-    else if (typeof value === "function")
-        code_format_function(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex);
-    else if (Array.isArray(value))
-        if (value.length > 100) {
-            code_format_array_long(
-                indexRef,
-                parentIndexRef,
-                index,
-                parentArr,
-                value,
-                level,
-                optionalIndex,
-                optionalNewLine
-            );
-        } else {
-            code_format_array(indexRef, parentIndexRef, index, parentArr, value, level, optionalIndex, optionalNewLine);
-        }
-    else if (typeof value === "object") {
-        if (value["svelte-explorer-tag"]) {
-            code_format_svelte_explorer_tag(
-                indexRef,
-                parentIndexRef,
-                index,
-                parentArr,
-                value,
-                level,
-                optionalIndex,
-                optionalNewLine
-            );
-        } else {
-            code_format_object(
-                indexRef,
-                parentIndexRef,
-                index,
-                parentArr,
-                value,
-                level,
-                optionalIndex,
-                optionalNewLine
-            );
-        }
-    } else code_format_unknown(indexRef, parentIndexRef, index, parentArr, level, optionalIndex);
-}
-
-export default function valueFormatterToArr(object) {
-    //console.log("valueFormatterToArr");
-    let parentArr = []; //[{ output: '   test:"test"', type: "string" }];
-    formatByType("0.0", "0", 0, parentArr, object, 0); // <- make this assign to parentArr specifically instead of with JS magic
-    console.log(parentArr);
-    return parentArr;
 }

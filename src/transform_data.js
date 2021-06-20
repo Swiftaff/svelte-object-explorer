@@ -2,19 +2,14 @@ import code_format from "../src/code_format.js";
 
 function transform_data(cache) {
     let tempArr = [];
-    for (const key in cache.myStore) {
-        if (cache.myStore.hasOwnProperty(key)) {
-            let tempItem = {
-                key,
-                val: cache.myStore[key],
-                type: getType(cache.myStore[key]),
-            };
-            tempItem.class = displayClass(tempItem);
-            tempItem.valType = displayValType(tempItem.val);
-            tempItem.childRows = code_format(tempItem.val);
-            tempArr.push(tempItem);
-        }
-    }
+    let tempItem = {
+        key: "TOP LEVEL",
+        val: cache.myStore,
+    };
+    tempItem.class = "";
+    tempItem.valType = "";
+    tempItem.childRows = code_format(tempItem);
+    tempArr.push(tempItem);
     tempArr.sort(sort_byKey);
     tempArr = tempArr.map((item, index) => {
         return { ...item, index };
@@ -46,8 +41,7 @@ function getType(val) {
 
 function displayClass(testy) {
     let isObject = testy.val ? Object.entries(testy.val).length : false;
-    let accordion = testy.type !== "string" ? "accordion" : "";
-    return testy.val !== [] && testy.val !== null && isObject ? accordion + " tree_" + testy.type : "";
+    return testy.val !== [] && testy.val !== null && isObject ? " tree_" : "";
 }
 
 function sort_byKey(a, b) {
