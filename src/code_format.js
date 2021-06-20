@@ -20,7 +20,6 @@ function appendRowsByType(row_settings, arr) {
 
 function getTypeName(value) {
     let type = getNullOrOtherType(value);
-    console.log("type", type);
     return type;
 
     function getNullOrOtherType(value) {
@@ -61,14 +60,38 @@ function appendRowsForArrayLarge(row_settings, arr) {
     let index = 0;
     const brackets = "[]";
     arr.push(getRowForBracketOpen(row_settings, children, brackets, "array"));
-    for (let i = 0; i < children.length; i += long_array_max) {
-        const end = i + long_array_max > children.length - 1 ? children.length : i + long_array_max - 1;
-        const childSubArray = children.slice(i, end);
-        const rowsForChildSubArray = getRowsForChild(row_settings, index, childSubArray, index);
-        appendRowsByType(rowsForChildSubArray, arr);
-        console.log("loop", i, childSubArray, rowsForChildSubArray);
-        index++;
+    const sub_arrays = Math.floor(children.length / long_array_max);
+
+    //if (sub_arrays) {
+    console.log("sub_arrays", sub_arrays);
+    //WIP - too much recursion
+
+    for (let start = 0; start < sub_arrays + 1; start++) {
+        const end = (start + 1) * long_array_max > children.length ? children.length : (start + 1) * long_array_max;
+        const sub_array = children.slice(start * long_array_max, end);
+        console.log("test", start, end, sub_array);
+        if (sub_array.length) {
+            const rowsForChildSubArray = getRowsForChild(
+                row_settings,
+                "{" + start * long_array_max + "-" + (end - 1) + "}",
+                sub_array,
+                start
+            );
+            console.log("rowsForChildSubArray", rowsForChildSubArray);
+            appendRowsByType(rowsForChildSubArray, arr);
+        }
     }
+    /*} else {
+        console.log("NO sub_arrays", sub_arrays);
+        for (let i = 0; i < children.length; i += long_array_max) {
+            const end = i + long_array_max > children.length - 1 ? children.length : i + long_array_max - 1;
+            const childSubArray = children.slice(i, end);
+            const rowsForChildSubArray = getRowsForChild(row_settings, index, childSubArray, index);
+            appendRowsByType(rowsForChildSubArray, arr);
+            //console.log("loop", i, childSubArray, rowsForChildSubArray);
+            index++;
+        }
+    }*/
     arr.push(getRowForBracketClose(row_settings, brackets[1]));
 }
 

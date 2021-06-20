@@ -20,7 +20,7 @@
         string1: "testy",
         string2: "testy",
         array: [[["test1", "test2"], "test2"], "test2"],
-        longarray: new Array(450).fill("test"),
+        longarray: new Array(200).fill("x").map((x, i) => "" + i),
         object: {
             test1: {
                 test1: { test1: { test1: "test1", test2: "test2" }, test2: "test2" },
