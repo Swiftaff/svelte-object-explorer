@@ -1,5 +1,6 @@
 const indentSpaces = 2;
-const long_array_max = 100;
+const long_array_max = 10;
+const max_recursions = 4;
 
 export default function convertObjectToArrayOfOutputPanelRows({ key, val }) {
     let arr = [];
@@ -61,6 +62,7 @@ function power(n, p) {
     return result;
 }
 
+/*
 function split_array_into_chunks(arr, chunk_length) {
     let return_array = [];
     for (let start = 0; start < arr.length + 1; start++) {
@@ -73,24 +75,84 @@ function split_array_into_chunks(arr, chunk_length) {
     }
     return return_array;
 }
+*/
+
+function recursive_get_chunked_children(supplied, recurred = 0) {
+    console.log("recursive_get_chunked_children");
+    let arr;
+    if (Array.isArray(supplied)) {
+        arr = supplied;
+    } else if (supplied && supplied.sub_array && Array.isArray(supplied.sub_array)) {
+        arr = supplied.sub_array;
+    }
+
+    const start = 0 * (recurred + long_array_max);
+    const end = arr.length - 1;
+    const range = "{" + start + "-" + end + "}";
+    //console.log("recursive_get_chunked_children", range, arr, recurred);
+    const sub_array_object = get_sub_array(arr, recurred);
+    console.log("sub_array", sub_array_object.sub_array.length);
+
+    if (sub_array_object.sub_array.length <= long_array_max || recurred > max_recursions) {
+        return sub_array_object;
+    } else {
+        return recursive_get_chunked_children(sub_array_object, recurred + 1);
+    }
+}
+
+function get_sub_array(arr, recurred) {
+    const return_array = [];
+    for (let start = 0; start < arr.length + 1; start += long_array_max) {
+        const end = start + long_array_max > arr.length ? arr.length : start + long_array_max - 1;
+        const sub_array = arr.slice(start, end + 1);
+        const len = sub_array.length;
+
+        if (sub_array.length) {
+            const text = "{" + start + "-" + end + "}";
+            //console.log("get_sub_array", start, end, recurred, text, len, sub_array, recurred);
+            return_array.push({ start, end, sub_array });
+            /*
+        const rowsForChildSubArray = getRowsForChild(row_settings, "text", transformed_children_array, 0);
+        console.log("rowsForChildSubArray", rowsForChildSubArray);
+        appendRowsByType(rowsForChildSubArray, arr);
+        */
+        }
+    }
+    let chunk_start = 0;
+    let chunk_end = 0;
+
+    if (
+        return_array &&
+        return_array.length &&
+        return_array[0] &&
+        return_array[return_array.length - 1] &&
+        typeof return_array[0].start !== "undefined" &&
+        typeof return_array[return_array.length - 1].end !== "undefined"
+    ) {
+        chunk_start = return_array[0].start;
+        chunk_end = return_array[return_array.length - 1].end;
+        console.log("chunk", chunk_start, chunk_end);
+    }
+    let ret = { start: chunk_start, end: chunk_end, sub_array: return_array };
+    console.log("ret", JSON.parse(JSON.stringify(ret)));
+    return ret;
+}
 
 function appendRowsForArrayLarge(row_settings, arr) {
     const children = row_settings.val;
-    console.log(children);
+    //console.log(children);
     let index = 0;
     const brackets = "[]";
     const type = children.length > long_array_max ? "array+" : "array";
     arr.push(getRowForBracketOpen(row_settings, [], brackets, type));
 
     let transformed_children_array = children;
-    //let transformed_children_object = { ["{"+0+"-"+children.length+"}"]: children };
     let nesting = 0;
+    if (transformed_children_array.length > long_array_max) recursive_get_chunked_children(transformed_children_array);
 
-    //if (children.length <= long_array_max) {
-    //    console.log("transformed_children_array", transformed_children_array);
-    //}
+    /*
     for (let index = 0; index < 5; index++) {
-        console.log("loop");
+        //console.log("loop");
         if (transformed_children_array.length > long_array_max) {
             transformed_children_array = split_array_into_chunks(transformed_children_array, long_array_max);
             nesting++;
@@ -98,27 +160,10 @@ function appendRowsForArrayLarge(row_settings, arr) {
             break;
         }
     }
-    console.log("transformed_children_array", transformed_children_array);
+    */
 
-    for (let start = 0; start < transformed_children_array.length + 1; start++) {
-        const end = start + 1 > transformed_children_array.length ? transformed_children_array.length : start + 1;
-        const sub_array = transformed_children_array.slice(start, end);
-
-        if (sub_array.length) {
-            const text =
-                "{" +
-                start * power(long_array_max, nesting - 1) +
-                "-" +
-                (end * power(long_array_max, nesting - 1) - 1) +
-                "}";
-            console.log("test", text, start, end, sub_array);
-            /*
-            const rowsForChildSubArray = getRowsForChild(row_settings, "text", transformed_children_array, 0);
-            console.log("rowsForChildSubArray", rowsForChildSubArray);
-            appendRowsByType(rowsForChildSubArray, arr);
-            */
-        }
-    }
+    //console.log("transformed_children_array", transformed_children_array);
+    //get_sub_array(transformed_children_array);
 
     arr.push(getRowForBracketClose(row_settings, brackets[1]));
 }
