@@ -1,5 +1,5 @@
 const indentSpaces = 2;
-const long_array_max = 10;
+const long_array_max = 100;
 
 export default function convertObjectToArrayOfOutputPanelRows({ key, val }) {
     let arr = [];
@@ -14,7 +14,7 @@ function appendRowsByType(row_settings, arr) {
     let type = getTypeName(row_settings.val);
     let new_settings = { ...row_settings, type };
     if (type === "object") appendRowsForObject(new_settings, arr);
-    if (type === "array") appendRowsForArray(new_settings, arr);
+    if (type === "array") appendRowsForArrayLarge(new_settings, arr);
     if (type === "string") appendRowForString(new_settings, arr);
 }
 
@@ -53,45 +53,73 @@ function appendRowsForArray(row_settings, arr) {
     }
 }
 
+function power(n, p) {
+    let result = n;
+    for (let index = 0; index < p; index++) {
+        result = result * n;
+    }
+    return result;
+}
+
+function split_array_into_chunks(arr, chunk_length) {
+    let return_array = [];
+    for (let start = 0; start < arr.length + 1; start++) {
+        const end = (start + 1) * chunk_length > arr.length ? arr.length : (start + 1) * chunk_length;
+        const sub_array = arr.slice(start * chunk_length, end);
+        if (sub_array.length) {
+            //console.log("test", start, end, sub_array);
+            return_array.push(sub_array);
+        }
+    }
+    return return_array;
+}
+
 function appendRowsForArrayLarge(row_settings, arr) {
     const children = row_settings.val;
     console.log(children);
-    console.log();
     let index = 0;
     const brackets = "[]";
-    arr.push(getRowForBracketOpen(row_settings, children, brackets, "array"));
-    const sub_arrays = Math.floor(children.length / long_array_max);
+    const type = children.length > long_array_max ? "array+" : "array";
+    arr.push(getRowForBracketOpen(row_settings, [], brackets, type));
 
-    //if (sub_arrays) {
-    console.log("sub_arrays", sub_arrays);
-    //WIP - too much recursion
+    let transformed_children_array = children;
+    //let transformed_children_object = { ["{"+0+"-"+children.length+"}"]: children };
+    let nesting = 0;
 
-    for (let start = 0; start < sub_arrays + 1; start++) {
-        const end = (start + 1) * long_array_max > children.length ? children.length : (start + 1) * long_array_max;
-        const sub_array = children.slice(start * long_array_max, end);
-        console.log("test", start, end, sub_array);
-        if (sub_array.length) {
-            const rowsForChildSubArray = getRowsForChild(
-                row_settings,
-                "{" + start * long_array_max + "-" + (end - 1) + "}",
-                sub_array,
-                start
-            );
-            console.log("rowsForChildSubArray", rowsForChildSubArray);
-            appendRowsByType(rowsForChildSubArray, arr);
+    //if (children.length <= long_array_max) {
+    //    console.log("transformed_children_array", transformed_children_array);
+    //}
+    for (let index = 0; index < 5; index++) {
+        console.log("loop");
+        if (transformed_children_array.length > long_array_max) {
+            transformed_children_array = split_array_into_chunks(transformed_children_array, long_array_max);
+            nesting++;
+        } else {
+            break;
         }
     }
-    /*} else {
-        console.log("NO sub_arrays", sub_arrays);
-        for (let i = 0; i < children.length; i += long_array_max) {
-            const end = i + long_array_max > children.length - 1 ? children.length : i + long_array_max - 1;
-            const childSubArray = children.slice(i, end);
-            const rowsForChildSubArray = getRowsForChild(row_settings, index, childSubArray, index);
+    console.log("transformed_children_array", transformed_children_array);
+
+    for (let start = 0; start < transformed_children_array.length + 1; start++) {
+        const end = start + 1 > transformed_children_array.length ? transformed_children_array.length : start + 1;
+        const sub_array = transformed_children_array.slice(start, end);
+
+        if (sub_array.length) {
+            const text =
+                "{" +
+                start * power(long_array_max, nesting - 1) +
+                "-" +
+                (end * power(long_array_max, nesting - 1) - 1) +
+                "}";
+            console.log("test", text, start, end, sub_array);
+            /*
+            const rowsForChildSubArray = getRowsForChild(row_settings, "text", transformed_children_array, 0);
+            console.log("rowsForChildSubArray", rowsForChildSubArray);
             appendRowsByType(rowsForChildSubArray, arr);
-            //console.log("loop", i, childSubArray, rowsForChildSubArray);
-            index++;
+            */
         }
-    }*/
+    }
+
     arr.push(getRowForBracketClose(row_settings, brackets[1]));
 }
 
