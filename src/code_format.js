@@ -1,5 +1,5 @@
 const indentSpaces = 2;
-const long_array_max = 10;
+const long_array_max = 3; //10;
 const max_recursions = 4;
 
 export default function convertObjectToArrayOfOutputPanelRows({ key, val }) {
@@ -77,21 +77,49 @@ function split_array_into_chunks(arr, chunk_length) {
 }
 */
 
-function recursive_get_chunked_children(supplied, recurred = 0) {
-    console.log("recursive_get_chunked_children");
-    let arr;
-    if (Array.isArray(supplied)) {
-        arr = supplied;
-    } else if (supplied && supplied.sub_array && Array.isArray(supplied.sub_array)) {
-        arr = supplied.sub_array;
+/*
+tests...
+1.
+x=3
+input=[1,2,3,4]
+recursive_get_chunked_children(supplied) =
+[{ start: 0, end: 3, sub_array:
+  [
+    { start: 0, end: 2, sub_array: [1,2,3]},
+    { start: 3, end: 3, sub_array: [4]}
+  ]
+}]
+
+2.
+x=3
+input=[1,2,3,4,5,6,7,8,9,10]
+recursive_get_chunked_children(supplied) =
+[{ start: 0, end: 9, sub_array:
+  [
+    { start: 0, end: 8, sub_array:
+      [
+        { start: 0, end: 2, sub_array: [1,2,3]},
+        { start: 3, end: 5, sub_array: [4,5,6]},
+        { start: 6, end: 8, sub_array: [7,8,9]}
+      ],
+    { start: 9, end: 9, sub_array:
+      [
+        { start: 9, end: 9, sub_array: [10]}
+      ]
     }
+  ]
+}]
+*/
+
+function recursive_get_chunked_children(supplied, recurred = 0) {
+    console.log("1. recursive_get_chunked_children", recurred);
+    let arr = get_array_from_array_or_object(supplied);
 
     const start = 0 * (recurred + long_array_max);
     const end = arr.length - 1;
     const range = "{" + start + "-" + end + "}";
-    //console.log("recursive_get_chunked_children", range, arr, recurred);
-    const sub_array_object = get_sub_array(arr, recurred);
-    console.log("sub_array", sub_array_object.sub_array.length);
+    const sub_array_object = get_sub_array(arr, start, recurred);
+    console.log("5. sub_array", sub_array_object.sub_array.length, range);
 
     if (sub_array_object.sub_array.length <= long_array_max || recurred > max_recursions) {
         return sub_array_object;
@@ -100,17 +128,38 @@ function recursive_get_chunked_children(supplied, recurred = 0) {
     }
 }
 
-function get_sub_array(arr, recurred) {
+function get_array_from_array_or_object(supplied) {
+    if (Array.isArray(supplied)) return supplied;
+    else return get_array_from_object_or_empty(supplied);
+}
+
+function get_array_from_object_or_empty(supplied) {
+    if (supplied && supplied.sub_array && Array.isArray(supplied.sub_array)) {
+        return supplied.sub_array;
+    } else return [];
+}
+
+function get_sub_array(arr, range_start, recurred) {
     const return_array = [];
+    let multiplier = long_array_max || 1;
     for (let start = 0; start < arr.length + 1; start += long_array_max) {
-        const end = start + long_array_max > arr.length ? arr.length : start + long_array_max - 1;
+        const end = start + long_array_max > arr.length ? arr.length - 1 : start + long_array_max - 1;
         const sub_array = arr.slice(start, end + 1);
         const len = sub_array.length;
 
         if (sub_array.length) {
             const text = "{" + start + "-" + end + "}";
-            //console.log("get_sub_array", start, end, recurred, text, len, sub_array, recurred);
-            return_array.push({ start, end, sub_array });
+            console.log("2. get_sub_array", start, end, recurred, range_start);
+            //0, 2, 1, 0
+            //3, 3, 1, 0
+            return_array.push({
+                start,
+                end,
+                multiplier,
+                sub_array,
+                recurred,
+                range_start,
+            });
             /*
         const rowsForChildSubArray = getRowsForChild(row_settings, "text", transformed_children_array, 0);
         console.log("rowsForChildSubArray", rowsForChildSubArray);
@@ -129,12 +178,12 @@ function get_sub_array(arr, recurred) {
         typeof return_array[0].start !== "undefined" &&
         typeof return_array[return_array.length - 1].end !== "undefined"
     ) {
-        chunk_start = return_array[0].start;
-        chunk_end = return_array[return_array.length - 1].end;
-        console.log("chunk", chunk_start, chunk_end);
+        chunk_start = return_array[0].start * multiplier;
+        chunk_end = return_array[return_array.length - 1].end * multiplier;
+        console.log("3. chunk", chunk_start, chunk_end);
     }
-    let ret = { start: chunk_start, end: chunk_end, sub_array: return_array };
-    console.log("ret", JSON.parse(JSON.stringify(ret)));
+    let ret = { start: chunk_start, end: chunk_end, sub_array: return_array, multiplier, recurred, range_start };
+    console.log("4. ret", JSON.parse(JSON.stringify(ret)));
     return ret;
 }
 
@@ -148,6 +197,7 @@ function appendRowsForArrayLarge(row_settings, arr) {
 
     let transformed_children_array = children;
     let nesting = 0;
+    console.log("0. ", transformed_children_array);
     if (transformed_children_array.length > long_array_max) recursive_get_chunked_children(transformed_children_array);
 
     /*

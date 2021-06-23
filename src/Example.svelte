@@ -16,13 +16,13 @@
 
     incr();
 
-    const longarray = new Array(1011).fill("x").map((x, i) => "" + i);
+    const longarray = new Array(10).fill("x").map((x, i) => "" + i);
     console.log("longarray", longarray);
 
     let myStore = {
         string1: "testy",
         string2: "testy",
-        array: [[["test1", "test2"], "test2"], "test2"],
+        //array: [[["test1", "test2"], "test2"], "test2"],
         longarray,
         object: {
             test1: {
