@@ -127,91 +127,55 @@ function recursive_get_chunked_children(supplied, recurred = 0) {
     let obj = get_obj_from_arr_or_obj(supplied);
     let temp_sub_array = [];
     //let multiplier = long_array_max * recurred || 1;
+    let is_bottom_level = false;
     for (let start = 0; start < obj.sub_array.length; start += long_array_max) {
         //get end
         let end;
         if (start + long_array_max > obj.sub_array.length) {
             end = obj.sub_array.length - 1;
+            is_bottom_level = true;
         } else {
             end = start + long_array_max - 1;
         }
         let sub_array = obj.sub_array.slice(start, end + 1);
-        let sub_array_start = typeof sub_array[0].start !== "undefined" ? sub_array[0].start : start;
-        let sub_array_end =
-            typeof sub_array[sub_array.length - 1].end !== "undefined" ? sub_array[sub_array.length - 1].end : end;
-        let temp_obj = { start: sub_array_start, end: sub_array_end, sub_array };
-        temp_sub_array.push(temp_obj);
-        //console.log(recurred + ": loop", temp_obj);
+        //get temp_obj
+        let temp_obj;
+        //if (typeof sub_array[0].start === "undefined" || typeof sub_array[sub_array.length - 1].end === "undefined")
+        //    is_bottom_level = true;
+        if (is_bottom_level) {
+            temp_obj = sub_array;
+            temp_sub_array.push(...temp_obj);
+        } else {
+            temp_obj = { start, end, sub_array };
+            if (
+                typeof sub_array[0].start === "undefined" ||
+                typeof sub_array[sub_array.length - 1].end === "undefined"
+            ) {
+                temp_obj = { start: start, end: end, sub_array };
+            } else {
+                temp_obj = { start: sub_array[0].start, end: sub_array[sub_array.length - 1].end, sub_array };
+            }
+            //temp_obj = { start: sub_array[0].start, end: sub_array[sub_array.length - 1].end, sub_array };
+            temp_sub_array.push(temp_obj);
+        }
+
+        console.log(recurred + ": loop", temp_obj);
     }
-    //console.log("chunks", temp_sub_array);
-    //let chunk_start = temp_sub_array[0].start;
-    //let chunk_end = temp_sub_array[temp_sub_array.length - 1].end;
-    //let temp_obj = { start: chunk_start, end: chunk_end, sub_array: temp_sub_array };
+    console.log("chunks", temp_sub_array.start, obj.start, temp_sub_array.end, obj.end);
     let new_obj = { start: obj.start, end: obj.end, sub_array: temp_sub_array };
     if (new_obj.sub_array.length <= long_array_max || recurred > max_recursions) {
-        //console.log("5a - return sub_array_object");
+        //console.log("5a - return sub_array_object", new_obj);
         return new_obj;
     } else {
-        //console.log("5b - recurs");
-        return recursive_get_chunked_children(new_obj, recurred + 1);
+        let next_level_down = recursive_get_chunked_children(new_obj, recurred + 1);
+        console.log("5b - recurs", next_level_down);
+        return next_level_down;
     }
 }
 
 function get_obj_from_arr_or_obj(supplied) {
     if (Array.isArray(supplied)) return { start: 0, end: supplied.length - 1, sub_array: supplied };
     else return supplied;
-}
-
-function get_sub_array(arr, range_start, range_end, recurred) {
-    const return_array = [];
-    let multiplier = recurred * long_array_max || 1;
-    for (let start = 0; start < arr.length + 1; start += long_array_max) {
-        const end = start + long_array_max > arr.length ? arr.length - 1 : start + long_array_max - 1;
-        const sub_array = arr.slice(start, end + 1);
-        const len = sub_array.length;
-
-        if (sub_array.length) {
-            const text = "{" + start + "-" + end + "}";
-            console.log("2. get_sub_array", arr, range_start, range_end, start, end, recurred);
-            //0, 2, 1, 0
-            //3, 3, 1, 0
-            return_array.push(
-                sub_array
-                /*{
-                a: "testy",
-                start: start * multiplier,
-                end: end * multiplier * (recurred || 1),
-                endy: end * multiplier + multiplier - 1,
-                sub_array,
-            }*/
-            );
-            /*
-        const rowsForChildSubArray = getRowsForChild(row_settings, "text", transformed_children_array, 0);
-        console.log("rowsForChildSubArray", rowsForChildSubArray);
-        appendRowsByType(rowsForChildSubArray, arr);
-        */
-        }
-    }
-    /*
-  let chunk_start = 0;
-    let chunk_end = 0;
-
-    if (
-        return_array &&
-        return_array.length &&
-        typeof return_array[0] !== "undefined" &&
-        typeof return_array[0].start !== "undefined" &&
-        typeof return_array[return_array.length - 1] !== "undefined" &&
-        typeof return_array[return_array.length - 1].end !== "undefined"
-    ) {
-        chunk_start = return_array[0].start; // * multiplier;
-        chunk_end = return_array[return_array.length - 1].end; // + multiplier - 1;
-        console.log("3. chunk", chunk_start, chunk_end);
-    }
-  */
-    //let ret = { start: chunk_start, end: chunk_end, endy2: chunk_end, sub_array: return_array };
-    //console.log("4. ret", JSON.parse(JSON.stringify(ret)));
-    return return_array;
 }
 
 function appendRowsForArrayLarge(row_settings, arr) {
@@ -227,14 +191,14 @@ function appendRowsForArrayLarge(row_settings, arr) {
     //console.log("0. ", transformed_children_array, transformed_children_array.length - 1);
 
     //if (transformed_children_array.length > long_array_max) {
-    const longarray1 = new Array(3).fill("x").map((x, i) => "" + i);
-    const longarray2 = new Array(10).fill("x").map((x, i) => "" + i);
+    //const longarray1 = new Array(3).fill("x").map((x, i) => "" + i);
+    //const longarray2 = new Array(10).fill("x").map((x, i) => "" + i);
     const longarray3 = new Array(28).fill("x").map((x, i) => "" + i);
-    const ret1 = recursive_get_chunked_children(longarray1);
-    const ret2 = recursive_get_chunked_children(longarray2);
+    //const ret1 = recursive_get_chunked_children(longarray1);
+    //const ret2 = recursive_get_chunked_children(longarray2);
     const ret3 = recursive_get_chunked_children(longarray3);
-    console.log("finished", ret1);
-    console.log("finished", ret2);
+    //console.log("finished", ret1);
+    //console.log("finished", ret2);
     console.log("finished", ret3);
     //}
 
