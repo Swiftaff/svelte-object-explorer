@@ -122,16 +122,17 @@ step b.
 }]
 */
 
-function recursive_get_chunked_children(supplied, recurred = 0) {
+export function recursive_get_chunked_children(supplied, recurred = 0) {
     //console.log(recurred + ": recursive_get_chunked_children", supplied, recurred);
     let obj = get_obj_from_arr_or_obj(supplied);
+    //console.log("obj", obj, recurred);
     let temp_sub_array = [];
     //let multiplier = long_array_max * recurred || 1;
     let is_bottom_level = false;
     for (let start = 0; start < obj.sub_array.length; start += long_array_max) {
         //get end
         let end;
-        if (start + long_array_max > obj.sub_array.length) {
+        if (start + long_array_max >= obj.sub_array.length) {
             end = obj.sub_array.length - 1;
             is_bottom_level = true;
         } else {
@@ -159,16 +160,16 @@ function recursive_get_chunked_children(supplied, recurred = 0) {
             temp_sub_array.push(temp_obj);
         }
 
-        console.log(recurred + ": loop", temp_obj);
+        //console.log(recurred + ": loop", temp_obj);
     }
-    console.log("chunks", temp_sub_array.start, obj.start, temp_sub_array.end, obj.end);
+    //console.log("chunks", temp_sub_array.start, obj.start, temp_sub_array.end, obj.end);
     let new_obj = { start: obj.start, end: obj.end, sub_array: temp_sub_array };
     if (new_obj.sub_array.length <= long_array_max || recurred > max_recursions) {
         //console.log("5a - return sub_array_object", new_obj);
         return new_obj;
     } else {
         let next_level_down = recursive_get_chunked_children(new_obj, recurred + 1);
-        console.log("5b - recurs", next_level_down);
+        //console.log("5b - recurs", next_level_down);
         return next_level_down;
     }
 }
@@ -191,31 +192,18 @@ function appendRowsForArrayLarge(row_settings, arr) {
     //console.log("0. ", transformed_children_array, transformed_children_array.length - 1);
 
     //if (transformed_children_array.length > long_array_max) {
-    //const longarray1 = new Array(3).fill("x").map((x, i) => "" + i);
-    //const longarray2 = new Array(10).fill("x").map((x, i) => "" + i);
-    const longarray3 = new Array(28).fill("x").map((x, i) => "" + i);
-    //const ret1 = recursive_get_chunked_children(longarray1);
-    //const ret2 = recursive_get_chunked_children(longarray2);
-    const ret3 = recursive_get_chunked_children(longarray3);
-    //console.log("finished", ret1);
-    //console.log("finished", ret2);
-    console.log("finished", ret3);
-    //}
 
-    /*
-    for (let index = 0; index < 5; index++) {
-        //console.log("loop");
-        if (transformed_children_array.length > long_array_max) {
-            transformed_children_array = split_array_into_chunks(transformed_children_array, long_array_max);
-            nesting++;
-        } else {
-            break;
+    for (let index = 0; index < 30; index++) {
+        if (index > 2) {
+            // N 3 = [ 0, 1, 2 ]
+            // Y 4 = {[ {[ 0, 1, 2 ]}, 3 ]}
+            const longarray = new Array(index).fill("x").map((x, i) => "" + i);
+            const ret = recursive_get_chunked_children(longarray);
+            console.log(index, ret, longarray);
         }
     }
-    */
 
-    //console.log("transformed_children_array", transformed_children_array);
-    //get_sub_array(transformed_children_array);
+    //}
 
     arr.push(getRowForBracketClose(row_settings, brackets[1]));
 }
