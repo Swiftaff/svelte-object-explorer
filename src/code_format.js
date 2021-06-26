@@ -122,6 +122,89 @@ step b.
 }]
 */
 
+export function recursive_get_chunked_array(supplied = [], recurred = 0) {
+    console.log("###", recurred, supplied);
+    const initial_obj = get_obj_from_arr_or_obj(supplied);
+    if (initial_obj.sub_array.length > long_array_max) {
+        let chunked_array = [];
+        for (let chunk_start = 0; chunk_start < initial_obj.sub_array.length; chunk_start += long_array_max) {
+            let chunk_end = chunk_start + long_array_max - 1;
+            let chunk_array_is_short = chunk_end > initial_obj.sub_array.length - 1;
+            if (chunk_array_is_short) {
+                chunk_end = initial_obj.sub_array.length - 1;
+            }
+            const chunk_array = initial_obj.sub_array.slice(chunk_start, chunk_end + 1);
+
+            if (
+                typeof chunk_array[0].start !== "undefined" &&
+                typeof chunk_array[chunk_array.length - 1].end !== "undefined"
+            ) {
+                //console.log("YES");
+                chunk_start = chunk_array[0].start;
+                chunk_end = chunk_array[chunk_array.length - 1].end;
+            } else {
+                //console.log("NO");
+                //chunked_array.push(...chunk_array);
+            }
+
+            if (
+                chunk_array_is_short &&
+                //chunk_array[0].start === "undefined"
+                //||
+                chunk_start === chunk_array[0].start &&
+                chunk_end === chunk_array[chunk_array.length - 1].end
+            ) {
+                //console.log("YES");
+                chunked_array.push(...chunk_array);
+            } else {
+                //console.log("NO");
+                const chunk_obj = { start: chunk_start, end: chunk_end, sub_array: chunk_array };
+                console.log(
+                    "#######",
+                    initial_obj.start,
+                    initial_obj.end,
+                    chunk_start,
+                    chunk_end,
+                    chunk_obj,
+                    chunk_array_is_short
+                );
+                chunked_array.push(chunk_obj);
+            }
+        }
+        //initial_obj.sub_array = chunked_array;
+
+        if (
+            chunked_array.length > long_array_max &&
+            recurred < max_recursions
+            /*&&
+            !(
+                typeof chunked_array[0].start !== "undefined" &&
+                typeof chunked_array[chunked_array.length - 1].end !== "undefined" &&
+                chunked_array[0].start === initial_obj.start &&
+                chunked_array[chunked_array.length - 1].end === initial_obj.end
+            )*/
+        ) {
+            console.log("recurs");
+            initial_obj.sub_array = chunked_array;
+            return recursive_get_chunked_array(initial_obj, recurred + 1);
+        } else {
+            console.log(
+                "NO recurs",
+                chunked_array.length,
+                recurred,
+                chunked_array[0].start,
+                initial_obj.start,
+                chunked_array[chunked_array.length - 1].end,
+                initial_obj.end
+            );
+            initial_obj.sub_array = chunked_array;
+            return initial_obj;
+        }
+    } else {
+        return supplied;
+    }
+}
+
 export function recursive_get_chunked_children(supplied, recurred = 0) {
     //console.log(recurred + ": recursive_get_chunked_children", supplied, recurred);
     let obj = get_obj_from_arr_or_obj(supplied);
