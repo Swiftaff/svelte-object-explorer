@@ -127,14 +127,15 @@ export function recursive_get_chunked_array(supplied = [], recurred = 0) {
     const initial_obj = get_obj_from_arr_or_obj(supplied);
     if (initial_obj.sub_array.length > long_array_max) {
         let chunked_array = [];
-        for (let chunk_start = 0; chunk_start < initial_obj.sub_array.length; chunk_start += long_array_max) {
-            let chunk_end = chunk_start + long_array_max - 1;
-            let chunk_array_is_short = chunk_end > initial_obj.sub_array.length - 1;
+        for (let start = 0; start < initial_obj.sub_array.length; start += long_array_max) {
+            let end = start + long_array_max - 1;
+            let chunk_array_is_short = end > initial_obj.sub_array.length - 1;
             if (chunk_array_is_short) {
-                chunk_end = initial_obj.sub_array.length - 1;
+                end = initial_obj.sub_array.length - 1;
             }
-            const chunk_array = initial_obj.sub_array.slice(chunk_start, chunk_end + 1);
-
+            const chunk_array = initial_obj.sub_array.slice(start, end + 1);
+            let chunk_start = start;
+            let chunk_end = end;
             if (
                 typeof chunk_array[0].start !== "undefined" &&
                 typeof chunk_array[chunk_array.length - 1].end !== "undefined"
@@ -146,28 +147,22 @@ export function recursive_get_chunked_array(supplied = [], recurred = 0) {
                 //console.log("NO");
                 //chunked_array.push(...chunk_array);
             }
+            console.log("chunk_start", chunk_start, chunk_end);
 
+            //<-- problem
             if (
                 chunk_array_is_short &&
-                //chunk_array[0].start === "undefined"
-                //||
+                //typeof chunk_array[0].start === "undefined" &&
+                //typeof chunk_array[chunk_array.length - 1].end === "undefined"
                 chunk_start === chunk_array[0].start &&
                 chunk_end === chunk_array[chunk_array.length - 1].end
             ) {
-                //console.log("YES");
+                console.log("YES");
                 chunked_array.push(...chunk_array);
             } else {
-                //console.log("NO");
+                console.log("NO");
                 const chunk_obj = { start: chunk_start, end: chunk_end, sub_array: chunk_array };
-                console.log(
-                    "#######",
-                    initial_obj.start,
-                    initial_obj.end,
-                    chunk_start,
-                    chunk_end,
-                    chunk_obj,
-                    chunk_array_is_short
-                );
+                console.log("#######", start, end, chunk_start, chunk_end, chunk_obj, chunk_array_is_short);
                 chunked_array.push(chunk_obj);
             }
         }

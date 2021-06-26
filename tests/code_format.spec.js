@@ -136,8 +136,6 @@ test("recursive_get_chunked_array 10", async (t) => {
         ],
     };
     const output = recursive_get_chunked_array(input);
-    console.log("output", output.sub_array);
-    console.log("expected_output", expected_output.sub_array);
     t.deepEqual(output, expected_output);
 });
 
@@ -160,5 +158,44 @@ test("recursive_get_chunked_array 11", async (t) => {
         ],
     };
     const output = recursive_get_chunked_array(input);
+    t.deepEqual(output, expected_output);
+});
+
+test("recursive_get_chunked_array 21", async (t) => {
+    const input = new Array(22).fill("x").map((x, i) => i);
+    const expected_output = {
+        start: 0,
+        end: 21,
+        sub_array: [
+            {
+                start: 0,
+                end: 8,
+                sub_array: [
+                    { start: 0, end: 2, sub_array: [0, 1, 2] },
+                    { start: 3, end: 5, sub_array: [3, 4, 5] },
+                    { start: 6, end: 8, sub_array: [6, 7, 8] },
+                ],
+            },
+            {
+                start: 9,
+                end: 17,
+                sub_array: [
+                    { start: 9, end: 11, sub_array: [9, 10, 11] },
+                    { start: 12, end: 14, sub_array: [12, 13, 14] },
+                    { start: 15, end: 17, sub_array: [15, 16, 17] },
+                ],
+            },
+            {
+                start: 18,
+                end: 21,
+                sub_array: [
+                    { start: 18, end: 20, sub_array: [18, 19, 20] },
+                    { start: 21, end: 21, sub_array: [21] },
+                ],
+            },
+        ],
+    };
+    const output = recursive_get_chunked_array(input);
+    console.log(JSON.stringify(output));
     t.deepEqual(output, expected_output);
 });
