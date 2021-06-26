@@ -52,19 +52,22 @@ function appendRowsForArray(row_settings, arr) {
     }
 }
 
-function power(n, p) {
-    let result = n;
-    for (let index = 0; index < p; index++) {
-        result = result * n;
-    }
-    return result;
-}
-
-export function recursive_get_chunked_array(supplied = [], recurrence_count = 0) {
-    const long_array_max = 3; //10;
-    const max_recursions = 4;
+export function recursive_get_chunked_array(supplied = [], supplied_options = {}) {
+    const options = get_options();
+    const recurrence_count = options.recurrence_count;
+    const long_array_max = options.array_length_max;
+    const max_recursions = options.recurrence_max;
     const initial_obj = get_obj_from_arr_or_obj(supplied);
     return get_short_or_chunked_array();
+
+    function get_options() {
+        return {
+            recurrence_count: 0,
+            recurrence_max: 4,
+            array_length_max: 10,
+            ...supplied_options,
+        };
+    }
 
     function get_short_or_chunked_array() {
         if (initial_obj.sub_array.length > long_array_max) {
@@ -82,7 +85,7 @@ export function recursive_get_chunked_array(supplied = [], recurrence_count = 0)
     function recurse_or_return(chunked_array, initial_obj, recurrence_count) {
         if (chunked_array.length > long_array_max && recurrence_count < max_recursions) {
             initial_obj.sub_array = chunked_array;
-            return recursive_get_chunked_array(initial_obj, recurrence_count + 1);
+            return recursive_get_chunked_array(initial_obj, { ...options, recurrence_count: recurrence_count + 1 });
         } else {
             initial_obj.sub_array = chunked_array;
             return initial_obj;
