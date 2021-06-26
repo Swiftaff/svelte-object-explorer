@@ -1,6 +1,4 @@
 const indentSpaces = 2;
-const long_array_max = 3; //10;
-const max_recursions = 4;
 
 export default function convertObjectToArrayOfOutputPanelRows({ key, val }) {
     let arr = [];
@@ -62,213 +60,82 @@ function power(n, p) {
     return result;
 }
 
-/*
-function split_array_into_chunks(arr, chunk_length) {
-    let return_array = [];
-    for (let start = 0; start < arr.length + 1; start++) {
-        const end = (start + 1) * chunk_length > arr.length ? arr.length : (start + 1) * chunk_length;
-        const sub_array = arr.slice(start * chunk_length, end);
-        if (sub_array.length) {
-            //console.log("test", start, end, sub_array);
-            return_array.push(sub_array);
-        }
-    }
-    return return_array;
-}
-*/
-
-/*
-tests...
-1.
-x=3
-input=[0,1,2,3]
-recursive_get_chunked_children(supplied) =
-[{ start: 0, end: 3, sub_array:
-  [
-    { start: 0, end: 2, sub_array: [0,1,2]},
-    { start: 3, end: 3, sub_array: [3]}
-  ]
-}]
-
-2.
-x=3
-input=[0,1,2,3,4,5,6,7,8,9]
-recursive_get_chunked_children(supplied) =
-step a.
-[{ start: 0, end: 9, sub_array:
-  [
-    { start: 0, end: 2, sub_array: [0,1,2]},
-    { start: 3, end: 5, sub_array: [3,4,5]},
-    { start: 6, end: 8, sub_array: [6,7,8]},
-    { start: 9, end: 9, sub_array: [9]},
-  ]
-}]
-
-step b.
-[{ start: 0, end: 9, sub_array:
-  [
-    { start: 0, end: 8, sub_array:
-      [
-        { start: 0, end: 2, sub_array: [0,1,2]},
-        { start: 3, end: 5, sub_array: [3,4,5]},
-        { start: 6, end: 8, sub_array: [6,7,8]}
-      ],
-    { start: 9, end: 9, sub_array:
-      [
-        { start: 9, end: 9, sub_array: [9]}
-      ]
-    }
-  ]
-}]
-*/
-
-export function recursive_get_chunked_array(supplied = [], recurred = 0) {
-    console.log("##", recurred, supplied);
+export function recursive_get_chunked_array(supplied = [], recurrence_count = 0) {
+    const long_array_max = 3; //10;
+    const max_recursions = 4;
     const initial_obj = get_obj_from_arr_or_obj(supplied);
-    if (initial_obj.sub_array.length > long_array_max) {
-        let chunked_array = [];
-        for (let start = 0; start < initial_obj.sub_array.length; start += long_array_max) {
-            //get end
-            let end = start + long_array_max - 1;
-            let chunk_array_is_short = end > initial_obj.sub_array.length - 1;
-            if (chunk_array_is_short) {
-                end = initial_obj.sub_array.length - 1;
-            }
+    return get_short_or_chunked_array();
 
-            const chunk_array = initial_obj.sub_array.slice(start, end + 1);
-
-            //get chunk start and end depending on if its the root array or from child chunks arrays
-            let chunk_start = start;
-            let chunk_end = end;
-            const contains_child_chunks =
-                typeof chunk_array[0].start !== "undefined" &&
-                typeof chunk_array[chunk_array.length - 1].end !== "undefined";
-            console.log("###", start, end, chunk_start, chunk_end, chunk_array);
-            if (contains_child_chunks) {
-                chunk_start = chunk_array[0].start;
-                chunk_end = chunk_array[chunk_array.length - 1].end;
-            }
-
-            console.log("###", start, end, chunk_start, chunk_end, chunk_array, initial_obj, chunked_array);
-
-            //<-- problem
-            //what should this do?
-            // for tests 10 & 11 - avoid unecessarily nesting sub arrays which are the same as the current array
-            //
-            /*
-            if (
-                chunk_array_is_short &&
-                //typeof chunk_array[0].start === "undefined" &&
-                //typeof chunk_array[chunk_array.length - 1].end === "undefined"
-                chunk_start === chunk_array[0].start &&
-                chunk_end === chunk_array[chunk_array.length - 1].end
-            ) {
-                console.log("YES");
-                chunked_array.push(...chunk_array);
-            } else {
-            */
-
-            //console.log("NO");
-
-            let chunk_obj = { start: chunk_start, end: chunk_end, sub_array: chunk_array };
-            //if (chunk_start === start && chunk_end === end) {
-            //    console.log("WAH");
-            //    chunk_obj.chunk_array = chunk_array[0].sub_array;
-            //}
-            //console.log("#######", start, end, chunk_start, chunk_end, chunk_obj, chunk_array_is_short);
-
-            chunked_array.push(chunk_obj);
-            let this_chunk_object = chunked_array[chunked_array.length - 1];
-            console.log("####", chunked_array, this_chunk_object.sub_array);
-            let has_only_one_items = this_chunk_object.sub_array.length === 1;
-            let sub_item_start = this_chunk_object.sub_array[0].start;
-            let sub_item_end = this_chunk_object.sub_array[0].end;
-            if (
-                has_only_one_items &&
-                sub_item_start === this_chunk_object.start &&
-                sub_item_end === this_chunk_object.end
-            ) {
-                console.log("WAH2", sub_item_start, sub_item_end);
-                chunked_array[chunked_array.length - 1] = chunked_array[chunked_array.length - 1].sub_array[0];
-            }
-
-            //}
-        }
-
-        if (chunked_array.length > long_array_max && recurred < max_recursions) {
-            console.log("recurs");
-            initial_obj.sub_array = chunked_array;
-            return recursive_get_chunked_array(initial_obj, recurred + 1);
+    function get_short_or_chunked_array() {
+        if (initial_obj.sub_array.length > long_array_max) {
+            return get_recursive_chunked_array();
         } else {
-            /*
-            console.log(
-                "NO recurs",
-                chunked_array.length,
-                recurred,
-                chunked_array[0].start,
-                initial_obj.start,
-                chunked_array[chunked_array.length - 1].end,
-                initial_obj.end
-            );
-            */
-            console.log("NO recurs");
+            return supplied;
+        }
+    }
+
+    function get_recursive_chunked_array() {
+        const chunked_array = get_single_level_chunked_array(initial_obj);
+        return recurse_or_return(chunked_array, initial_obj, recurrence_count);
+    }
+
+    function recurse_or_return(chunked_array, initial_obj, recurrence_count) {
+        if (chunked_array.length > long_array_max && recurrence_count < max_recursions) {
+            initial_obj.sub_array = chunked_array;
+            return recursive_get_chunked_array(initial_obj, recurrence_count + 1);
+        } else {
             initial_obj.sub_array = chunked_array;
             return initial_obj;
         }
-    } else {
-        return supplied;
     }
-}
-
-export function recursive_get_chunked_children(supplied, recurred = 0) {
-    //console.log(recurred + ": recursive_get_chunked_children", supplied, recurred);
-    let obj = get_obj_from_arr_or_obj(supplied);
-    //console.log("obj", obj, recurred);
-    let temp_sub_array = [];
-    //let multiplier = long_array_max * recurred || 1;
-    let is_bottom_level = false;
-    for (let start = 0; start < obj.sub_array.length; start += long_array_max) {
-        //get end
-        let end;
-        if (start + long_array_max >= obj.sub_array.length) {
-            end = obj.sub_array.length - 1;
-            is_bottom_level = true;
-        } else {
-            end = start + long_array_max - 1;
+    function get_single_level_chunked_array(initial_obj) {
+        let chunked_array = [];
+        for (let start = 0; start < initial_obj.sub_array.length; start += long_array_max) {
+            const end = get_chunk_end(initial_obj, start);
+            const chunk_array = initial_obj.sub_array.slice(start, end + 1);
+            const chunk_obj = get_chunk_object(start, end, chunk_array);
+            chunked_array.push(chunk_obj);
+            chunked_array = get_chunked_array_without_duplicate_nested_last_item(chunked_array);
         }
-        let sub_array = obj.sub_array.slice(start, end + 1);
-        //get temp_obj
-        let temp_obj;
-        //if (typeof sub_array[0].start === "undefined" || typeof sub_array[sub_array.length - 1].end === "undefined")
-        //    is_bottom_level = true;
-        if (is_bottom_level) {
-            temp_obj = sub_array;
-            temp_sub_array.push(...temp_obj);
-        } else {
-            temp_obj = { start, end, sub_array };
-            if (
-                typeof sub_array[0].start === "undefined" ||
-                typeof sub_array[sub_array.length - 1].end === "undefined"
-            ) {
-                temp_obj = { start: start, end: end, sub_array };
-            } else {
-                temp_obj = { start: sub_array[0].start, end: sub_array[sub_array.length - 1].end, sub_array };
-            }
-            //temp_obj = { start: sub_array[0].start, end: sub_array[sub_array.length - 1].end, sub_array };
-            temp_sub_array.push(temp_obj);
-        }
-
-        //console.log(recurred + ": loop", temp_obj);
+        return chunked_array;
     }
-    //console.log("chunks", temp_sub_array.start, obj.start, temp_sub_array.end, obj.end);
-    let new_obj = { start: obj.start, end: obj.end, sub_array: temp_sub_array };
-    if (new_obj.sub_array.length <= long_array_max || recurred > max_recursions) {
-        //console.log("5a - return sub_array_object", new_obj);
-        return new_obj;
-    } else {
-        let next_level_down = recursive_get_chunked_children(new_obj, recurred + 1);
-        //console.log("5b - recurs", next_level_down);
-        return next_level_down;
+
+    function get_chunk_end(initial_obj, start) {
+        let end = start + long_array_max - 1;
+        let last_item_index = initial_obj.sub_array.length - 1;
+        let chunk_array_is_short = end > last_item_index;
+        if (chunk_array_is_short) end = last_item_index;
+        return end;
+    }
+
+    function get_chunk_object(chunk_start, chunk_end, chunk_array) {
+        //get chunk range depending on if its just the root array, or from range of all child chunks
+        const chunk_item_first = chunk_array[0];
+        const chunk_item_last = chunk_array[chunk_array.length - 1];
+        const contains_child_chunks =
+            //is not just a plain array, because it has start and end items
+            typeof chunk_item_first.start !== "undefined" && typeof chunk_item_last.end !== "undefined";
+        const start = contains_child_chunks ? chunk_array[0].start : chunk_start;
+        const end = contains_child_chunks ? chunk_array[chunk_array.length - 1].end : chunk_end;
+        return { start, end, sub_array: chunk_array };
+    }
+
+    function get_chunked_array_without_duplicate_nested_last_item(chunked_array) {
+        // this fixes tests 10 and 11 when the last item is a single item
+        // incorrectly looks like this: { start: 9, end: 9, sub_array: { start: 9, end: 9, sub_array: [9] } }
+        // correctly looks like this:   { start: 9, end: 9, sub_array: [9] }
+        let last_added_chunk_object = chunked_array[chunked_array.length - 1];
+        let has_only_one_items = last_added_chunk_object.sub_array.length === 1;
+        let sub_item_start = last_added_chunk_object.sub_array[0].start;
+        let sub_item_end = last_added_chunk_object.sub_array[0].end;
+        if (
+            has_only_one_items &&
+            sub_item_start === last_added_chunk_object.start &&
+            sub_item_end === last_added_chunk_object.end
+        ) {
+            chunked_array[chunked_array.length - 1] = chunked_array[chunked_array.length - 1].sub_array[0];
+        }
+        return chunked_array;
     }
 }
 

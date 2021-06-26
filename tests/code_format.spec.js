@@ -1,6 +1,6 @@
 const test = require("ava");
 
-import { recursive_get_chunked_array, recursive_get_chunked_children } from "../src/code_format.js";
+import { recursive_get_chunked_array } from "../src/code_format.js";
 
 test("recursive_get_chunked_array 0", async (t) => {
     const input = [];
@@ -136,7 +136,6 @@ test("recursive_get_chunked_array 10", async (t) => {
         ],
     };
     const output = recursive_get_chunked_array(input);
-    console.log(JSON.stringify(output));
     t.deepEqual(output, expected_output);
 });
 
@@ -286,5 +285,6 @@ test("recursive_get_chunked_array 28", async (t) => {
         ],
     };
     const output = recursive_get_chunked_array(input);
+    //console.log(JSON.stringify(output));
     t.deepEqual(output, expected_output);
 });
