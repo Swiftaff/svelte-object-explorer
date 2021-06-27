@@ -8,7 +8,7 @@
 {:else}
     <span>
         {#if isExpanded}{row.output.substring(0, row.output.length - 1)}{:else}{row.output}{/if}
-        {#if row.type}
+        {#if row.type && row.type !== "ARRAY+OBJECT" && row.type !== "ARRAY+SUB_ARRAY" && !row.output.includes("long arrays are chunked")}
             <span class="type">{row.type}</span>
         {/if}
         {#if row.len}

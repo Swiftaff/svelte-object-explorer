@@ -1,4 +1,5 @@
 const indentSpaces = 2;
+const max_array_length = 10;
 
 export default function convertObjectToArrayOfOutputPanelRows({ key, val }) {
     let arr = [];
@@ -10,16 +11,19 @@ export default function convertObjectToArrayOfOutputPanelRows({ key, val }) {
 }
 
 function appendRowsByType(row_settings, arr) {
-    let type = getTypeName(row_settings.val);
+    console.log(row_settings);
+    let type = getTypeName(row_settings.val, row_settings.type);
     let new_settings = { ...row_settings, type };
     if (type === "object") appendRowsForObject(new_settings, arr);
-    if (type === "array") appendRowsForArrayLarge(new_settings, arr);
+    if (type === "array") appendRowsForArray(new_settings, arr);
+    if (type === "ARRAY+") appendRowsForArrayLong(new_settings, arr); //not converted yet
+    if (type === "ARRAY+OBJECT") appendRowsForArrayLongObject(new_settings, arr); //converted
+    if (type === "ARRAY+SUB_ARRAY") appendRowsForArrayLongSubArray(new_settings, arr); //converted
     if (type === "string") appendRowForString(new_settings, arr);
 }
 
-function getTypeName(value) {
-    let type = getNullOrOtherType(value);
-    return type;
+function getTypeName(value, type) {
+    return type || getNullOrOtherType(value);
 
     function getNullOrOtherType(value) {
         return value === null ? "null" : getObjectOrStandardType(value);
@@ -30,32 +34,38 @@ function getTypeName(value) {
     }
 
     function getArrayOrObject(value) {
-        return Array.isArray(value) ? "array" : "object";
+        return Array.isArray(value) ? getArrayOrLongArray(value) : getObjectOrLongArraySubArray(value);
+    }
+
+    function getArrayOrLongArray(value) {
+        return value.length > max_array_length ? "ARRAY+" : "array";
+    }
+
+    function getObjectOrLongArraySubArray(value) {
+        const is_long_array_object =
+            typeof value.start !== "undefined" &&
+            typeof value.end !== "undefined" &&
+            typeof value.sub_array !== "undefined" &&
+            Array.isArray(value.sub_array);
+        if (is_long_array_object) console.log("YES");
+        return is_long_array_object ? "ARRAY+OBJECT" : "object";
     }
 }
 
 function appendRowsForObject(row_settings, arr) {
     const children = Object.entries(row_settings.val);
     const brackets = "{}";
-    arr.push(getRowForBracketOpen(row_settings, children, brackets, "object"));
+    arr.push(getRowForBracketOpen(row_settings, children.length, brackets, "object"));
     children.forEach(([k, v], i) => {
         appendRowsByType(getRowsForChild(row_settings, k, v, i), arr);
     });
     arr.push(getRowForBracketClose(row_settings, brackets[1]));
 }
 
-function appendRowsForArray(row_settings, arr) {
-    if (row_settings.val.length <= long_array_max) {
-        appendRowsForArraySmall(row_settings, arr);
-    } else {
-        appendRowsForArrayLarge(row_settings, arr);
-    }
-}
-
 export function recursive_get_chunked_array(supplied = [], supplied_options = {}) {
     const options = get_options();
     const recurrence_count = options.recurrence_count;
-    const long_array_max = options.array_length_max;
+    const array_length_max = options.array_length_max;
     const max_recursions = options.recurrence_max;
     const initial_obj = get_obj_from_arr_or_obj(supplied);
     return get_short_or_chunked_array();
@@ -64,13 +74,18 @@ export function recursive_get_chunked_array(supplied = [], supplied_options = {}
         return {
             recurrence_count: 0,
             recurrence_max: 4,
-            array_length_max: 10,
+            array_length_max: max_array_length,
             ...supplied_options,
         };
     }
 
+    function get_obj_from_arr_or_obj(supplied) {
+        if (Array.isArray(supplied)) return { start: 0, end: supplied.length - 1, sub_array: supplied };
+        else return supplied;
+    }
+
     function get_short_or_chunked_array() {
-        if (initial_obj.sub_array.length > long_array_max) {
+        if (initial_obj.sub_array.length > array_length_max) {
             return get_recursive_chunked_array();
         } else {
             return supplied;
@@ -83,7 +98,7 @@ export function recursive_get_chunked_array(supplied = [], supplied_options = {}
     }
 
     function recurse_or_return(chunked_array, initial_obj, recurrence_count) {
-        if (chunked_array.length > long_array_max && recurrence_count < max_recursions) {
+        if (chunked_array.length > array_length_max && recurrence_count < max_recursions) {
             initial_obj.sub_array = chunked_array;
             return recursive_get_chunked_array(initial_obj, { ...options, recurrence_count: recurrence_count + 1 });
         } else {
@@ -93,7 +108,7 @@ export function recursive_get_chunked_array(supplied = [], supplied_options = {}
     }
     function get_single_level_chunked_array(initial_obj) {
         let chunked_array = [];
-        for (let start = 0; start < initial_obj.sub_array.length; start += long_array_max) {
+        for (let start = 0; start < initial_obj.sub_array.length; start += array_length_max) {
             const end = get_chunk_end(initial_obj, start);
             const chunk_array = initial_obj.sub_array.slice(start, end + 1);
             const chunk_obj = get_chunk_object(start, end, chunk_array);
@@ -104,7 +119,7 @@ export function recursive_get_chunked_array(supplied = [], supplied_options = {}
     }
 
     function get_chunk_end(initial_obj, start) {
-        let end = start + long_array_max - 1;
+        let end = start + array_length_max - 1;
         let last_item_index = initial_obj.sub_array.length - 1;
         let chunk_array_is_short = end > last_item_index;
         if (chunk_array_is_short) end = last_item_index;
@@ -142,44 +157,38 @@ export function recursive_get_chunked_array(supplied = [], supplied_options = {}
     }
 }
 
-function get_obj_from_arr_or_obj(supplied) {
-    if (Array.isArray(supplied)) return { start: 0, end: supplied.length - 1, sub_array: supplied };
-    else return supplied;
-}
-
-function appendRowsForArrayLarge(row_settings, arr) {
-    const children = row_settings.val;
-    //console.log(children);
-    let index = 0;
+function appendRowsForArray(row_settings, arr) {
+    let children = row_settings.val;
     const brackets = "[]";
-    const type = children.length > long_array_max ? "array+" : "array";
-    arr.push(getRowForBracketOpen(row_settings, [], brackets, type));
-
-    let transformed_children_array = children;
-    let nesting = 0;
-    //console.log("0. ", transformed_children_array, transformed_children_array.length - 1);
-
-    //if (transformed_children_array.length > long_array_max) {
-
-    for (let index = 0; index < 30; index++) {
-        if (index > 2) {
-            // N 3 = [ 0, 1, 2 ]
-            // Y 4 = {[ {[ 0, 1, 2 ]}, 3 ]}
-            const longarray = new Array(index).fill("x").map((x, i) => "" + i);
-            const ret = recursive_get_chunked_children(longarray);
-            console.log(index, ret, longarray);
-        }
+    arr.push(getRowForBracketOpen(row_settings, children.length, brackets, row_settings.type));
+    for (let i = 0; i < children.length; i++) {
+        appendRowsByType(getRowsForChild(row_settings, i, children[i], i), arr);
     }
-
-    //}
-
     arr.push(getRowForBracketClose(row_settings, brackets[1]));
 }
 
-function appendRowsForArraySmall(row_settings, arr) {
-    const children = row_settings.val;
+function appendRowsForArrayLong(row_settings, arr) {
+    const converted = recursive_get_chunked_array(row_settings.val);
+    appendRowsForArrayLongObject({ ...row_settings, val: converted }, arr);
+}
+
+function appendRowsForArrayLongObject(row_settings, arr) {
+    const item = row_settings.val;
     const brackets = "[]";
-    arr.push(getRowForBracketOpen(row_settings, children, brackets, "array"));
+    arr.push(getRowForBracketOpen(row_settings, item.end + 1, brackets, row_settings.type));
+    //console.log("!!!", row_settings);
+    appendRowForString(getRowsForChild({ ...row_settings, type: "" }, "long arrays are chunked", "", 0), arr);
+    appendRowsForArrayLongSubArray(
+        getRowsForChild(row_settings, "{" + item.start + "..." + item.end + "}", item.sub_array, 1),
+        arr
+    );
+    arr.push(getRowForBracketClose(row_settings, brackets[1]));
+}
+
+function appendRowsForArrayLongSubArray(row_settings, arr) {
+    let children = row_settings.val;
+    const brackets = "[]";
+    arr.push(getRowForBracketOpen(row_settings, children.length, brackets, row_settings.type));
     for (let i = 0; i < children.length; i++) {
         appendRowsByType(getRowsForChild(row_settings, i, children[i], i), arr);
     }
@@ -191,11 +200,11 @@ function appendRowForString(row_settings, arr) {
     arr.push({ ...rest, output: indent_row(key + ": " + val, level), type: "string" });
 }
 
-function getRowForBracketOpen(row_settings, children, brackets, type) {
+function getRowForBracketOpen(row_settings, len, brackets, type) {
     //const items = children.length + " item" + (children.length > 1 ? "s" : "");
     const text = row_settings.key + ": " + brackets; //brackets[0] + " " + items + " " + brackets[1];
     const output = indent_row(text, row_settings.level);
-    return { ...row_settings, output, type, bracket: true, expandable: true, len: children.length };
+    return { ...row_settings, output, type, bracket: true, expandable: true, len };
 }
 
 function getRowForBracketClose(row_settings, close_bracket) {
