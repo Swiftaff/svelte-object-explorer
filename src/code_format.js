@@ -177,22 +177,45 @@ function appendRowsForArrayLongObject(row_settings, arr) {
     const brackets = "[]";
     arr.push(getRowForBracketOpen(row_settings, item.end + 1, brackets, row_settings.type));
     //console.log("!!!", row_settings);
-    appendRowForString(getRowsForChild({ ...row_settings, type: "" }, "long arrays are chunked", "", 0), arr);
+    //appendRowForString(getRowsForChild({ ...row_settings, type: "" }, "long arrays are chunked", "", 0), arr);
     appendRowsForArrayLongSubArray(
-        getRowsForChild(row_settings, "{" + item.start + "..." + item.end + "}", item.sub_array, 1),
-        arr
+        getRowsForChild(row_settings, "long arrays are chunked", item.sub_array, 1),
+        arr,
+        item.start
     );
     arr.push(getRowForBracketClose(row_settings, brackets[1]));
 }
 
-function appendRowsForArrayLongSubArray(row_settings, arr) {
-    let children = row_settings.val;
-    const brackets = "[]";
-    arr.push(getRowForBracketOpen(row_settings, children.length, brackets, row_settings.type));
-    for (let i = 0; i < children.length; i++) {
-        appendRowsByType(getRowsForChild(row_settings, i, children[i], i), arr);
+function appendRowsForArrayLongSubArray(row_settings, arr, parent_item_start) {
+    let item = row_settings.val;
+    const brackets = "...[]";
+    //arr.push(getRowForBracketOpen(row_settings, item.length, brackets, row_settings.type));
+    for (let i = 0; i < item.length; i++) {
+        //let temp = item.sub_array[i].sub_array ? item.sub_array[i].sub_array : item.sub_array[i];
+        //appendRowsByType(getRowsForChild(row_settings, getLongArrayRange(item.sub_array[i]), temp, i), arr);
+
+        //appendRowsByType(
+        //    getRowsForChild(row_settings, getLongArrayRange(item[i], parent_item_start + i), item[i], i),
+        //    arr
+        //);
+
+        appendRowsByType(
+            {
+                ...row_settings,
+                key: getLongArrayRange(item[i], parent_item_start + i),
+                val: item[i],
+                indexRef: row_settings.indexRef + "." + i,
+            },
+            arr
+        );
     }
-    arr.push(getRowForBracketClose(row_settings, brackets[1]));
+    //arr.push(getRowForBracketClose(row_settings, brackets[brackets.length - 1]));
+}
+
+function getLongArrayRange(long_array_object, i) {
+    return typeof long_array_object !== "undefined" && typeof long_array_object.start !== "undefined"
+        ? "{" + long_array_object.start + ".." + long_array_object.end + "}"
+        : i;
 }
 
 function appendRowForString(row_settings, arr) {
