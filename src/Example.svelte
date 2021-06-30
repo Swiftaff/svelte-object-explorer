@@ -36,6 +36,8 @@
         boolean2: false,
         null: null,
         undefined: undefined,
+        symbol1: Symbol(),
+        symbol2: Symbol("foo"),
         variousTypes: {
             /*
             arrowfunction: () => {},
