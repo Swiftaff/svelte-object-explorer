@@ -60,7 +60,7 @@
                 cache.dataChanges = cache.dataChanges + 1;
             }
             if (cache.dataUpdated - cache.viewUpdated > rateLimit && !isPaused) {
-                cache.myStore = JSON.parse(JSON.stringify(myStore));
+                cache.myStore = myStore; //JSON.parse(JSON.stringify(myStore)); //note: strips out undefined keys
                 cache.viewChanges = cache.viewChanges + 1;
                 cache.viewUpdated = new Date();
                 cache.formatted = formatDate(cache.viewUpdated);

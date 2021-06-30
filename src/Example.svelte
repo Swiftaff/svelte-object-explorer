@@ -17,8 +17,7 @@
     incr();
 
     const longarray = new Array(101).fill("x").map((x, i) => "" + i);
-    console.log("longarray", longarray);
-
+    //console.log("longarray", longarray);
     let myStore = {
         string1: "testy",
         string2: "testy",
@@ -33,27 +32,17 @@
         },
         number1: 123,
         number2: 123.456789,
+        boolean1: true,
+        boolean2: false,
+        null: null,
+        undefined: undefined,
         variousTypes: {
-            //boolean: true,
-            string: "test",
             /*
-            number: 123,
-            array: [[["test1", "test2"], "test2"], "test2"],
-            longarray: new Array(4000).fill("test"),
-            object: {
-                test1: {
-                    test1: { test1: { test1: "test1", test2: "test2" }, test2: "test2" },
-                    test2: "test2",
-                },
-                test2: "test2",
-            },
             arrowfunction: () => {},
             function: function test() {
                 console.log("test");
             },
             symbol: Symbol(),
-            null: null,
-            undefined: typeof bananaman,
           */
         },
         //SvelteVariable: counter,

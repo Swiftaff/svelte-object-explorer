@@ -11,19 +11,19 @@ export default function convertObjectToArrayOfOutputPanelRows({ key, val }) {
 }
 
 function appendRowsByType(row_settings, arr) {
-    console.log(row_settings);
-    let type = getTypeName(row_settings.val, row_settings.type);
+    //console.log(row_settings);
+    let type = getTypeName(row_settings.val, row_settings.type, row_settings.key);
     let new_settings = { ...row_settings, type };
     if (type === "object") appendRowsForObject(new_settings, arr);
     if (type === "array") appendRowsForArray(new_settings, arr);
     if (type === "ARRAY+") appendRowsForArrayLong(new_settings, arr); //not converted yet
     if (type === "ARRAY+OBJECT") appendRowsForArrayLongObject(new_settings, arr); //converted
     if (type === "ARRAY+SUB_ARRAY") appendRowsForArrayLongSubArray(new_settings, arr); //converted
-    if (type === "string") appendRowForString(new_settings, arr);
-    if (type === "number") appendRowForNumber(new_settings, arr);
+    if (type === "string" || type === "number" || type === "boolean" || type === "null" || type === "undefined")
+        appendRowForSimpleTypes(new_settings, arr);
 }
 
-function getTypeName(value, type) {
+function getTypeName(value, type, key) {
     return type || getNullOrOtherType(value);
 
     function getNullOrOtherType(value) {
@@ -48,7 +48,7 @@ function getTypeName(value, type) {
             typeof value.end !== "undefined" &&
             typeof value.sub_array !== "undefined" &&
             Array.isArray(value.sub_array);
-        if (is_long_array_object) console.log("YES");
+        //if (is_long_array_object) console.log("YES");
         return is_long_array_object ? "ARRAY+OBJECT" : "object";
     }
 }
@@ -209,14 +209,9 @@ function getLongArrayRange(long_array_object, i) {
         : i;
 }
 
-function appendRowForString(row_settings, arr) {
+function appendRowForSimpleTypes(row_settings, arr) {
     let { key, val, level, ...rest } = row_settings;
-    arr.push({ ...rest, output: indent_row(key + ": " + val, level), type: "string" });
-}
-
-function appendRowForNumber(row_settings, arr) {
-    let { key, val, level, ...rest } = row_settings;
-    arr.push({ ...rest, output: indent_row(key + ": " + val, level), type: "number" });
+    arr.push({ ...rest, output: indent_row(key + ": " + val, level) });
 }
 
 function getRowForBracketOpen(row_settings, len, brackets, type) {
