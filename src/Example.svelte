@@ -31,6 +31,8 @@
             },
             test2: "test2",
         },
+        number1: 123,
+        number2: 123.456789,
         variousTypes: {
             //boolean: true,
             string: "test",

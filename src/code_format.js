@@ -20,6 +20,7 @@ function appendRowsByType(row_settings, arr) {
     if (type === "ARRAY+OBJECT") appendRowsForArrayLongObject(new_settings, arr); //converted
     if (type === "ARRAY+SUB_ARRAY") appendRowsForArrayLongSubArray(new_settings, arr); //converted
     if (type === "string") appendRowForString(new_settings, arr);
+    if (type === "number") appendRowForNumber(new_settings, arr);
 }
 
 function getTypeName(value, type) {
@@ -189,16 +190,7 @@ function appendRowsForArrayLongObject(row_settings, arr) {
 function appendRowsForArrayLongSubArray(row_settings, arr, parent_item_start) {
     let item = row_settings.val;
     const brackets = "...[]";
-    //arr.push(getRowForBracketOpen(row_settings, item.length, brackets, row_settings.type));
     for (let i = 0; i < item.length; i++) {
-        //let temp = item.sub_array[i].sub_array ? item.sub_array[i].sub_array : item.sub_array[i];
-        //appendRowsByType(getRowsForChild(row_settings, getLongArrayRange(item.sub_array[i]), temp, i), arr);
-
-        //appendRowsByType(
-        //    getRowsForChild(row_settings, getLongArrayRange(item[i], parent_item_start + i), item[i], i),
-        //    arr
-        //);
-
         appendRowsByType(
             {
                 ...row_settings,
@@ -209,7 +201,6 @@ function appendRowsForArrayLongSubArray(row_settings, arr, parent_item_start) {
             arr
         );
     }
-    //arr.push(getRowForBracketClose(row_settings, brackets[brackets.length - 1]));
 }
 
 function getLongArrayRange(long_array_object, i) {
@@ -221,6 +212,11 @@ function getLongArrayRange(long_array_object, i) {
 function appendRowForString(row_settings, arr) {
     let { key, val, level, ...rest } = row_settings;
     arr.push({ ...rest, output: indent_row(key + ": " + val, level), type: "string" });
+}
+
+function appendRowForNumber(row_settings, arr) {
+    let { key, val, level, ...rest } = row_settings;
+    arr.push({ ...rest, output: indent_row(key + ": " + val, level), type: "number" });
 }
 
 function getRowForBracketOpen(row_settings, len, brackets, type) {
