@@ -55,12 +55,24 @@
 
     function refreshDataAndCache() {
         if (toggle) {
-            if (JSON.stringify(myStore) !== JSON.stringify(cache.myStore)) {
+            /*
+            attempt to allow bigint
+            const stringifiedMyStore = JSON.stringify(myStore, (key, value) =>
+                typeof value === "bigint" ? value.toString() + "n" : value
+            );
+            const stringifiedMyStoreCache = JSON.stringify(cache.myStore, (key, value) =>
+                typeof value === "bigint" ? value.toString() + "n" : value
+            );
+            */
+            const stringifiedMyStore = JSON.stringify(myStore);
+            const stringifiedMyStoreCache = JSON.stringify(cache.myStore);
+
+            if (stringifiedMyStore !== stringifiedMyStoreCache) {
                 cache.dataUpdated = new Date();
                 cache.dataChanges = cache.dataChanges + 1;
             }
             if (cache.dataUpdated - cache.viewUpdated > rateLimit && !isPaused) {
-                cache.myStore = myStore; //JSON.parse(JSON.stringify(myStore)); //note: strips out undefined keys
+                cache.myStore = myStore;
                 cache.viewChanges = cache.viewChanges + 1;
                 cache.viewUpdated = new Date();
                 cache.formatted = formatDate(cache.viewUpdated);

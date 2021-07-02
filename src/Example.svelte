@@ -15,9 +15,7 @@
     }
 
     incr();
-
     const longarray = new Array(101).fill("x").map((x, i) => "" + i);
-    //console.log("longarray", longarray);
     let myStore = {
         string1: "testy",
         string2: "testy",
@@ -38,14 +36,13 @@
         undefined: undefined,
         symbol1: Symbol(),
         symbol2: Symbol("foo"),
-        variousTypes: {
-            /*
-            arrowfunction: () => {},
-            function: function test() {
-                console.log("test");
-            },
-            symbol: Symbol(),
-          */
+        arrowfunction: () => {},
+        arrowfunction2: (a, b, c, d) => {
+            console.log("test");
+            arrowfunction();
+        },
+        function: function test(a, b, c, d) {
+            console.log("test");
         },
         //SvelteVariable: counter,
         //customStore: count,

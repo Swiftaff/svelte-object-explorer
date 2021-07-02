@@ -21,6 +21,7 @@ function appendRowsByType(row_settings, arr) {
     if (type === "ARRAY+SUB_ARRAY") appendRowsForArrayLongSubArray(new_settings, arr); //converted
     if (simpleTypes.includes(type)) appendRowForSimpleTypes(new_settings, arr);
     if (type === "symbol") appendRowForSymbol(new_settings, arr);
+    if (type === "function") appendRowForFunction(new_settings, arr);
 }
 
 function getTypeName(value, type, key) {
@@ -214,6 +215,23 @@ function appendRowForSimpleTypes(row_settings, arr) {
     arr.push({ ...rest, output: indent_row(key + ": " + val, level) });
 }
 
+function appendRowForFunction(row_settings, arr) {
+    const { key, val, level, ...rest } = row_settings;
+    const val_as_string = "" + val;
+    const val_as_array = val_as_string.split("\n");
+
+    const brackets = "{}";
+    const type = val_as_array[0] && val_as_array[0].substring(0, 1) === "f" ? "function" : "arrow fn";
+    arr.push(getRowForBracketOpen(row_settings, val_as_array.length, brackets, type));
+    for (let i = 0; i < val_as_array.length; i++) {
+        const formula_row = val_as_array[i].trim();
+        if (!formula_row.length) continue;
+        console.log(val_as_array[i], formula_row);
+        appendRowsByType(getRowsForChild(row_settings, i, formula_row, i), arr);
+    }
+    arr.push(getRowForBracketClose(row_settings, brackets[1]));
+}
+
 function appendRowForSymbol(row_settings, arr) {
     const { key, val, level, ...rest } = row_settings;
     let sym = val.toString();
@@ -240,11 +258,11 @@ function getRowsForChild(row_settings, key, val, index) {
     return { indexRef, parentIndexRef, index, key, val, level };
 }
 
-//bigint?
+function indent_row(row, level) {
+    return " ".repeat(level * indentSpaces) + row;
+}
 
 // --- old below
-
-//formatByType("0.0", "0", 0, parentArr, object, 0);
 
 function code_format_function(row_object, parentArr, fn) {
     //indexRef, parentIndexRef, index, parentArr, fn, level, optionalIndex
@@ -294,21 +312,4 @@ function code_format_svelte_explorer_tag(
             );
         }
     });
-}
-
-function code_format_unknown(indexRef, parentIndexRef, index, parentArr, level, optionalIndex) {
-    parentArr.push({
-        indexRef,
-        parentIndexRef,
-        index,
-        output: indent_row(code_format_index(optionalIndex) + "!!unknown!!", level),
-    });
-}
-
-function code_format_index(optionalIndex) {
-    return typeof optionalIndex !== "undefined" ? optionalIndex + ": " : "";
-}
-
-function indent_row(row, level) {
-    return " ".repeat(level * indentSpaces) + row;
 }
