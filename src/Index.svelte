@@ -9,11 +9,14 @@
     import lib from "../src/lib.js";
     import transform_data from "../src/transform_data.js";
 
+    let rateLimitDefault = 100;
+    let stringifiedMyStoreCache = "";
+
     export let myStore;
     export let tabPosition = "top";
     export let open = null;
     export let fade = false;
-    export let rateLimit = 100;
+    export let rateLimit = rateLimitDefault;
     export let initialToggleState = true;
 
     let isPaused = false;
@@ -39,9 +42,9 @@
     let mainLoop;
 
     $: if (toggle) rowsToShow = showAll ? showAllArr : showManuallySelected;
+    $: if (rateLimit === null) rateLimit = rateLimitDefault;
 
     onMount(async () => {
-        //console.log(isPaused);
         rowsToShow = showAll ? showAllArr : showManuallySelected;
         if (!myStore) myStore = lib.domParser();
         mainLoop = timer();
@@ -65,17 +68,19 @@
             );
             */
             const stringifiedMyStore = JSON.stringify(myStore);
-            const stringifiedMyStoreCache = JSON.stringify(cache.myStore);
-
             if (stringifiedMyStore !== stringifiedMyStoreCache) {
                 cache.dataUpdated = new Date();
                 cache.dataChanges = cache.dataChanges + 1;
+                stringifiedMyStoreCache = stringifiedMyStore;
             }
-            if (cache.dataUpdated - cache.viewUpdated > rateLimit && !isPaused) {
+            const time_since_last_check = cache.dataUpdated - cache.viewUpdated;
+            if (time_since_last_check > rateLimit && !isPaused) {
                 cache.myStore = myStore;
                 cache.viewChanges = cache.viewChanges + 1;
                 cache.viewUpdated = new Date();
+                cache.dataUpdated = cache.viewUpdated;
                 cache.formatted = formatDate(cache.viewUpdated);
+                stringifiedMyStoreCache = JSON.stringify(cache.myStore);
 
                 topLevelObjectArray = transform_data.transform_data(cache); //this should trigger a redraw
                 //if (!openIndexSetOnce)
@@ -128,12 +133,10 @@
 
     function unpause() {
         isPaused = false;
-        console.log(isPaused);
     }
 
     function pause() {
         isPaused = true;
-        console.log(isPaused);
     }
 </script>
 

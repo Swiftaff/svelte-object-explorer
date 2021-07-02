@@ -9,59 +9,62 @@
     ];
 
     function incr() {
-        //setInterval(() => {
-        //    counter++;
-        //}, 100);
+        setInterval(() => {
+            counter++;
+        }, 1000);
     }
 
     incr();
     const longarray = new Array(101).fill("x").map((x, i) => "" + i);
-    let myStore = {
-        string1: "testy",
-        string2: "testy",
-        array: [[["test1", "test2"], "test2"], "test2"],
-        longarray,
-        object: {
-            test1: {
-                test1: { test1: { test1: "test1", test2: "test2" }, test2: "test2" },
+    let myStore;
+    $: if (counter || $count) {
+        myStore = {
+            string1: "testy",
+            string2: "testy",
+            array: [[["test1", "test2"], "test2"], "test2"],
+            longarray,
+            object: {
+                test1: {
+                    test1: { test1: { test1: "test1", test2: "test2" }, test2: "test2" },
+                    test2: "test2",
+                },
                 test2: "test2",
             },
-            test2: "test2",
-        },
-        number1: 123,
-        number2: 123.456789,
-        boolean1: true,
-        boolean2: false,
-        null: null,
-        undefined: undefined,
-        symbol1: Symbol(),
-        symbol2: Symbol("foo"),
-        arrowfunction: () => {},
-        arrowfunction2: (a, b, c, d) => {
-            console.log("long, long, long, long comment test");
-            arrowfunction();
-        },
-        function: function test(a, b, c, d) {
-            console.log("test");
-        },
-        deep: {
+            number1: 123,
+            number2: 123.456789,
+            boolean1: true,
+            boolean2: false,
+            null: null,
+            undefined: undefined,
+            symbol1: Symbol(),
+            symbol2: Symbol("foo"),
+            arrowfunction: () => {},
+            arrowfunction2: (a, b, c, d) => {
+                console.log("long, long, long, long comment test");
+                arrowfunction();
+            },
+            function: function test(a, b, c, d) {
+                console.log("test");
+            },
             deep: {
                 deep: {
                     deep: {
                         deep: {
-                            arrowfunction2: (a, b, c, d) => {
-                                console.log("long, long, long, long comment test");
-                                arrowfunction();
+                            deep: {
+                                arrowfunction2: (a, b, c, d) => {
+                                    console.log("long, long, long, long comment test");
+                                    arrowfunction();
+                                },
                             },
                         },
                     },
                 },
             },
-        },
-        //SvelteVariable: counter,
-        //customStore: count,
-        //customStoreValue: $count,
-    };
+            SvelteVariable: counter,
+            customStore: count,
+            customStoreValue: $count,
+        };
+    }
 
     let params = new URL(document.location).searchParams;
     let open = params.get("open");
