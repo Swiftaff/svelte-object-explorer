@@ -213,11 +213,9 @@ function getLongArrayRange(long_array_object, i) {
 
 function appendRowForSimpleTypes(row_settings, arr) {
     const { key, val, level, ...rest } = row_settings;
-    if (val && "" + val.length > max_line_length - level * indentSpaces) {
-        appendRowForSimpleTypesMultiLine(row_settings, arr);
-    } else {
-        arr.push({ ...rest, output: indent_row(key + ": " + val, level) });
-    }
+    const row_is_too_wide = val && "" + val.length > max_line_length - level * indentSpaces;
+    if (row_is_too_wide) appendRowForSimpleTypesMultiLine(row_settings, arr);
+    else arr.push({ ...rest, output: indent_row(key + ": " + val, level) });
 }
 
 function appendRowForSimpleTypesMultiLine(row_settings, arr) {
@@ -225,16 +223,17 @@ function appendRowForSimpleTypesMultiLine(row_settings, arr) {
     const available_chars_based_on_indent = max_line_length - level * indentSpaces;
     const regex_to_split_into_chunks = new RegExp("[^]{1," + available_chars_based_on_indent + "}", "gi");
     const array_of_rows = ("" + val).match(regex_to_split_into_chunks);
+    const index_and_no_indent_in_first_row = (str, i) =>
+        i ? indent_row(" " + str, level + 1) : indent_row("" + (i + 1) + ": " + str, level);
+    const only_show_type_in_first_row = (settings, i) => (i ? "" : settings.type);
     let new_row_settings = row_settings;
-    array_of_rows.map((a, i) => {
-        const output = i
-            ? //indent all rows except first. Only have index in first row
-              indent_row(" " + a, level + 1)
-            : indent_row("" + (i + 1) + ": " + a, level);
-        new_row_settings = { ...new_row_settings, output, type: i ? "" : new_row_settings.type };
+    const push_each_row = (a, i) => {
+        const output = index_and_no_indent_in_first_row(a, i);
+        new_row_settings = { ...new_row_settings, output, type: only_show_type_in_first_row(new_row_settings, i) };
         // we don't change the indexRef - so that all rows have the same row reference and highlight together
         arr.push(new_row_settings, arr);
-    });
+    };
+    array_of_rows.map(push_each_row);
 }
 
 function appendRowForFunction(row_settings, arr) {

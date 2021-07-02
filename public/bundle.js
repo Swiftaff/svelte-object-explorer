@@ -2070,67 +2070,87 @@ var app = (function () {
 
     const file$8 = "src/RowText.svelte";
 
-    // (7:0) {:else}
+    // (8:0) {:else}
     function create_else_block$3(ctx) {
     	let span;
-    	let t0_value = /*row*/ ctx[0].output + "";
     	let t0;
+    	let show_if = /*row*/ ctx[0].type && /*row*/ ctx[0].type !== "ARRAY+OBJECT" && /*row*/ ctx[0].type !== "ARRAY+SUB_ARRAY" && !/*row*/ ctx[0].output.includes("long arrays are chunked");
     	let t1;
-    	let t2;
-    	let if_block0 = /*row*/ ctx[0].type && create_if_block_2(ctx);
-    	let if_block1 = /*row*/ ctx[0].len && create_if_block_1$1(ctx);
+
+    	function select_block_type_1(ctx, dirty) {
+    		if (/*isExpanded*/ ctx[1]) return create_if_block_3;
+    		return create_else_block_1;
+    	}
+
+    	let current_block_type = select_block_type_1(ctx);
+    	let if_block0 = current_block_type(ctx);
+    	let if_block1 = show_if && create_if_block_2(ctx);
+    	let if_block2 = /*row*/ ctx[0].len && create_if_block_1$1(ctx);
 
     	const block = {
     		c: function create() {
     			span = element("span");
-    			t0 = text(t0_value);
-    			t1 = space();
-    			if (if_block0) if_block0.c();
-    			t2 = space();
+    			if_block0.c();
+    			t0 = space();
     			if (if_block1) if_block1.c();
-    			add_location(span, file$8, 7, 0, 79);
+    			t1 = space();
+    			if (if_block2) if_block2.c();
+    			add_location(span, file$8, 8, 0, 110);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, span, anchor);
+    			if_block0.m(span, null);
     			append_dev(span, t0);
-    			append_dev(span, t1);
-    			if (if_block0) if_block0.m(span, null);
-    			append_dev(span, t2);
     			if (if_block1) if_block1.m(span, null);
+    			append_dev(span, t1);
+    			if (if_block2) if_block2.m(span, null);
     		},
     		p: function update(ctx, dirty) {
-    			if (dirty & /*row*/ 1 && t0_value !== (t0_value = /*row*/ ctx[0].output + "")) set_data_dev(t0, t0_value);
-
-    			if (/*row*/ ctx[0].type) {
-    				if (if_block0) {
-    					if_block0.p(ctx, dirty);
-    				} else {
-    					if_block0 = create_if_block_2(ctx);
-    					if_block0.c();
-    					if_block0.m(span, t2);
-    				}
-    			} else if (if_block0) {
+    			if (current_block_type === (current_block_type = select_block_type_1(ctx)) && if_block0) {
+    				if_block0.p(ctx, dirty);
+    			} else {
     				if_block0.d(1);
-    				if_block0 = null;
+    				if_block0 = current_block_type(ctx);
+
+    				if (if_block0) {
+    					if_block0.c();
+    					if_block0.m(span, t0);
+    				}
     			}
 
-    			if (/*row*/ ctx[0].len) {
+    			if (dirty & /*row*/ 1) show_if = /*row*/ ctx[0].type && /*row*/ ctx[0].type !== "ARRAY+OBJECT" && /*row*/ ctx[0].type !== "ARRAY+SUB_ARRAY" && !/*row*/ ctx[0].output.includes("long arrays are chunked");
+
+    			if (show_if) {
     				if (if_block1) {
     					if_block1.p(ctx, dirty);
     				} else {
-    					if_block1 = create_if_block_1$1(ctx);
+    					if_block1 = create_if_block_2(ctx);
     					if_block1.c();
-    					if_block1.m(span, null);
+    					if_block1.m(span, t1);
     				}
     			} else if (if_block1) {
     				if_block1.d(1);
     				if_block1 = null;
     			}
+
+    			if (/*row*/ ctx[0].len) {
+    				if (if_block2) {
+    					if_block2.p(ctx, dirty);
+    				} else {
+    					if_block2 = create_if_block_1$1(ctx);
+    					if_block2.c();
+    					if_block2.m(span, null);
+    				}
+    			} else if (if_block2) {
+    				if_block2.d(1);
+    				if_block2 = null;
+    			}
     		},
     		d: function destroy(detaching) {
     			if (detaching) detach_dev(span);
-    			if (if_block0) if_block0.d();
+    			if_block0.d();
     			if (if_block1) if_block1.d();
+    			if (if_block2) if_block2.d();
     		}
     	};
 
@@ -2138,14 +2158,14 @@ var app = (function () {
     		block,
     		id: create_else_block$3.name,
     		type: "else",
-    		source: "(7:0) {:else}",
+    		source: "(8:0) {:else}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (5:0) {#if row.type === "Tag"}
+    // (6:0) {#if row.type === "Tag"}
     function create_if_block$4(ctx) {
     	let t_value = /*row*/ ctx[0].tag + "";
     	let t;
@@ -2169,14 +2189,76 @@ var app = (function () {
     		block,
     		id: create_if_block$4.name,
     		type: "if",
-    		source: "(5:0) {#if row.type === \\\"Tag\\\"}",
+    		source: "(6:0) {#if row.type === \\\"Tag\\\"}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (10:0) {#if row.type}
+    // (10:64) {:else}
+    function create_else_block_1(ctx) {
+    	let t_value = /*row*/ ctx[0].output + "";
+    	let t;
+
+    	const block = {
+    		c: function create() {
+    			t = text(t_value);
+    		},
+    		m: function mount(target, anchor) {
+    			insert_dev(target, t, anchor);
+    		},
+    		p: function update(ctx, dirty) {
+    			if (dirty & /*row*/ 1 && t_value !== (t_value = /*row*/ ctx[0].output + "")) set_data_dev(t, t_value);
+    		},
+    		d: function destroy(detaching) {
+    			if (detaching) detach_dev(t);
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_else_block_1.name,
+    		type: "else",
+    		source: "(10:64) {:else}",
+    		ctx
+    	});
+
+    	return block;
+    }
+
+    // (10:0) {#if isExpanded}
+    function create_if_block_3(ctx) {
+    	let t_value = /*row*/ ctx[0].output.substring(0, /*row*/ ctx[0].output.length - 1) + "";
+    	let t;
+
+    	const block = {
+    		c: function create() {
+    			t = text(t_value);
+    		},
+    		m: function mount(target, anchor) {
+    			insert_dev(target, t, anchor);
+    		},
+    		p: function update(ctx, dirty) {
+    			if (dirty & /*row*/ 1 && t_value !== (t_value = /*row*/ ctx[0].output.substring(0, /*row*/ ctx[0].output.length - 1) + "")) set_data_dev(t, t_value);
+    		},
+    		d: function destroy(detaching) {
+    			if (detaching) detach_dev(t);
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_if_block_3.name,
+    		type: "if",
+    		source: "(10:0) {#if isExpanded}",
+    		ctx
+    	});
+
+    	return block;
+    }
+
+    // (11:0) {#if row.type && row.type !== "ARRAY+OBJECT" && row.type !== "ARRAY+SUB_ARRAY" && !row.output.includes("long arrays are chunked")}
     function create_if_block_2(ctx) {
     	let span;
     	let t_value = /*row*/ ctx[0].type + "";
@@ -2186,8 +2268,8 @@ var app = (function () {
     		c: function create() {
     			span = element("span");
     			t = text(t_value);
-    			attr_dev(span, "class", "type svelte-1j5usoi");
-    			add_location(span, file$8, 10, 0, 114);
+    			attr_dev(span, "class", "type svelte-1lljhvw");
+    			add_location(span, file$8, 11, 0, 337);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, span, anchor);
@@ -2205,20 +2287,21 @@ var app = (function () {
     		block,
     		id: create_if_block_2.name,
     		type: "if",
-    		source: "(10:0) {#if row.type}",
+    		source: "(11:0) {#if row.type && row.type !== \\\"ARRAY+OBJECT\\\" && row.type !== \\\"ARRAY+SUB_ARRAY\\\" && !row.output.includes(\\\"long arrays are chunked\\\")}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (13:0) {#if row.len}
+    // (14:0) {#if row.len}
     function create_if_block_1$1(ctx) {
     	let span;
     	let t0;
     	let t1_value = /*row*/ ctx[0].len + "";
     	let t1;
     	let t2;
+    	let span_class_value;
 
     	const block = {
     		c: function create() {
@@ -2226,8 +2309,8 @@ var app = (function () {
     			t0 = text("(");
     			t1 = text(t1_value);
     			t2 = text(")");
-    			attr_dev(span, "class", "len svelte-1j5usoi");
-    			add_location(span, file$8, 13, 0, 171);
+    			attr_dev(span, "class", span_class_value = "" + (null_to_empty("len" + (/*isExpanded*/ ctx[1] ? " grey" : "")) + " svelte-1lljhvw"));
+    			add_location(span, file$8, 14, 0, 394);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, span, anchor);
@@ -2237,6 +2320,10 @@ var app = (function () {
     		},
     		p: function update(ctx, dirty) {
     			if (dirty & /*row*/ 1 && t1_value !== (t1_value = /*row*/ ctx[0].len + "")) set_data_dev(t1, t1_value);
+
+    			if (dirty & /*isExpanded*/ 2 && span_class_value !== (span_class_value = "" + (null_to_empty("len" + (/*isExpanded*/ ctx[1] ? " grey" : "")) + " svelte-1lljhvw"))) {
+    				attr_dev(span, "class", span_class_value);
+    			}
     		},
     		d: function destroy(detaching) {
     			if (detaching) detach_dev(span);
@@ -2247,7 +2334,7 @@ var app = (function () {
     		block,
     		id: create_if_block_1$1.name,
     		type: "if",
-    		source: "(13:0) {#if row.len}",
+    		source: "(14:0) {#if row.len}",
     		ctx
     	});
 
@@ -2311,7 +2398,8 @@ var app = (function () {
 
     function instance$8($$self, $$props, $$invalidate) {
     	let { row } = $$props;
-    	const writable_props = ["row"];
+    	let { isExpanded = false } = $$props;
+    	const writable_props = ["row", "isExpanded"];
 
     	Object.keys($$props).forEach(key => {
     		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console.warn(`<RowText> was created with unknown prop '${key}'`);
@@ -2319,23 +2407,25 @@ var app = (function () {
 
     	$$self.$set = $$props => {
     		if ("row" in $$props) $$invalidate(0, row = $$props.row);
+    		if ("isExpanded" in $$props) $$invalidate(1, isExpanded = $$props.isExpanded);
     	};
 
     	$$self.$capture_state = () => {
-    		return { row };
+    		return { row, isExpanded };
     	};
 
     	$$self.$inject_state = $$props => {
     		if ("row" in $$props) $$invalidate(0, row = $$props.row);
+    		if ("isExpanded" in $$props) $$invalidate(1, isExpanded = $$props.isExpanded);
     	};
 
-    	return [row];
+    	return [row, isExpanded];
     }
 
     class RowText extends SvelteComponentDev {
     	constructor(options) {
     		super(options);
-    		init(this, options, instance$8, create_fragment$8, safe_not_equal, { row: 0 });
+    		init(this, options, instance$8, create_fragment$8, safe_not_equal, { row: 0, isExpanded: 1 });
 
     		dispatch_dev("SvelteRegisterComponent", {
     			component: this,
@@ -2357,6 +2447,14 @@ var app = (function () {
     	}
 
     	set row(value) {
+    		throw new Error("<RowText>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
+
+    	get isExpanded() {
+    		throw new Error("<RowText>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
+
+    	set isExpanded(value) {
     		throw new Error("<RowText>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
     	}
     }
@@ -2386,10 +2484,13 @@ var app = (function () {
 
     var lib = { domParser };
 
-    const indentSpaces = 1;
+    const indentSpaces = 2;
+    const max_array_length = 10;
+    const max_line_length = 38;
 
     function convertObjectToArrayOfOutputPanelRows({ key, val }) {
-        let arr = []; // [{indexRef, parentIndexRef, output, type, bracket(optional), expandable(optional)}]
+        let arr = [];
+        // [{indexRef, parentIndexRef, output, type, bracket(optional), expandable(optional), len(optional)}]
         let row_settings = { indexRef: "0.0", parentIndexRef: "0", key, val, level: 0 };
         appendRowsByType(row_settings, arr);
         console.log("outputRowsArray", arr);
@@ -2397,62 +2498,270 @@ var app = (function () {
     }
 
     function appendRowsByType(row_settings, arr) {
-        let type = getTypeName(row_settings.val);
-        let new_settings = { ...row_settings, type };
+        const type = getTypeName(row_settings.val, row_settings.type, row_settings.key);
+        const simpleTypes = ["string", "number", "boolean", "null", "undefined"];
+        const new_settings = { ...row_settings, type };
         if (type === "object") appendRowsForObject(new_settings, arr);
-        if (type === "string") appendRowForString(new_settings, arr);
+        if (type === "array") appendRowsForArray(new_settings, arr);
+        if (type === "ARRAY+") appendRowsForArrayLong(new_settings, arr); //not converted yet
+        if (type === "ARRAY+OBJECT") appendRowsForArrayLongObject(new_settings, arr); //converted
+        if (type === "ARRAY+SUB_ARRAY") appendRowsForArrayLongSubArray(new_settings, arr); //converted
+        if (simpleTypes.includes(type)) appendRowForSimpleTypes(new_settings, arr);
+        if (type === "symbol") appendRowForSymbol(new_settings, arr);
+        if (type === "function") appendRowForFunction(new_settings, arr);
     }
 
-    function getTypeName(value) {
-        let type = getNullOrOtherType(value);
-        console.log("type", type);
-        return type;
-    }
+    function getTypeName(value, type, key) {
+        return type || getNullOrOtherType(value);
 
-    function getNullOrOtherType(value) {
-        return value === null ? "null" : getObjectOrStandardType(value);
-    }
+        function getNullOrOtherType(value) {
+            return value === null ? "null" : getObjectOrStandardType(value);
+        }
 
-    function getObjectOrStandardType(value) {
-        return typeof value === "object" ? getArrayOrObject(value) : typeof value;
-    }
+        function getObjectOrStandardType(value) {
+            return typeof value === "object" ? getArrayOrObject(value) : typeof value;
+        }
 
-    function getArrayOrObject(value) {
-        return Array.isArray(value) ? "array" : "object";
+        function getArrayOrObject(value) {
+            return Array.isArray(value) ? getArrayOrLongArray(value) : getObjectOrLongArraySubArray(value);
+        }
+
+        function getArrayOrLongArray(value) {
+            return value.length > max_array_length ? "ARRAY+" : "array";
+        }
+
+        function getObjectOrLongArraySubArray(value) {
+            const is_long_array_object =
+                typeof value.start !== "undefined" &&
+                typeof value.end !== "undefined" &&
+                typeof value.sub_array !== "undefined" &&
+                Array.isArray(value.sub_array);
+            //if (is_long_array_object) console.log("YES");
+            return is_long_array_object ? "ARRAY+OBJECT" : "object";
+        }
     }
 
     function appendRowsForObject(row_settings, arr) {
-        arr.push(getRowForBracketOpen(row_settings));
-        Object.entries(row_settings.val).forEach(([k, v], i) => {
+        const children = Object.entries(row_settings.val);
+        const brackets = "{}";
+        arr.push(getRowForBracketOpen(row_settings, children.length, brackets, "object"));
+        children.forEach(([k, v], i) => {
             appendRowsByType(getRowsForChild(row_settings, k, v, i), arr);
         });
-        arr.push(getRowForBracketClose(row_settings));
+        arr.push(getRowForBracketClose(row_settings, brackets[1]));
     }
 
-    function getRowForBracketOpen(row_settings) {
-        const output = indent_row(row_settings.key + ": {", row_settings.level);
-        return { ...row_settings, output, type: "object", bracket: true, expandable: true };
+    function recursive_get_chunked_array(supplied = [], supplied_options = {}) {
+        const options = get_options();
+        const recurrence_count = options.recurrence_count;
+        const array_length_max = options.array_length_max;
+        const max_recursions = options.recurrence_max;
+        const initial_obj = get_obj_from_arr_or_obj(supplied);
+        return get_short_or_chunked_array();
+
+        function get_options() {
+            return {
+                recurrence_count: 0,
+                recurrence_max: 4,
+                array_length_max: max_array_length,
+                ...supplied_options,
+            };
+        }
+
+        function get_obj_from_arr_or_obj(supplied) {
+            if (Array.isArray(supplied)) return { start: 0, end: supplied.length - 1, sub_array: supplied };
+            else return supplied;
+        }
+
+        function get_short_or_chunked_array() {
+            if (initial_obj.sub_array.length > array_length_max) {
+                return get_recursive_chunked_array();
+            } else {
+                return supplied;
+            }
+        }
+
+        function get_recursive_chunked_array() {
+            const chunked_array = get_single_level_chunked_array(initial_obj);
+            return recurse_or_return(chunked_array, initial_obj, recurrence_count);
+        }
+
+        function recurse_or_return(chunked_array, initial_obj, recurrence_count) {
+            if (chunked_array.length > array_length_max && recurrence_count < max_recursions) {
+                initial_obj.sub_array = chunked_array;
+                return recursive_get_chunked_array(initial_obj, { ...options, recurrence_count: recurrence_count + 1 });
+            } else {
+                initial_obj.sub_array = chunked_array;
+                return initial_obj;
+            }
+        }
+        function get_single_level_chunked_array(initial_obj) {
+            let chunked_array = [];
+            for (let start = 0; start < initial_obj.sub_array.length; start += array_length_max) {
+                const end = get_chunk_end(initial_obj, start);
+                const chunk_array = initial_obj.sub_array.slice(start, end + 1);
+                const chunk_obj = get_chunk_object(start, end, chunk_array);
+                chunked_array.push(chunk_obj);
+                chunked_array = get_chunked_array_without_duplicate_nested_last_item(chunked_array);
+            }
+            return chunked_array;
+        }
+
+        function get_chunk_end(initial_obj, start) {
+            let end = start + array_length_max - 1;
+            let last_item_index = initial_obj.sub_array.length - 1;
+            let chunk_array_is_short = end > last_item_index;
+            if (chunk_array_is_short) end = last_item_index;
+            return end;
+        }
+
+        function get_chunk_object(chunk_start, chunk_end, chunk_array) {
+            //get chunk range depending on if its just the root array, or from range of all child chunks
+            const chunk_item_first = chunk_array[0];
+            const chunk_item_last = chunk_array[chunk_array.length - 1];
+            const contains_child_chunks =
+                //is not just a plain array, because it has start and end items
+                typeof chunk_item_first.start !== "undefined" && typeof chunk_item_last.end !== "undefined";
+            const start = contains_child_chunks ? chunk_array[0].start : chunk_start;
+            const end = contains_child_chunks ? chunk_array[chunk_array.length - 1].end : chunk_end;
+            return { start, end, sub_array: chunk_array };
+        }
+
+        function get_chunked_array_without_duplicate_nested_last_item(chunked_array) {
+            // this fixes tests 10 and 11 when the last item is a single item
+            // incorrectly looks like this: { start: 9, end: 9, sub_array: { start: 9, end: 9, sub_array: [9] } }
+            // correctly looks like this:   { start: 9, end: 9, sub_array: [9] }
+            let last_added_chunk_object = chunked_array[chunked_array.length - 1];
+            let has_only_one_items = last_added_chunk_object.sub_array.length === 1;
+            let sub_item_start = last_added_chunk_object.sub_array[0].start;
+            let sub_item_end = last_added_chunk_object.sub_array[0].end;
+            if (
+                has_only_one_items &&
+                sub_item_start === last_added_chunk_object.start &&
+                sub_item_end === last_added_chunk_object.end
+            ) {
+                chunked_array[chunked_array.length - 1] = chunked_array[chunked_array.length - 1].sub_array[0];
+            }
+            return chunked_array;
+        }
     }
 
-    function getRowsForChild(row_settings, key, val, index) {
-        return {
-            indexRef: row_settings.indexRef + "." + index,
-            parentIndexRef: row_settings.indexRef,
-            index,
-            key,
-            val,
-            level: row_settings.level + 1,
+    function appendRowsForArray(row_settings, arr) {
+        let children = row_settings.val;
+        const brackets = "[]";
+        arr.push(getRowForBracketOpen(row_settings, children.length, brackets, row_settings.type));
+        for (let i = 0; i < children.length; i++) {
+            appendRowsByType(getRowsForChild(row_settings, i, children[i], i), arr);
+        }
+        arr.push(getRowForBracketClose(row_settings, brackets[1]));
+    }
+
+    function appendRowsForArrayLong(row_settings, arr) {
+        const converted = recursive_get_chunked_array(row_settings.val);
+        appendRowsForArrayLongObject({ ...row_settings, val: converted }, arr);
+    }
+
+    function appendRowsForArrayLongObject(row_settings, arr) {
+        const item = row_settings.val;
+        const brackets = "[]";
+        arr.push(getRowForBracketOpen(row_settings, item.end + 1, brackets, row_settings.type));
+        //console.log("!!!", row_settings);
+        //appendRowForString(getRowsForChild({ ...row_settings, type: "" }, "long arrays are chunked", "", 0), arr);
+        appendRowsForArrayLongSubArray(
+            getRowsForChild(row_settings, "long arrays are chunked", item.sub_array, 1),
+            arr,
+            item.start
+        );
+        arr.push(getRowForBracketClose(row_settings, brackets[1]));
+    }
+
+    function appendRowsForArrayLongSubArray(row_settings, arr, parent_item_start) {
+        let item = row_settings.val;
+        for (let i = 0; i < item.length; i++) {
+            appendRowsByType(
+                {
+                    ...row_settings,
+                    key: getLongArrayRange(item[i], parent_item_start + i),
+                    val: item[i],
+                    indexRef: row_settings.indexRef + "." + i,
+                },
+                arr
+            );
+        }
+    }
+
+    function getLongArrayRange(long_array_object, i) {
+        return typeof long_array_object !== "undefined" && typeof long_array_object.start !== "undefined"
+            ? "{" + long_array_object.start + ".." + long_array_object.end + "}"
+            : i;
+    }
+
+    function appendRowForSimpleTypes(row_settings, arr) {
+        const { key, val, level, ...rest } = row_settings;
+        const row_is_too_wide = val && "" + val.length > max_line_length - level * indentSpaces;
+        if (row_is_too_wide) appendRowForSimpleTypesMultiLine(row_settings, arr);
+        else arr.push({ ...rest, output: indent_row(key + ": " + val, level) });
+    }
+
+    function appendRowForSimpleTypesMultiLine(row_settings, arr) {
+        const { key, val, level, ...rest } = row_settings;
+        const available_chars_based_on_indent = max_line_length - level * indentSpaces;
+        const regex_to_split_into_chunks = new RegExp("[^]{1," + available_chars_based_on_indent + "}", "gi");
+        const array_of_rows = ("" + val).match(regex_to_split_into_chunks);
+        const index_and_no_indent_in_first_row = (str, i) =>
+            i ? indent_row(" " + str, level + 1) : indent_row("" + (i + 1) + ": " + str, level);
+        const only_show_type_in_first_row = (settings, i) => (i ? "" : settings.type);
+        let new_row_settings = row_settings;
+        const push_each_row = (a, i) => {
+            const output = index_and_no_indent_in_first_row(a, i);
+            new_row_settings = { ...new_row_settings, output, type: only_show_type_in_first_row(new_row_settings, i) };
+            // we don't change the indexRef - so that all rows have the same row reference and highlight together
+            arr.push(new_row_settings, arr);
         };
+        array_of_rows.map(push_each_row);
     }
 
-    function getRowForBracketClose(row_settings) {
-        const output = indent_row("}", row_settings.level);
+    function appendRowForFunction(row_settings, arr) {
+        const { key, val, level, ...rest } = row_settings;
+        const val_as_string = "" + val;
+        const val_as_array = val_as_string.split("\n");
+
+        const brackets = "{}";
+        const type = val_as_array[0] && val_as_array[0].substring(0, 1) === "f" ? "function" : "arrow fn";
+        arr.push(getRowForBracketOpen(row_settings, val_as_array.length, brackets, type));
+        for (let i = 0; i < val_as_array.length; i++) {
+            const formula_row = val_as_array[i].trim();
+            if (!formula_row.length) continue;
+            console.log(val_as_array[i], formula_row);
+            appendRowsByType(getRowsForChild(row_settings, i, formula_row, i), arr);
+        }
+        arr.push(getRowForBracketClose(row_settings, brackets[1]));
+    }
+
+    function appendRowForSymbol(row_settings, arr) {
+        const { key, val, level, ...rest } = row_settings;
+        let sym = val.toString();
+        if (sym !== "Symbol()") sym = `Symbol('${sym.substring(7, sym.length - 1)}')`;
+        arr.push({ ...rest, output: indent_row(key + ": " + sym, level) });
+    }
+
+    function getRowForBracketOpen(row_settings, len, brackets, type) {
+        //const items = children.length + " item" + (children.length > 1 ? "s" : "");
+        const text = row_settings.key + ": " + brackets; //brackets[0] + " " + items + " " + brackets[1];
+        const output = indent_row(text, row_settings.level);
+        return { ...row_settings, output, type, bracket: true, expandable: true, len };
+    }
+
+    function getRowForBracketClose(row_settings, close_bracket) {
+        const output = indent_row(close_bracket, row_settings.level);
         return { ...row_settings, output, type: "", bracket: true };
     }
 
-    function appendRowForString(row_settings, arr) {
-        let { key, val, level, ...rest } = row_settings;
-        arr.push({ ...rest, output: indent_row(key + ": " + val, level), type: "string" });
+    function getRowsForChild(row_settings, key, val, index) {
+        const indexRef = row_settings.indexRef + "." + index;
+        const parentIndexRef = row_settings.indexRef;
+        const level = row_settings.level + 1;
+        return { indexRef, parentIndexRef, index, key, val, level };
     }
 
     function indent_row(row, level) {
@@ -2532,7 +2841,7 @@ var app = (function () {
     	return child_ctx;
     }
 
-    // (130:0) {#if toggle}
+    // (142:0) {#if toggle}
     function create_if_block$5(ctx) {
     	let div;
     	let t0;
@@ -2581,14 +2890,14 @@ var app = (function () {
     			}
 
     			attr_dev(table, "class", "svelte-10jhld9");
-    			add_location(table, file$9, 138, 0, 3525);
+    			add_location(table, file$9, 150, 0, 3901);
     			attr_dev(div, "id", "svelteObjectExplorer");
 
     			attr_dev(div, "class", div_class_value = "" + (null_to_empty("tree" + (/*toggle*/ ctx[7] ? "" : " tree-hide") + (/*fade*/ ctx[1]
     			? /*hovering*/ ctx[3] ? " noFade" : " fade"
     			: " noFade")) + " svelte-10jhld9"));
 
-    			add_location(div, file$9, 130, 0, 3240);
+    			add_location(div, file$9, 142, 0, 3616);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -2685,14 +2994,14 @@ var app = (function () {
     		block,
     		id: create_if_block$5.name,
     		type: "if",
-    		source: "(130:0) {#if toggle}",
+    		source: "(142:0) {#if toggle}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (141:0) {#if openIndex === topLevelObject_index}
+    // (153:0) {#if openIndex === topLevelObject_index}
     function create_if_block_1$2(ctx) {
     	let tr;
     	let td;
@@ -2710,11 +3019,11 @@ var app = (function () {
     			if (if_block) if_block.c();
     			t = space();
     			attr_dev(pre, "class", "svelte-10jhld9");
-    			add_location(pre, file$9, 144, 0, 3730);
+    			add_location(pre, file$9, 156, 0, 4106);
     			attr_dev(td, "class", "treeVal svelte-10jhld9");
-    			add_location(td, file$9, 142, 0, 3701);
+    			add_location(td, file$9, 154, 0, 4077);
     			attr_dev(tr, "class", "treeVal svelte-10jhld9");
-    			add_location(tr, file$9, 141, 0, 3642);
+    			add_location(tr, file$9, 153, 0, 4018);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, tr, anchor);
@@ -2766,14 +3075,14 @@ var app = (function () {
     		block,
     		id: create_if_block_1$2.name,
     		type: "if",
-    		source: "(141:0) {#if openIndex === topLevelObject_index}",
+    		source: "(153:0) {#if openIndex === topLevelObject_index}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (146:0) {#if openIndex === topLevelObject_index}
+    // (158:0) {#if openIndex === topLevelObject_index}
     function create_if_block_2$1(ctx) {
     	let each_1_anchor;
     	let current;
@@ -2860,15 +3169,15 @@ var app = (function () {
     		block,
     		id: create_if_block_2$1.name,
     		type: "if",
-    		source: "(146:0) {#if openIndex === topLevelObject_index}",
+    		source: "(158:0) {#if openIndex === topLevelObject_index}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (148:0) {#if ( rowsToShow.includes(row.parentIndexRef) && (!row.bracket || (row.bracket && (row.expandable || rowsToShow.includes(row.indexRef)))) )}
-    function create_if_block_3(ctx) {
+    // (160:0) {#if ( rowsToShow.includes(row.parentIndexRef) && (!row.bracket || (row.bracket && (row.expandable || rowsToShow.includes(row.indexRef)))) )}
+    function create_if_block_3$1(ctx) {
     	let div;
     	let t0;
     	let t1;
@@ -2877,7 +3186,10 @@ var app = (function () {
     	let dispose;
 
     	const rowtext = new RowText({
-    			props: { row: /*row*/ ctx[35] },
+    			props: {
+    				row: /*row*/ ctx[35],
+    				isExpanded: /*row*/ ctx[35].expandable && /*rowsToShow*/ ctx[5].includes(/*row*/ ctx[35].indexRef)
+    			},
     			$$inline: true
     		});
 
@@ -2911,7 +3223,7 @@ var app = (function () {
     			? "row hoverRow"
     			: "row") + " svelte-10jhld9"));
 
-    			add_location(div, file$9, 151, 0, 3959);
+    			add_location(div, file$9, 163, 0, 4335);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -2930,6 +3242,7 @@ var app = (function () {
     			ctx = new_ctx;
     			const rowtext_changes = {};
     			if (dirty[0] & /*topLevelObjectArray*/ 256) rowtext_changes.row = /*row*/ ctx[35];
+    			if (dirty[0] & /*topLevelObjectArray, rowsToShow*/ 288) rowtext_changes.isExpanded = /*row*/ ctx[35].expandable && /*rowsToShow*/ ctx[5].includes(/*row*/ ctx[35].indexRef);
     			rowtext.$set(rowtext_changes);
     			const chevronbuttons_changes = {};
     			if (dirty[0] & /*topLevelObjectArray*/ 256) chevronbuttons_changes.row = /*row*/ ctx[35];
@@ -2963,21 +3276,21 @@ var app = (function () {
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_if_block_3.name,
+    		id: create_if_block_3$1.name,
     		type: "if",
-    		source: "(148:0) {#if ( rowsToShow.includes(row.parentIndexRef) && (!row.bracket || (row.bracket && (row.expandable || rowsToShow.includes(row.indexRef)))) )}",
+    		source: "(160:0) {#if ( rowsToShow.includes(row.parentIndexRef) && (!row.bracket || (row.bracket && (row.expandable || rowsToShow.includes(row.indexRef)))) )}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (147:0) {#each topLevelObject.childRows as row}
+    // (159:0) {#each topLevelObject.childRows as row}
     function create_each_block_1(ctx) {
     	let show_if = /*rowsToShow*/ ctx[5].includes(/*row*/ ctx[35].parentIndexRef) && (!/*row*/ ctx[35].bracket || /*row*/ ctx[35].bracket && (/*row*/ ctx[35].expandable || /*rowsToShow*/ ctx[5].includes(/*row*/ ctx[35].indexRef)));
     	let if_block_anchor;
     	let current;
-    	let if_block = show_if && create_if_block_3(ctx);
+    	let if_block = show_if && create_if_block_3$1(ctx);
 
     	const block = {
     		c: function create() {
@@ -2997,7 +3310,7 @@ var app = (function () {
     					if_block.p(ctx, dirty);
     					transition_in(if_block, 1);
     				} else {
-    					if_block = create_if_block_3(ctx);
+    					if_block = create_if_block_3$1(ctx);
     					if_block.c();
     					transition_in(if_block, 1);
     					if_block.m(if_block_anchor.parentNode, if_block_anchor);
@@ -3031,14 +3344,14 @@ var app = (function () {
     		block,
     		id: create_each_block_1.name,
     		type: "each",
-    		source: "(147:0) {#each topLevelObject.childRows as row}",
+    		source: "(159:0) {#each topLevelObject.childRows as row}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (140:0) {#each topLevelObjectArray as topLevelObject, topLevelObject_index}
+    // (152:0) {#each topLevelObjectArray as topLevelObject, topLevelObject_index}
     function create_each_block(ctx) {
     	let if_block_anchor;
     	let current;
@@ -3094,7 +3407,7 @@ var app = (function () {
     		block,
     		id: create_each_block.name,
     		type: "each",
-    		source: "(140:0) {#each topLevelObjectArray as topLevelObject, topLevelObject_index}",
+    		source: "(152:0) {#each topLevelObjectArray as topLevelObject, topLevelObject_index}",
     		ctx
     	});
 
@@ -3126,7 +3439,7 @@ var app = (function () {
     			t = space();
     			if (if_block) if_block.c();
     			attr_dev(div, "class", "svelte-object-explorer-wrapper svelte-10jhld9");
-    			add_location(div, file$9, 127, 0, 3116);
+    			add_location(div, file$9, 139, 0, 3492);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -3244,13 +3557,26 @@ var app = (function () {
 
     	function refreshDataAndCache() {
     		if (toggle) {
-    			if (JSON.stringify(myStore) !== JSON.stringify(cache.myStore)) {
+    			/*
+    attempt to allow bigint
+    const stringifiedMyStore = JSON.stringify(myStore, (key, value) =>
+    typeof value === "bigint" ? value.toString() + "n" : value
+    );
+    const stringifiedMyStoreCache = JSON.stringify(cache.myStore, (key, value) =>
+    typeof value === "bigint" ? value.toString() + "n" : value
+    );
+    */
+    			const stringifiedMyStore = JSON.stringify(myStore);
+
+    			const stringifiedMyStoreCache = JSON.stringify(cache.myStore);
+
+    			if (stringifiedMyStore !== stringifiedMyStoreCache) {
     				$$invalidate(9, cache.dataUpdated = new Date(), cache);
     				$$invalidate(9, cache.dataChanges = cache.dataChanges + 1, cache);
     			}
 
     			if (cache.dataUpdated - cache.viewUpdated > rateLimit && !isPaused) {
-    				$$invalidate(9, cache.myStore = JSON.parse(JSON.stringify(myStore)), cache);
+    				$$invalidate(9, cache.myStore = myStore, cache);
     				$$invalidate(9, cache.viewChanges = cache.viewChanges + 1, cache);
     				$$invalidate(9, cache.viewUpdated = new Date(), cache);
     				$$invalidate(9, cache.formatted = formatDate(cache.viewUpdated), cache);
@@ -3643,21 +3969,21 @@ var app = (function () {
     			t20 = space();
     			button2 = element("button");
     			button2.textContent = "reset";
-    			add_location(h1, file$a, 60, 0, 1242);
-    			add_location(p0, file$a, 62, 0, 1275);
-    			add_location(span0, file$a, 68, 26, 1507);
-    			add_location(span1, file$a, 68, 13, 1494);
-    			add_location(span2, file$a, 68, 0, 1481);
-    			add_location(p1, file$a, 65, 0, 1299);
-    			add_location(p2, file$a, 70, 0, 1547);
-    			add_location(h20, file$a, 72, 0, 1631);
-    			add_location(h21, file$a, 74, 0, 1685);
+    			add_location(h1, file$a, 76, 0, 1568);
+    			add_location(p0, file$a, 78, 0, 1601);
+    			add_location(span0, file$a, 84, 26, 1833);
+    			add_location(span1, file$a, 84, 13, 1820);
+    			add_location(span2, file$a, 84, 0, 1807);
+    			add_location(p1, file$a, 81, 0, 1625);
+    			add_location(p2, file$a, 86, 0, 1873);
+    			add_location(h20, file$a, 88, 0, 1957);
+    			add_location(h21, file$a, 90, 0, 2011);
     			attr_dev(button0, "id", "decr");
-    			add_location(button0, file$a, 76, 0, 1738);
+    			add_location(button0, file$a, 92, 0, 2064);
     			attr_dev(button1, "id", "incr");
-    			add_location(button1, file$a, 77, 0, 1794);
+    			add_location(button1, file$a, 93, 0, 2120);
     			attr_dev(button2, "id", "reset");
-    			add_location(button2, file$a, 78, 0, 1850);
+    			add_location(button2, file$a, 94, 0, 2176);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -3762,32 +4088,55 @@ var app = (function () {
     		}
     	];
 
+    	const longarray = new Array(101).fill("x").map((x, i) => "" + i);
+
     	let myStore = {
     		string1: "testy",
     		string2: "testy",
-    		variousTypes: {
-    			//boolean: true,
-    			string2: "test"
-    		}, /*
-    number: 123,
-    array: [[["test1", "test2"], "test2"], "test2"],
-    longarray: new Array(4000).fill("test"),
-    object: {
-    test1: {
-    test1: { test1: { test1: "test1", test2: "test2" }, test2: "test2" },
-    test2: "test2",
-    },
-    test2: "test2",
-    },
-    arrowfunction: () => {},
-    function: function test() {
-    console.log("test");
-    },
-    symbol: Symbol(),
-    null: null,
-    undefined: typeof bananaman,
-    */
-    		
+    		array: [[["test1", "test2"], "test2"], "test2"],
+    		longarray,
+    		object: {
+    			test1: {
+    				test1: {
+    					test1: { test1: "test1", test2: "test2" },
+    					test2: "test2"
+    				},
+    				test2: "test2"
+    			},
+    			test2: "test2"
+    		},
+    		number1: 123,
+    		number2: 123.456789,
+    		boolean1: true,
+    		boolean2: false,
+    		null: null,
+    		undefined,
+    		symbol1: Symbol(),
+    		symbol2: Symbol("foo"),
+    		arrowfunction: () => {
+    			
+    		},
+    		arrowfunction2: (a, b, c, d) => {
+    			console.log("long, long, long, long comment test");
+    			arrowfunction();
+    		},
+    		function: function test(a, b, c, d) {
+    			console.log("test");
+    		},
+    		deep: {
+    			deep: {
+    				deep: {
+    					deep: {
+    						deep: {
+    							arrowfunction2: (a, b, c, d) => {
+    								console.log("long, long, long, long comment test");
+    								arrowfunction();
+    							}
+    						}
+    					}
+    				}
+    			}
+    		}
     	}; //SvelteVariable: counter,
     	//customStore: count,
     	//customStoreValue: $count,
