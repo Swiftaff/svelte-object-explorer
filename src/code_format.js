@@ -212,7 +212,27 @@ function getLongArrayRange(long_array_object, i) {
 
 function appendRowForSimpleTypes(row_settings, arr) {
     const { key, val, level, ...rest } = row_settings;
-    arr.push({ ...rest, output: indent_row(key + ": " + val, level) });
+    const line_length = 38;
+    if (val && "" + val.length > line_length - level * indentSpaces) {
+        const regex = new RegExp("[^]{1," + (line_length - level * indentSpaces) + "}", "gi");
+        const rows = ("" + val).match(regex);
+        let new_row_settings = row_settings;
+        rows.map((a, i) => {
+            const indexRef_arr = new_row_settings.indexRef.split(".");
+            const current_indexRef = indexRef_arr[indexRef_arr.length - 1];
+            const next_sibling_indexRef =
+                new_row_settings.indexRef.split(".").slice(0, -1).join(".") + "." + (current_indexRef + i);
+            const output = indent_row(i ? " " + a : "" + (i + 1) + ": " + a, level + (i ? 1 : 0));
+            new_row_settings = {
+                ...new_row_settings,
+                output,
+                type: i ? "" : new_row_settings.type,
+            };
+            arr.push(new_row_settings, arr);
+        });
+    } else {
+        arr.push({ ...rest, output: indent_row(key + ": " + val, level) });
+    }
 }
 
 function appendRowForFunction(row_settings, arr) {
@@ -260,17 +280,6 @@ function getRowsForChild(row_settings, key, val, index) {
 
 function indent_row(row, level) {
     return " ".repeat(level * indentSpaces) + row;
-}
-
-// --- old below
-
-function code_format_function(row_object, parentArr, fn) {
-    //indexRef, parentIndexRef, index, parentArr, fn, level, optionalIndex
-    parentArr.push({
-        ...row_object,
-        output: get_indent(row_object, "'" + fn.name + "'"),
-        type: "Function",
-    });
 }
 
 function code_format_svelte_explorer_tag(

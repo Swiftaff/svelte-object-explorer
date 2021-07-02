@@ -38,11 +38,25 @@
         symbol2: Symbol("foo"),
         arrowfunction: () => {},
         arrowfunction2: (a, b, c, d) => {
-            console.log("test");
+            console.log("long, long, long, long comment test");
             arrowfunction();
         },
         function: function test(a, b, c, d) {
             console.log("test");
+        },
+        deep: {
+            deep: {
+                deep: {
+                    deep: {
+                        deep: {
+                            arrowfunction2: (a, b, c, d) => {
+                                console.log("long, long, long, long comment test");
+                                arrowfunction();
+                            },
+                        },
+                    },
+                },
+            },
         },
         //SvelteVariable: counter,
         //customStore: count,
