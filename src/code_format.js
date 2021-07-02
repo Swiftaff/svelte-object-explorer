@@ -1,5 +1,6 @@
 const indentSpaces = 2;
 const max_array_length = 10;
+const max_line_length = 38;
 
 export default function convertObjectToArrayOfOutputPanelRows({ key, val }) {
     let arr = [];
@@ -212,27 +213,28 @@ function getLongArrayRange(long_array_object, i) {
 
 function appendRowForSimpleTypes(row_settings, arr) {
     const { key, val, level, ...rest } = row_settings;
-    const line_length = 38;
-    if (val && "" + val.length > line_length - level * indentSpaces) {
-        const regex = new RegExp("[^]{1," + (line_length - level * indentSpaces) + "}", "gi");
-        const rows = ("" + val).match(regex);
-        let new_row_settings = row_settings;
-        rows.map((a, i) => {
-            const indexRef_arr = new_row_settings.indexRef.split(".");
-            const current_indexRef = indexRef_arr[indexRef_arr.length - 1];
-            const next_sibling_indexRef =
-                new_row_settings.indexRef.split(".").slice(0, -1).join(".") + "." + (current_indexRef + i);
-            const output = indent_row(i ? " " + a : "" + (i + 1) + ": " + a, level + (i ? 1 : 0));
-            new_row_settings = {
-                ...new_row_settings,
-                output,
-                type: i ? "" : new_row_settings.type,
-            };
-            arr.push(new_row_settings, arr);
-        });
+    if (val && "" + val.length > max_line_length - level * indentSpaces) {
+        appendRowForSimpleTypesMultiLine(row_settings, arr);
     } else {
         arr.push({ ...rest, output: indent_row(key + ": " + val, level) });
     }
+}
+
+function appendRowForSimpleTypesMultiLine(row_settings, arr) {
+    const { key, val, level, ...rest } = row_settings;
+    const available_chars_based_on_indent = max_line_length - level * indentSpaces;
+    const regex_to_split_into_chunks = new RegExp("[^]{1," + available_chars_based_on_indent + "}", "gi");
+    const array_of_rows = ("" + val).match(regex_to_split_into_chunks);
+    let new_row_settings = row_settings;
+    array_of_rows.map((a, i) => {
+        const output = i
+            ? //indent all rows except first. Only have index in first row
+              indent_row(" " + a, level + 1)
+            : indent_row("" + (i + 1) + ": " + a, level);
+        new_row_settings = { ...new_row_settings, output, type: i ? "" : new_row_settings.type };
+        // we don't change the indexRef - so that all rows have the same row reference and highlight together
+        arr.push(new_row_settings, arr);
+    });
 }
 
 function appendRowForFunction(row_settings, arr) {
