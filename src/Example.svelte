@@ -91,22 +91,36 @@
         Provides a simple to use, quick a dirty hideable list of whatever data you wish to temporarily view whilst you
         are developing your app, rather than console.logging or debugging.
     </p>
+    <span data-svelte-explorer-tag="#component:src/App.svelte" />
     <div>
         level 1
-        {#if counter % 2}
-            <div>
-                level 2
-                <div>level 3</div>
-            </div>
-        {:else}
-            <div>
-                level 4
-                <div>
-                    level 5 <div>level 6</div>
-                </div>
-            </div>
-        {/if}
+        <span data-svelte-explorer-tag="#if counter % 2">
+            {#if counter % 2}
+                <span>
+                    level 2
+                    <span>level 3</span>
+                </span>
+                <span data-svelte-explorer-tag=":else" />
+            {:else}
+                <span data-svelte-explorer-tag=":else" />
+                <span>
+                    level 4
+                    <span>
+                        level 5 <span>level 6</span>
+                    </span>
+                </span>
+            {/if}
+        </span>
+        <div>
+            <span data-svelte-explorer-tag="#each array as person">
+                {#each array as person}
+                    <span>{person.first} {person.surname}</span>
+                {/each}
+            </span>
+        </div>
     </div>
+    <span data-svelte-explorer-tag="/component:src/App.svelte" />
+
     <p>Displays most kinds of data: array, object, string, number, boolean, symbol</p>
 
     <h2>Autocounter from component state: {counter}</h2>

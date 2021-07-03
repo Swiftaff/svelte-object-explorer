@@ -9,16 +9,26 @@ function domParser(node) {
 
     function getTag(el) {
         if (el && el.tagName && el.tagName !== "SCRIPT" && !el.className.includes("svelte-object-explorer-wrapper ")) {
-            const textContent = el && el.firstChild && el.firstChild.nodeType === 3 ? el.firstChild.textContent : "";
+            const textContent = el.firstChild && el.firstChild.nodeType === 3 ? el.firstChild.textContent : "";
+            const svelteExplorerTag = isSvelteExplorerTag(el) ? el.dataset["svelteExplorerTag"] : el.tagName;
             return {
                 class: el.className,
-                "svelte-explorer-tag": el.tagName,
-                children: getChildren(el),
+                "svelte-explorer-tag": svelteExplorerTag,
+                children:
+                    isSvelteExplorerTag(el) &&
+                    svelteExplorerTag.substring(0, 3) !== "#if" &&
+                    svelteExplorerTag.substring(0, 5) !== "#each"
+                        ? []
+                        : getChildren(el),
                 textContent,
             };
         } else {
             return null;
         }
+    }
+
+    function isSvelteExplorerTag(el) {
+        return el.dataset && el.dataset["svelteExplorerTag"];
     }
 
     function getChildren(el) {
