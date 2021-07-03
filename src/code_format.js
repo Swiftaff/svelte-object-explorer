@@ -22,6 +22,7 @@ function appendRowsByType(row_settings, arr) {
         "ARRAY+SUB_ARRAY": appendRowsForArrayLongSubArray,
         symbol: appendRowForSymbol,
         function: appendRowForFunction,
+        HTML: appendRowForSvelteExplorerTag,
     };
     if (simpleTypes.includes(type)) appendRowForSimpleTypes(new_settings, arr);
     if (type in type_matcher) type_matcher[type](new_settings, arr);
@@ -39,20 +40,25 @@ function getTypeName(value, type, key) {
     }
 
     function getArrayOrObject(value) {
-        return Array.isArray(value) ? getArrayOrLongArray(value) : getObjectOrLongArraySubArray(value);
+        return Array.isArray(value) ? getArrayOrLongArray(value) : getObjectOrSpecialObject(value);
     }
 
     function getArrayOrLongArray(value) {
         return value.length > max_array_length ? "ARRAY+" : "array";
     }
 
-    function getObjectOrLongArraySubArray(value) {
-        function are_all_not_undefined(arr) {
-            return arr.filter((prop) => value[prop] !== "undefined").length === arr.length;
-        }
-        const is_long_array_object =
-            are_all_not_undefined(["start", "end", "sub_array"]) && Array.isArray(value.sub_array);
-        return is_long_array_object ? "ARRAY+OBJECT" : "object";
+    function getObjectOrSpecialObject(value) {
+        const longArraySubArrayProperties = ["start", "end", "sub_array"];
+        const svelteExplorerTagProperties = ["class", "svelte-explorer-tag", "children"];
+        return object_has_only_these_properties(value, longArraySubArrayProperties)
+            ? "ARRAY+OBJECT"
+            : object_has_only_these_properties(value, svelteExplorerTagProperties)
+            ? "HTML"
+            : "object";
+    }
+
+    function object_has_only_these_properties(value, arr) {
+        return arr.filter((prop) => prop in value).length === arr.length;
     }
 }
 
@@ -61,7 +67,7 @@ function appendRowsForObject(row_settings, arr) {
     const brackets = "{}";
     arr.push(getRowForBracketOpen(row_settings, children.length, brackets, "object"));
     children.forEach(([k, v], i) => appendRowsByType(getRowsForChild(row_settings, k, v, i), arr));
-    arr.push(getRowForBracketClose(row_settings, brackets[1]));
+    arr.push(getRowForBracketClose(row_settings, brackets));
 }
 
 export function recursive_get_chunked_array(supplied = [], supplied_options = {}) {
@@ -163,7 +169,7 @@ function appendRowsForArray(row_settings, arr) {
     for (let i = 0; i < children.length; i++) {
         appendRowsByType(getRowsForChild(row_settings, i, children[i], i), arr);
     }
-    arr.push(getRowForBracketClose(row_settings, brackets[1]));
+    arr.push(getRowForBracketClose(row_settings, brackets));
 }
 
 function appendRowsForArrayLong(row_settings, arr) {
@@ -180,7 +186,7 @@ function appendRowsForArrayLongObject(row_settings, arr) {
         arr,
         item.start
     );
-    arr.push(getRowForBracketClose(row_settings, brackets[1]));
+    arr.push(getRowForBracketClose(row_settings, brackets));
 }
 
 function appendRowsForArrayLongSubArray(row_settings, arr, parent_item_start) {
@@ -238,7 +244,7 @@ function appendRowForFunction(row_settings, arr) {
         if (!function_row.length) continue;
         appendRowsByType(getRowsForChild(row_settings, i, function_row, i), arr);
     }
-    arr.push(getRowForBracketClose(row_settings, brackets[1]));
+    arr.push(getRowForBracketClose(row_settings, brackets));
 }
 
 function appendRowForSymbol(row_settings, arr) {
@@ -248,15 +254,16 @@ function appendRowForSymbol(row_settings, arr) {
     arr.push({ ...rest, output: indent_row(key + ": " + sym, level) });
 }
 
-function getRowForBracketOpen(row_settings, len, brackets, type) {
+function getRowForBracketOpen(row_settings, len, brackets, type, close_bracket_length = 1) {
     const text = row_settings.key + ": " + brackets;
     const output = indent_row(text, row_settings.level);
-    return { ...row_settings, output, type, bracket: true, expandable: true, len };
+    return { ...row_settings, output, type, bracket: close_bracket_length, expandable: true, len };
 }
 
-function getRowForBracketClose(row_settings, close_bracket) {
+function getRowForBracketClose(row_settings, brackets, close_bracket_length = 1) {
+    const close_bracket = brackets.substring(brackets.length - close_bracket_length, brackets.length);
     const output = indent_row(close_bracket, row_settings.level);
-    return { ...row_settings, output, type: "", bracket: true };
+    return { ...row_settings, output, type: "", bracket: close_bracket_length };
 }
 
 function getRowsForChild(row_settings, key, val, index) {
@@ -268,6 +275,16 @@ function getRowsForChild(row_settings, key, val, index) {
 
 function indent_row(row, level) {
     return " ".repeat(level * indentSpaces) + row;
+}
+
+function appendRowForSvelteExplorerTag(row_settings, arr) {
+    const children = Object.entries(row_settings.val);
+    const tag = row_settings.val["svelte-explorer-tag"].toLowerCase();
+    const end_bracket = "</" + tag + ">";
+    const brackets = "<" + tag + ">" + end_bracket;
+    arr.push(getRowForBracketOpen(row_settings, children.length, brackets, "object", end_bracket.length));
+    children.forEach(([k, v], i) => appendRowsByType(getRowsForChild(row_settings, k, v, i), arr));
+    arr.push(getRowForBracketClose(row_settings, brackets, end_bracket.length));
 }
 
 function code_format_svelte_explorer_tag(

@@ -17,7 +17,7 @@
     incr();
     const longarray = new Array(101).fill("x").map((x, i) => "" + i);
     let myStore;
-    $: if (counter || $count) {
+    /*$: if (counter || $count) {
         myStore = {
             string1: "testy",
             string2: "testy",
@@ -64,8 +64,7 @@
             customStore: count,
             customStoreValue: $count,
         };
-    }
-
+    }*/
     let params = new URL(document.location).searchParams;
     let open = params.get("open");
     let fade = params.get("fade");
