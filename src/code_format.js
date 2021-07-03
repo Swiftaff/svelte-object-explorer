@@ -51,7 +51,7 @@ function getTypeName(value, type, key) {
 
     function getObjectOrSpecialObject(value) {
         const longArraySubArrayProperties = ["start", "end", "sub_array"];
-        const svelteExplorerTagProperties = ["class", "svelte-explorer-tag", "children"];
+        const svelteExplorerTagProperties = ["class", "svelte-explorer-tag", "children", "textContent"];
         return object_has_only_these_properties(value, longArraySubArrayProperties)
             ? "ARRAY+OBJECT"
             : object_has_only_these_properties(value, svelteExplorerTagProperties)
@@ -122,18 +122,23 @@ function appendRowsForArrayLongSubArray(row_settings, arr, parent_item_start) {
 
 function appendRowForSimpleTypes(row_settings, arr) {
     const { key, val, level, ...rest } = row_settings;
+    const key_length = ("" + key).length;
+    const index_or_not = key_length ? "" + key + ": " : "";
     const row_is_too_wide = val && "" + val.length > max_line_length - level * indentSpaces;
     if (row_is_too_wide) appendRowForSimpleTypesMultiLine(row_settings, arr);
-    else arr.push({ ...rest, output: getIndentedRow(key + ": " + val, level) });
+    else arr.push({ ...rest, output: getIndentedRow(index_or_not + val, level) });
 }
 
 function appendRowForSimpleTypesMultiLine(row_settings, arr) {
     const { key, val, level, ...rest } = row_settings;
-    const available_chars_based_on_indent = max_line_length - level * indentSpaces;
+    const key_length = ("" + key).length;
+    const available_chars_based_on_indent = max_line_length - key_length - level * indentSpaces;
+    console.log(key, available_chars_based_on_indent);
     const regex_to_split_into_chunks = new RegExp("[^]{1," + available_chars_based_on_indent + "}", "gi");
     const array_of_rows = ("" + val).match(regex_to_split_into_chunks);
+    const index_or_not = key_length ? "" + key + ": " : "";
     const index_and_no_indent_in_first_row = (str, i) =>
-        i ? getIndentedRow(" " + str, level + 1) : getIndentedRow("" + (i + 1) + ": " + str, level);
+        i ? getIndentedRow(" ".repeat(key_length) + str, level + 1) : getIndentedRow(index_or_not + str, level);
     const only_show_type_in_first_row = (settings, i) => (i ? "" : settings.type);
     let new_row_settings = row_settings;
     const push_each_row = (a, i) => {
@@ -168,24 +173,27 @@ function appendRowForSymbol(row_settings, arr) {
     arr.push({ ...rest, output: getIndentedRow(key + ": " + sym, level) });
 }
 
+function appendRowsForDomNode(row_settings, arr) {
+    const converted = lib.domParser(row_settings.val);
+    appendRowsForSvelteExplorerTag({ ...row_settings, val: converted }, arr);
+}
+
 function appendRowsForSvelteExplorerTag(row_settings, arr) {
     const { key, val, level, ...rest } = row_settings;
+    const text = row_settings.val.textContent;
     const children = row_settings.val.children;
     const tag = row_settings.val["svelte-explorer-tag"].toLowerCase();
     const end_bracket = "</" + tag + ">";
     const brackets = "<" + tag + ">" + end_bracket;
-    if (children.length) {
+    const has_text = text.length ? 1 : 0;
+    if (children.length || has_text) {
         arr.push(getRowForBracketOpen(row_settings, children.length, brackets, "HTML", end_bracket.length));
-        children.map((a, i) => appendRowsByType(getRowForChild(row_settings, i, a, i), arr));
+        if (has_text) appendRowsByType(getRowForChild(row_settings, "", text, 0), arr);
+        children.map((a, i) => appendRowsByType(getRowForChild(row_settings, i + has_text, a, i + has_text), arr));
         arr.push(getRowForBracketClose(row_settings, brackets, end_bracket.length));
     } else {
         arr.push({ ...rest, output: getIndentedRow(key + ": " + brackets, level) });
     }
-}
-
-function appendRowsForDomNode(row_settings, arr) {
-    const converted = lib.domParser(row_settings.val);
-    appendRowsForSvelteExplorerTag({ ...row_settings, val: converted }, arr);
 }
 
 export function recursive_get_chunked_array(supplied = [], supplied_options = {}) {

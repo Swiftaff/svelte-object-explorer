@@ -8,8 +8,14 @@ function domParser(node) {
     //console.log(arr);
 
     function getTag(el) {
-        if (el.tagName && el.tagName !== "SCRIPT" && !el.className.includes("svelte-object-explorer-wrapper ")) {
-            return { class: el.className, "svelte-explorer-tag": el.tagName, children: getChildren(el) };
+        if (el && el.tagName && el.tagName !== "SCRIPT" && !el.className.includes("svelte-object-explorer-wrapper ")) {
+            const textContent = el && el.firstChild && el.firstChild.nodeType === 3 ? el.firstChild.textContent : "";
+            return {
+                class: el.className,
+                "svelte-explorer-tag": el.tagName,
+                children: getChildren(el),
+                textContent,
+            };
         } else {
             return null;
         }
