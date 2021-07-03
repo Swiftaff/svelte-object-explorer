@@ -21,8 +21,8 @@ function appendRowsByType(row_settings, arr) {
         "ARRAY+OBJECT": appendRowsForArrayLongObject, //after being converted to object
         "ARRAY+SUB_ARRAY": appendRowsForArrayLongSubArray,
         symbol: appendRowForSymbol,
-        function: appendRowForFunction,
-        HTML: appendRowForSvelteExplorerTag,
+        function: appendRowsForFunction,
+        HTML: appendRowsForSvelteExplorerTag,
     };
     if (simpleTypes.includes(type)) appendRowForSimpleTypes(new_settings, arr);
     if (type in type_matcher) type_matcher[type](new_settings, arr);
@@ -66,8 +66,109 @@ function appendRowsForObject(row_settings, arr) {
     const children = Object.entries(row_settings.val);
     const brackets = "{}";
     arr.push(getRowForBracketOpen(row_settings, children.length, brackets, "object"));
-    children.forEach(([k, v], i) => appendRowsByType(getRowsForChild(row_settings, k, v, i), arr));
+    children.forEach(([k, v], i) => appendRowsByType(getRowForChild(row_settings, k, v, i), arr));
     arr.push(getRowForBracketClose(row_settings, brackets));
+}
+
+function appendRowsForArray(row_settings, arr) {
+    let children = row_settings.val;
+    const brackets = "[]";
+    arr.push(getRowForBracketOpen(row_settings, children.length, brackets, row_settings.type));
+    for (let i = 0; i < children.length; i++) {
+        appendRowsByType(getRowForChild(row_settings, i, children[i], i), arr);
+    }
+    arr.push(getRowForBracketClose(row_settings, brackets));
+}
+
+function appendRowsForArrayLong(row_settings, arr) {
+    const converted = recursive_get_chunked_array(row_settings.val);
+    appendRowsForArrayLongObject({ ...row_settings, val: converted }, arr);
+}
+
+function appendRowsForArrayLongObject(row_settings, arr) {
+    const item = row_settings.val;
+    const brackets = "[]";
+    arr.push(getRowForBracketOpen(row_settings, item.end + 1, brackets, row_settings.type));
+    appendRowsForArrayLongSubArray(
+        getRowForChild(row_settings, "long arrays are chunked", item.sub_array, 1),
+        arr,
+        item.start
+    );
+    arr.push(getRowForBracketClose(row_settings, brackets));
+}
+
+function appendRowsForArrayLongSubArray(row_settings, arr, parent_item_start) {
+    let item = row_settings.val;
+    const brackets = "...[]";
+    for (let i = 0; i < item.length; i++) {
+        const key = getLongArrayRange(item[i], parent_item_start + i);
+        const val = item[i];
+        const indexRef = row_settings.indexRef + "." + i;
+        appendRowsByType({ ...row_settings, key, val, indexRef }, arr);
+    }
+    function getLongArrayRange(long_array_object, i) {
+        return typeof long_array_object !== "undefined" && typeof long_array_object.start !== "undefined"
+            ? "{" + long_array_object.start + ".." + long_array_object.end + "}"
+            : i;
+    }
+}
+
+function appendRowForSimpleTypes(row_settings, arr) {
+    const { key, val, level, ...rest } = row_settings;
+    const row_is_too_wide = val && "" + val.length > max_line_length - level * indentSpaces;
+    if (row_is_too_wide) appendRowForSimpleTypesMultiLine(row_settings, arr);
+    else arr.push({ ...rest, output: getIndentedRow(key + ": " + val, level) });
+}
+
+function appendRowForSimpleTypesMultiLine(row_settings, arr) {
+    const { key, val, level, ...rest } = row_settings;
+    const available_chars_based_on_indent = max_line_length - level * indentSpaces;
+    const regex_to_split_into_chunks = new RegExp("[^]{1," + available_chars_based_on_indent + "}", "gi");
+    const array_of_rows = ("" + val).match(regex_to_split_into_chunks);
+    const index_and_no_indent_in_first_row = (str, i) =>
+        i ? getIndentedRow(" " + str, level + 1) : getIndentedRow("" + (i + 1) + ": " + str, level);
+    const only_show_type_in_first_row = (settings, i) => (i ? "" : settings.type);
+    let new_row_settings = row_settings;
+    const push_each_row = (a, i) => {
+        const output = index_and_no_indent_in_first_row(a, i);
+        new_row_settings = { ...new_row_settings, output, type: only_show_type_in_first_row(new_row_settings, i) };
+        // we don't change the indexRef - so that all rows have the same row reference and highlight together
+        arr.push(new_row_settings, arr);
+    };
+    array_of_rows.map(push_each_row);
+}
+
+function appendRowsForFunction(row_settings, arr) {
+    const { key, val, level, ...rest } = row_settings;
+    const val_as_string = "" + val;
+    const val_as_array = val_as_string.split("\n");
+
+    const brackets = "{}";
+    const type = val_as_array[0] && val_as_array[0].substring(0, 1) === "f" ? "function" : "arrow fn";
+    arr.push(getRowForBracketOpen(row_settings, val_as_array.length, brackets, type));
+    for (let i = 0; i < val_as_array.length; i++) {
+        const function_row = val_as_array[i].trim();
+        if (!function_row.length) continue;
+        appendRowsByType(getRowForChild(row_settings, i, function_row, i), arr);
+    }
+    arr.push(getRowForBracketClose(row_settings, brackets));
+}
+
+function appendRowForSymbol(row_settings, arr) {
+    const { key, val, level, ...rest } = row_settings;
+    let sym = val.toString();
+    if (sym !== "Symbol()") sym = `Symbol('${sym.substring(7, sym.length - 1)}')`;
+    arr.push({ ...rest, output: getIndentedRow(key + ": " + sym, level) });
+}
+
+function appendRowsForSvelteExplorerTag(row_settings, arr) {
+    const children = Object.entries(row_settings.val);
+    const tag = row_settings.val["svelte-explorer-tag"].toLowerCase();
+    const end_bracket = "</" + tag + ">";
+    const brackets = "<" + tag + ">" + end_bracket;
+    arr.push(getRowForBracketOpen(row_settings, children.length, brackets, "object", end_bracket.length));
+    children.forEach(([k, v], i) => appendRowsByType(getRowForChild(row_settings, k, v, i), arr));
+    arr.push(getRowForBracketClose(row_settings, brackets, end_bracket.length));
 }
 
 export function recursive_get_chunked_array(supplied = [], supplied_options = {}) {
@@ -162,168 +263,25 @@ export function recursive_get_chunked_array(supplied = [], supplied_options = {}
     }
 }
 
-function appendRowsForArray(row_settings, arr) {
-    let children = row_settings.val;
-    const brackets = "[]";
-    arr.push(getRowForBracketOpen(row_settings, children.length, brackets, row_settings.type));
-    for (let i = 0; i < children.length; i++) {
-        appendRowsByType(getRowsForChild(row_settings, i, children[i], i), arr);
-    }
-    arr.push(getRowForBracketClose(row_settings, brackets));
-}
-
-function appendRowsForArrayLong(row_settings, arr) {
-    const converted = recursive_get_chunked_array(row_settings.val);
-    appendRowsForArrayLongObject({ ...row_settings, val: converted }, arr);
-}
-
-function appendRowsForArrayLongObject(row_settings, arr) {
-    const item = row_settings.val;
-    const brackets = "[]";
-    arr.push(getRowForBracketOpen(row_settings, item.end + 1, brackets, row_settings.type));
-    appendRowsForArrayLongSubArray(
-        getRowsForChild(row_settings, "long arrays are chunked", item.sub_array, 1),
-        arr,
-        item.start
-    );
-    arr.push(getRowForBracketClose(row_settings, brackets));
-}
-
-function appendRowsForArrayLongSubArray(row_settings, arr, parent_item_start) {
-    let item = row_settings.val;
-    const brackets = "...[]";
-    for (let i = 0; i < item.length; i++) {
-        const key = getLongArrayRange(item[i], parent_item_start + i);
-        const val = item[i];
-        const indexRef = row_settings.indexRef + "." + i;
-        appendRowsByType({ ...row_settings, key, val, indexRef }, arr);
-    }
-}
-
-function getLongArrayRange(long_array_object, i) {
-    return typeof long_array_object !== "undefined" && typeof long_array_object.start !== "undefined"
-        ? "{" + long_array_object.start + ".." + long_array_object.end + "}"
-        : i;
-}
-
-function appendRowForSimpleTypes(row_settings, arr) {
-    const { key, val, level, ...rest } = row_settings;
-    const row_is_too_wide = val && "" + val.length > max_line_length - level * indentSpaces;
-    if (row_is_too_wide) appendRowForSimpleTypesMultiLine(row_settings, arr);
-    else arr.push({ ...rest, output: indent_row(key + ": " + val, level) });
-}
-
-function appendRowForSimpleTypesMultiLine(row_settings, arr) {
-    const { key, val, level, ...rest } = row_settings;
-    const available_chars_based_on_indent = max_line_length - level * indentSpaces;
-    const regex_to_split_into_chunks = new RegExp("[^]{1," + available_chars_based_on_indent + "}", "gi");
-    const array_of_rows = ("" + val).match(regex_to_split_into_chunks);
-    const index_and_no_indent_in_first_row = (str, i) =>
-        i ? indent_row(" " + str, level + 1) : indent_row("" + (i + 1) + ": " + str, level);
-    const only_show_type_in_first_row = (settings, i) => (i ? "" : settings.type);
-    let new_row_settings = row_settings;
-    const push_each_row = (a, i) => {
-        const output = index_and_no_indent_in_first_row(a, i);
-        new_row_settings = { ...new_row_settings, output, type: only_show_type_in_first_row(new_row_settings, i) };
-        // we don't change the indexRef - so that all rows have the same row reference and highlight together
-        arr.push(new_row_settings, arr);
-    };
-    array_of_rows.map(push_each_row);
-}
-
-function appendRowForFunction(row_settings, arr) {
-    const { key, val, level, ...rest } = row_settings;
-    const val_as_string = "" + val;
-    const val_as_array = val_as_string.split("\n");
-
-    const brackets = "{}";
-    const type = val_as_array[0] && val_as_array[0].substring(0, 1) === "f" ? "function" : "arrow fn";
-    arr.push(getRowForBracketOpen(row_settings, val_as_array.length, brackets, type));
-    for (let i = 0; i < val_as_array.length; i++) {
-        const function_row = val_as_array[i].trim();
-        if (!function_row.length) continue;
-        appendRowsByType(getRowsForChild(row_settings, i, function_row, i), arr);
-    }
-    arr.push(getRowForBracketClose(row_settings, brackets));
-}
-
-function appendRowForSymbol(row_settings, arr) {
-    const { key, val, level, ...rest } = row_settings;
-    let sym = val.toString();
-    if (sym !== "Symbol()") sym = `Symbol('${sym.substring(7, sym.length - 1)}')`;
-    arr.push({ ...rest, output: indent_row(key + ": " + sym, level) });
-}
-
 function getRowForBracketOpen(row_settings, len, brackets, type, close_bracket_length = 1) {
     const text = row_settings.key + ": " + brackets;
-    const output = indent_row(text, row_settings.level);
+    const output = getIndentedRow(text, row_settings.level);
     return { ...row_settings, output, type, bracket: close_bracket_length, expandable: true, len };
 }
 
 function getRowForBracketClose(row_settings, brackets, close_bracket_length = 1) {
     const close_bracket = brackets.substring(brackets.length - close_bracket_length, brackets.length);
-    const output = indent_row(close_bracket, row_settings.level);
+    const output = getIndentedRow(close_bracket, row_settings.level);
     return { ...row_settings, output, type: "", bracket: close_bracket_length };
 }
 
-function getRowsForChild(row_settings, key, val, index) {
+function getRowForChild(row_settings, key, val, index) {
     const indexRef = row_settings.indexRef + "." + index;
     const parentIndexRef = row_settings.indexRef;
     const level = row_settings.level + 1;
     return { indexRef, parentIndexRef, index, key, val, level };
 }
 
-function indent_row(row, level) {
+function getIndentedRow(row, level) {
     return " ".repeat(level * indentSpaces) + row;
-}
-
-function appendRowForSvelteExplorerTag(row_settings, arr) {
-    const children = Object.entries(row_settings.val);
-    const tag = row_settings.val["svelte-explorer-tag"].toLowerCase();
-    const end_bracket = "</" + tag + ">";
-    const brackets = "<" + tag + ">" + end_bracket;
-    arr.push(getRowForBracketOpen(row_settings, children.length, brackets, "object", end_bracket.length));
-    children.forEach(([k, v], i) => appendRowsByType(getRowsForChild(row_settings, k, v, i), arr));
-    arr.push(getRowForBracketClose(row_settings, brackets, end_bracket.length));
-}
-
-function code_format_svelte_explorer_tag(
-    indexRef,
-    parentIndexRef,
-    index,
-    parentArr,
-    obj,
-    level,
-    optionalIndex,
-    optionalNewLine
-) {
-    let object = Object.entries(obj);
-    parentArr.push({
-        indexRef,
-        parentIndexRef,
-        index,
-        output: indent_row(
-            (optionalNewLine ? "" : code_format_index(optionalIndex)) + code_format_index(optionalIndex),
-            level
-        ),
-        type: "Tag",
-        tag: indent_row("<" + obj["svelte-explorer-tag"].toLowerCase() + ">", level),
-        len: object.length,
-        expandable: true,
-    });
-
-    object.forEach(([key, value], objIndex) => {
-        if (key === "children") {
-            formatByType(
-                indexRef, // + "." + objIndex,
-                indexRef,
-                objIndex,
-                parentArr,
-                value,
-                level,
-                key,
-                true
-            );
-        }
-    });
 }
