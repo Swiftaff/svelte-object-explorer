@@ -1,3 +1,4 @@
+import lib from "./lib.js";
 const indentSpaces = 2;
 const max_array_length = 10;
 const max_line_length = 38;
@@ -23,6 +24,7 @@ function appendRowsByType(row_settings, arr) {
         symbol: appendRowForSymbol,
         function: appendRowsForFunction,
         HTML: appendRowsForSvelteExplorerTag,
+        Node: appendRowsForDomNode,
     };
     if (simpleTypes.includes(type)) appendRowForSimpleTypes(new_settings, arr);
     if (type in type_matcher) type_matcher[type](new_settings, arr);
@@ -54,11 +56,19 @@ function getTypeName(value, type, key) {
             ? "ARRAY+OBJECT"
             : object_has_only_these_properties(value, svelteExplorerTagProperties)
             ? "HTML"
+            : isNode(value)
+            ? "Node"
             : "object";
     }
 
     function object_has_only_these_properties(value, arr) {
         return arr.filter((prop) => prop in value).length === arr.length;
+    }
+
+    function isNode(o) {
+        return typeof Node === "object"
+            ? o instanceof Node
+            : o && typeof o === "object" && typeof o.nodeType === "number" && typeof o.nodeName === "string";
     }
 }
 
@@ -171,6 +181,11 @@ function appendRowsForSvelteExplorerTag(row_settings, arr) {
     } else {
         arr.push({ ...rest, output: getIndentedRow(key + ": " + brackets, level) });
     }
+}
+
+function appendRowsForDomNode(row_settings, arr) {
+    const converted = lib.domParser(row_settings.val);
+    appendRowsForSvelteExplorerTag({ ...row_settings, val: converted }, arr);
 }
 
 export function recursive_get_chunked_array(supplied = [], supplied_options = {}) {

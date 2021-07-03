@@ -3,7 +3,7 @@ import code_format from "../src/code_format.js";
 function transform_data(cache) {
     let tempArr = [];
     let tempItem = {
-        key: "TOP LEVEL",
+        key: "Svelte Object Explorer",
         val: cache.myStore,
     };
     tempItem.class = "";
