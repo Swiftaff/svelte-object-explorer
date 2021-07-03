@@ -88,12 +88,9 @@ function appendRowsForArrayLong(row_settings, arr) {
 function appendRowsForArrayLongObject(row_settings, arr) {
     const item = row_settings.val;
     const brackets = "[]";
+    const text = "long arrays are chunked";
     arr.push(getRowForBracketOpen(row_settings, item.end + 1, brackets, row_settings.type));
-    appendRowsForArrayLongSubArray(
-        getRowForChild(row_settings, "long arrays are chunked", item.sub_array, 1),
-        arr,
-        item.start
-    );
+    appendRowsForArrayLongSubArray(getRowForChild(row_settings, text, item.sub_array, 1), arr, item.start);
     arr.push(getRowForBracketClose(row_settings, brackets));
 }
 
@@ -162,13 +159,18 @@ function appendRowForSymbol(row_settings, arr) {
 }
 
 function appendRowsForSvelteExplorerTag(row_settings, arr) {
-    const children = Object.entries(row_settings.val);
+    const { key, val, level, ...rest } = row_settings;
+    const children = row_settings.val.children;
     const tag = row_settings.val["svelte-explorer-tag"].toLowerCase();
     const end_bracket = "</" + tag + ">";
     const brackets = "<" + tag + ">" + end_bracket;
-    arr.push(getRowForBracketOpen(row_settings, children.length, brackets, "object", end_bracket.length));
-    children.forEach(([k, v], i) => appendRowsByType(getRowForChild(row_settings, k, v, i), arr));
-    arr.push(getRowForBracketClose(row_settings, brackets, end_bracket.length));
+    if (children.length) {
+        arr.push(getRowForBracketOpen(row_settings, children.length, brackets, "HTML", end_bracket.length));
+        children.map((a, i) => appendRowsByType(getRowForChild(row_settings, i, a, i), arr));
+        arr.push(getRowForBracketClose(row_settings, brackets, end_bracket.length));
+    } else {
+        arr.push({ ...rest, output: getIndentedRow(key + ": " + brackets, level) });
+    }
 }
 
 export function recursive_get_chunked_array(supplied = [], supplied_options = {}) {
