@@ -150,7 +150,7 @@
             on:mouseleave={() => (hovering = false)}
         >
             <PauseButton {isPaused} {pause} {unpause} />
-            <CacheDisplay {cache} />
+            <CacheDisplay {cache} {rateLimit} {rateLimitDefault} />
             <table>
                 {#each topLevelObjectArray as topLevelObject, topLevelObject_index}
                     {#if openIndex === topLevelObject_index}
