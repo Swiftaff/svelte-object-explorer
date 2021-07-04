@@ -149,44 +149,44 @@ describe("Prop options", function () {
     });
 
     describe("rateLimit", function () {
-        it.only("rateLimit = default 100. Autocounter should increase automatically", function () {
-            cy.viewport(1000, 600);
-            cy.visit("http://localhost:5000");
-            let current = cy.get("span.cache_data").invoke("text");
-            cy.get("span.cache_data").should("have.text", current).invoke("text").should("equal", current);
-
-            //testAutomaticCounter("http://localhost:5000/", 0, 500);
+        it("rateLimit = default 100. Autocounter should increase automatically each second", function () {
+            cy.get("span.cache_ratelimit").should("not.be.visible");
+            testAutomaticCounter("http://localhost:5000", "span.cache_data", 0, 1500, true);
+            testAutomaticCounter("http://localhost:5000", "span.cache_view", 0, 1500, true);
         });
-        it("rateLimit = 500. Autocounter should increase automatically", function () {
-            testAutomaticCounter("http://localhost:5000?rateLimit=500", 100, 1000);
+        it("rateLimit = 500. Autocounter should still increase automatically", function () {
+            testAutomaticCounter("http://localhost:5000?rateLimit=500", "span.cache_data", 0, 1500, true, () => {
+                cy.get("span.cache_ratelimit").should("be.visible");
+            });
+            testAutomaticCounter("http://localhost:5000?rateLimit=500", "span.cache_view", 0, 1500, true);
         });
-        it("rateLimit = 2000. Autocounter should increase automatically", function () {
-            testAutomaticCounter("http://localhost:5000?rateLimit=2000", 100, 5000);
+        it("rateLimit = 2000. Autocounter should not increase in this period", function () {
+            testAutomaticCounter("http://localhost:5000?rateLimit=2000", "span.cache_data", 0, 500, false, () => {
+                cy.get("span.cache_ratelimit").should("be.visible");
+            });
+            testAutomaticCounter("http://localhost:5000?rateLimit=2000", "span.cache_view", 0, 500, false);
         });
     });
 });
 
-describe("Panel data updates when App data updates", function () {
-    it("Automatic: autocounter should increase automatically", function () {
-        testAutomaticCounter("http://localhost:5000/", 0, 100);
-    });
+describe.only("Panel data updates when App data updates", function () {
     it("Manual: Clicking counter buttons should change the manual counter", function () {
         cy.viewport(1000, 600);
         cy.visit("http://localhost:5000/");
-        //initially set to 0
-        cy.get("td.link")
-            .eq(1)
+        //is initially set to 0
+        cy.get("div.row")
+            .eq(27)
             .invoke("text")
-            .then((count1) => {
-                expect(Number.parseInt(count1)).to.equal(0);
+            .then((text) => {
+                expect(text).to.equal("test");
             });
 
+        /*
         //click increase button twice, should equal 2
         cy.get("#incr").click();
         cy.get("#incr").click();
         cy.wait(100);
-        cy.get("td.link")
-            .eq(1)
+        cy.get("span.cache_view")
             .invoke("text")
             .then((count1) => {
                 expect(Number.parseInt(count1)).to.equal(2);
@@ -195,8 +195,7 @@ describe("Panel data updates when App data updates", function () {
         //click decrease button once, should equal 1
         cy.get("#decr").click();
         cy.wait(100);
-        cy.get("td.link")
-            .eq(1)
+        cy.get("span.cache_view")
             .invoke("text")
             .then((count1) => {
                 expect(Number.parseInt(count1)).to.equal(1);
@@ -205,38 +204,37 @@ describe("Panel data updates when App data updates", function () {
         //click reset button once, should equal 0 again
         cy.get("#decr").click();
         cy.wait(100);
-        cy.get("td.link")
-            .eq(1)
+        cy.get("span.cache_view")
             .invoke("text")
             .then((count1) => {
                 expect(Number.parseInt(count1)).to.equal(0);
             });
+        */
     });
 });
 
-function testAutomaticCounter(url, firstWait, secondWait) {
+function testAutomaticCounter(url, selector, firstWait, secondWait, should_be_greater, callback) {
     cy.viewport(1000, 600);
     cy.visit(url);
-    //get value from 3rd row
-    cy.get("td.link")
-        .eq(2)
+    if (callback) callback();
+    cy.get(selector)
         .invoke("text")
         .then((count1) => {
             //wait a bit then get same value, it should be the same since rateLimit is in place
             cy.wait(firstWait);
-            cy.get("td.link")
-                .eq(2)
+            cy.get(selector)
                 .invoke("text")
                 .then((count2) => {
                     expect(Number.parseInt(count2)).to.be.equal(Number.parseInt(count1));
 
                     //wait a bit more get same value, it should be greater
                     cy.wait(secondWait);
-                    cy.get("td.link")
-                        .eq(2)
+                    cy.get(selector)
                         .invoke("text")
                         .then((count3) => {
-                            expect(Number.parseInt(count3)).to.be.greaterThan(Number.parseInt(count1));
+                            if (should_be_greater)
+                                expect(Number.parseInt(count3)).to.be.greaterThan(Number.parseInt(count1));
+                            else expect(Number.parseInt(count3)).to.be.equal(Number.parseInt(count1));
                         });
                 });
         });
