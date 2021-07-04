@@ -151,7 +151,7 @@ describe("Prop options", function () {
     describe("rateLimit", function () {
         it("rateLimit = default 100. Autocounter should increase automatically each second", function () {
             cy.get("span.cache_ratelimit").should("not.be.visible");
-            testAutomaticCounter("http://localhost:5000", "span.cache_data", 0, 50, true);
+            //testAutomaticCounter("http://localhost:5000", "span.cache_data", 0, 50, true);
             testAutomaticCounter("http://localhost:5000", "span.cache_view", 0, 1500, true);
         });
         it("rateLimit = 500. Autocounter should still increase automatically", function () {
@@ -195,29 +195,31 @@ describe("Panel data updates when App data updates", function () {
         nthSelectorEqualsText(28, "div.row span.val", "0");
     });
 
-    it("Automatic: Data updates when paused and un-paused, compared to view", function () {
-        cy.viewport(1000, 600);
-        cy.visit("http://localhost:5000/");
+    describe("Automatic: Data updates when paused and un-paused, compared to view", function () {
+        it("only data updates after pause, not view", function () {
+            cy.viewport(1000, 600);
+            cy.visit("http://localhost:5000/");
 
-        //pause
-        cy.get("button.pause").click();
-        nthSelectorEqualsText(0, "span.cache_data", "1");
-        nthSelectorEqualsText(0, "span.cache_view", "0");
-        cy.wait(1000);
-        nthSelectorEqualsText(0, "span.cache_data", "2");
-        nthSelectorEqualsText(0, "span.cache_view", "0");
-        cy.wait(1000);
-        nthSelectorEqualsText(0, "span.cache_data", "3");
-        nthSelectorEqualsText(0, "span.cache_view", "0");
-
-        //un-pause
-        cy.get("button.pause").click();
-        cy.wait(1000);
-        nthSelectorEqualsText(0, "span.cache_data", "4");
-        nthSelectorEqualsText(0, "span.cache_view", "2");
-        cy.wait(1000);
-        nthSelectorEqualsText(0, "span.cache_data", "5");
-        nthSelectorEqualsText(0, "span.cache_view", "3");
+            //pause
+            cy.get("button.pause").click();
+            nthSelectorEqualsText(0, "span.cache_data", "1");
+            nthSelectorEqualsText(0, "span.cache_view", "0");
+            cy.wait(1100);
+            nthSelectorEqualsText(0, "span.cache_data", "2");
+            nthSelectorEqualsText(0, "span.cache_view", "0");
+            cy.wait(1100);
+            nthSelectorEqualsText(0, "span.cache_data", "3");
+            nthSelectorEqualsText(0, "span.cache_view", "0");
+        });
+        it("both data and view will update after unpause", function () {
+            cy.get("button.pause").click();
+            cy.wait(1100);
+            nthSelectorEqualsText(0, "span.cache_data", "4");
+            nthSelectorEqualsText(0, "span.cache_view", "2");
+            cy.wait(1100);
+            nthSelectorEqualsText(0, "span.cache_data", "5");
+            nthSelectorEqualsText(0, "span.cache_view", "3");
+        });
     });
 });
 
