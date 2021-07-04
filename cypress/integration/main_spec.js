@@ -151,7 +151,7 @@ describe("Prop options", function () {
     describe("rateLimit", function () {
         it("rateLimit = default 100. Autocounter should increase automatically each second", function () {
             cy.get("span.cache_ratelimit").should("not.be.visible");
-            testAutomaticCounter("http://localhost:5000", "span.cache_data", 0, 1500, true);
+            testAutomaticCounter("http://localhost:5000", "span.cache_data", 0, 50, true);
             testAutomaticCounter("http://localhost:5000", "span.cache_view", 0, 1500, true);
         });
         it("rateLimit = 500. Autocounter should still increase automatically", function () {
@@ -169,47 +169,55 @@ describe("Prop options", function () {
     });
 });
 
-describe.only("Panel data updates when App data updates", function () {
+describe("Panel data updates when App data updates", function () {
     it("Manual: Clicking counter buttons should change the manual counter", function () {
         cy.viewport(1000, 600);
         cy.visit("http://localhost:5000/");
-        //is initially set to 0
-        cy.get("div.row")
-            .eq(27)
-            .invoke("text")
-            .then((text) => {
-                expect(text).to.equal("test");
-            });
 
-        /*
+        //customStoreValue is initially set to 0
+        nthSelectorEqualsText(22, "div.row span.key", "customStoreValue");
+        nthSelectorEqualsText(28, "div.row span.val", "0"); // 22 + 6 multi-lines from longstring
+
         //click increase button twice, should equal 2
         cy.get("#incr").click();
         cy.get("#incr").click();
-        cy.wait(100);
-        cy.get("span.cache_view")
-            .invoke("text")
-            .then((count1) => {
-                expect(Number.parseInt(count1)).to.equal(2);
-            });
+        cy.wait(1000);
+        nthSelectorEqualsText(28, "div.row span.val", "2");
 
         //click decrease button once, should equal 1
         cy.get("#decr").click();
-        cy.wait(100);
-        cy.get("span.cache_view")
-            .invoke("text")
-            .then((count1) => {
-                expect(Number.parseInt(count1)).to.equal(1);
-            });
+        cy.wait(1000);
+        nthSelectorEqualsText(28, "div.row span.val", "1");
 
         //click reset button once, should equal 0 again
         cy.get("#decr").click();
-        cy.wait(100);
-        cy.get("span.cache_view")
-            .invoke("text")
-            .then((count1) => {
-                expect(Number.parseInt(count1)).to.equal(0);
-            });
-        */
+        cy.wait(1000);
+        nthSelectorEqualsText(28, "div.row span.val", "0");
+    });
+
+    it("Automatic: Data updates when paused and un-paused, compared to view", function () {
+        cy.viewport(1000, 600);
+        cy.visit("http://localhost:5000/");
+
+        //pause
+        cy.get("button.pause").click();
+        nthSelectorEqualsText(0, "span.cache_data", "1");
+        nthSelectorEqualsText(0, "span.cache_view", "0");
+        cy.wait(1000);
+        nthSelectorEqualsText(0, "span.cache_data", "2");
+        nthSelectorEqualsText(0, "span.cache_view", "0");
+        cy.wait(1000);
+        nthSelectorEqualsText(0, "span.cache_data", "3");
+        nthSelectorEqualsText(0, "span.cache_view", "0");
+
+        //un-pause
+        cy.get("button.pause").click();
+        cy.wait(1000);
+        nthSelectorEqualsText(0, "span.cache_data", "4");
+        nthSelectorEqualsText(0, "span.cache_view", "2");
+        cy.wait(1000);
+        nthSelectorEqualsText(0, "span.cache_data", "5");
+        nthSelectorEqualsText(0, "span.cache_view", "3");
     });
 });
 
@@ -237,5 +245,14 @@ function testAutomaticCounter(url, selector, firstWait, secondWait, should_be_gr
                             else expect(Number.parseInt(count3)).to.be.equal(Number.parseInt(count1));
                         });
                 });
+        });
+}
+
+function nthSelectorEqualsText(n, selector, compare_text) {
+    cy.get(selector)
+        .eq(n)
+        .invoke("text")
+        .then((text) => {
+            expect(text).to.equal(compare_text);
         });
 }
