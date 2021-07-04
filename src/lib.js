@@ -17,7 +17,8 @@ function domParser(node) {
                 children:
                     isSvelteExplorerTag(el) &&
                     svelteExplorerTag.substring(0, 3) !== "#if" &&
-                    svelteExplorerTag.substring(0, 5) !== "#each"
+                    svelteExplorerTag.substring(0, 5) !== "#each" &&
+                    svelteExplorerTag.substring(0, 6) !== "#await"
                         ? []
                         : getChildren(el),
                 textContent,

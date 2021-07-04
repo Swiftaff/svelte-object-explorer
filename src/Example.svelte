@@ -77,6 +77,26 @@
     let rateLimit = params.get("rateLimit");
 
     let string = "< SvelteObjectExplorer {myStore} />";
+
+    async function getAsyncTimer() {
+        console.log("getAsyncTimer");
+        const res = await timeout(3000);
+        console.log(res);
+
+        if (res) {
+            return "async timer done";
+        } else {
+            throw new Error("async error");
+        }
+    }
+
+    function timeout(ms) {
+        return new Promise((resolve) => setTimeout(() => resolve("success"), ms));
+    }
+    let promise = getAsyncTimer();
+    function handleAsyncTimerClick() {
+        promise = getAsyncTimer();
+    }
 </script>
 
 <SvelteObjectExplorer {myStore} {open} {fade} {tabPosition} {rateLimit} />
@@ -116,6 +136,23 @@
                 {#each array as person}
                     <span>{person.first} {person.surname}</span>
                 {/each}
+            </span>
+        </div>
+        <div>
+            <button on:click={handleAsyncTimerClick}> Trigger Async Timer again </button>
+            <span data-svelte-explorer-tag="#await promise">
+                {#await promise}
+                    <p>...waiting</p>
+                    <span data-svelte-explorer-tag=":then message" />
+                    <span data-svelte-explorer-tag=":catch error" />
+                {:then message}
+                    <span data-svelte-explorer-tag=":then message" />
+                    <p>Async Timer Message is '{message}'</p>
+                    <span data-svelte-explorer-tag=":catch error" />
+                {:catch error}
+                    <span data-svelte-explorer-tag=":catch error" />
+                    <p style="color: red">{error.message}</p>
+                {/await}
             </span>
         </div>
     </div>

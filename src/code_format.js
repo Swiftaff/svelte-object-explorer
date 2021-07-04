@@ -133,7 +133,6 @@ function appendRowForSimpleTypesMultiLine(row_settings, arr) {
     const { key, val, level, ...rest } = row_settings;
     const key_length = ("" + key).length;
     const available_chars_based_on_indent = max_line_length - key_length - level * indentSpaces;
-    console.log(key, available_chars_based_on_indent);
     const regex_to_split_into_chunks = new RegExp("[^]{1," + available_chars_based_on_indent + "}", "gi");
     const array_of_rows = ("" + val).match(regex_to_split_into_chunks);
     const index_or_not = key_length ? "" + key + ": " : "";
@@ -183,8 +182,10 @@ function appendRowsForSvelteExplorerTag(row_settings, arr) {
     const text = row_settings.val.textContent;
     const children = row_settings.val.children;
     const tag = row_settings.val["svelte-explorer-tag"].toLowerCase();
-    const end_bracket = "</" + tag + ">";
-    const brackets = "<" + tag + ">" + end_bracket;
+    const is_svelte_tag = ["#", "/", ":"].includes(tag[0]);
+    const start_bracket = "<" + tag;
+    const end_bracket = is_svelte_tag ? ">" : "</" + tag + ">";
+    const brackets = is_svelte_tag ? start_bracket + end_bracket : start_bracket + ">" + end_bracket;
     const has_text = text.length ? 1 : 0;
     if (children.length || has_text) {
         arr.push(getRowForBracketOpen(row_settings, children.length, brackets, "HTML", end_bracket.length));
