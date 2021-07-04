@@ -149,22 +149,14 @@ describe("Prop options", function () {
     });
 
     describe("rateLimit", function () {
-        it("rateLimit = default 100. Autocounter should increase automatically each second", function () {
-            cy.get("span.cache_ratelimit").should("not.be.visible");
-            //testAutomaticCounter("http://localhost:5000", "span.cache_data", 0, 50, true);
-            testAutomaticCounter("http://localhost:5000", "span.cache_view", 0, 1500, true);
+        describe("rateLimit = default 100. Autocounter should increase cache automatically each second", function () {
+            callAutomaticCounterTests(100, 0, 150, "not.");
         });
-        it("rateLimit = 500. Autocounter should still increase automatically", function () {
-            testAutomaticCounter("http://localhost:5000?rateLimit=500", "span.cache_data", 0, 1500, true, () => {
-                cy.get("span.cache_ratelimit").should("be.visible");
-            });
-            testAutomaticCounter("http://localhost:5000?rateLimit=500", "span.cache_view", 0, 1500, true);
+        describe("rateLimit = 500. Autocounter should still increase cache each second", function () {
+            callAutomaticCounterTests(500, 100, 750, "");
         });
-        it("rateLimit = 2000. Autocounter should not increase in this period", function () {
-            testAutomaticCounter("http://localhost:5000?rateLimit=2000", "span.cache_data", 0, 500, false, () => {
-                cy.get("span.cache_ratelimit").should("be.visible");
-            });
-            testAutomaticCounter("http://localhost:5000?rateLimit=2000", "span.cache_view", 0, 500, false);
+        describe("rateLimit = 2000. Autocounter should increase cache each 2 seconds", function () {
+            callAutomaticCounterTests(2000, 1500, 5000, "");
         });
     });
 });
@@ -196,29 +188,70 @@ describe("Panel data updates when App data updates", function () {
     });
 
     describe("Automatic: Data updates when paused and un-paused, compared to view", function () {
-        it("only data updates after pause, not view", function () {
+        it("data and view are the same on page load", function () {
             cy.viewport(1000, 600);
             cy.visit("http://localhost:5000/");
-
+            cy.get("span.cache_view")
+                .invoke("text")
+                .then((count1) => {
+                    nthSelectorEqualsText(0, "span.cache_data", count1);
+                    nthSelectorEqualsText(0, "span.cache_view", count1);
+                });
+        });
+        it("after 2 seconds of pausing, data has increased, but view should not", function () {
+            cy.viewport(1000, 600);
+            cy.visit("http://localhost:5000/");
             //pause
             cy.get("button.pause").click();
-            nthSelectorEqualsText(0, "span.cache_data", "1");
-            nthSelectorEqualsText(0, "span.cache_view", "0");
-            cy.wait(1100);
-            nthSelectorEqualsText(0, "span.cache_data", "2");
-            nthSelectorEqualsText(0, "span.cache_view", "0");
-            cy.wait(1100);
-            nthSelectorEqualsText(0, "span.cache_data", "3");
-            nthSelectorEqualsText(0, "span.cache_view", "0");
+            cy.get("span.cache_data")
+                .invoke("text")
+                .then((count1) => {
+                    cy.wait(2000);
+                    cy.get("span.cache_data")
+                        .invoke("text")
+                        .then((count2) => {
+                            expect(Number.parseInt(count2)).to.be.greaterThan(Number.parseInt(count1));
+                        });
+                });
+            cy.get("span.cache_view")
+                .invoke("text")
+                .then((count1) => {
+                    cy.wait(2000);
+                    cy.get("span.cache_view")
+                        .invoke("text")
+                        .then((count2) => {
+                            expect(Number.parseInt(count2)).to.be.equal(Number.parseInt(count1));
+                        });
+                });
         });
         it("both data and view will update after unpause", function () {
+            cy.viewport(1000, 600);
+            cy.visit("http://localhost:5000/");
+            //pause
             cy.get("button.pause").click();
-            cy.wait(1100);
-            nthSelectorEqualsText(0, "span.cache_data", "4");
-            nthSelectorEqualsText(0, "span.cache_view", "2");
-            cy.wait(1100);
-            nthSelectorEqualsText(0, "span.cache_data", "5");
-            nthSelectorEqualsText(0, "span.cache_view", "3");
+            cy.get("span.cache_data")
+                .invoke("text")
+                .then((count1) => {
+                    cy.wait(2000);
+                    //this unpause should also affect the view in block below
+                    cy.get("button.pause").click();
+                    cy.wait(2000);
+                    cy.get("span.cache_data")
+                        .invoke("text")
+                        .then((count2) => {
+                            expect(Number.parseInt(count2)).to.be.greaterThan(Number.parseInt(count1));
+                        });
+                });
+            cy.get("span.cache_view")
+                .invoke("text")
+                .then((count1) => {
+                    cy.wait(4000);
+                    cy.get("span.cache_view")
+                        .invoke("text")
+                        .then((count2) => {
+                            expect(Number.parseInt(count2)).to.be.greaterThan(Number.parseInt(count1));
+                        });
+                });
         });
     });
 });
@@ -246,6 +279,40 @@ function testAutomaticCounter(url, selector, firstWait, secondWait, should_be_gr
                                 expect(Number.parseInt(count3)).to.be.greaterThan(Number.parseInt(count1));
                             else expect(Number.parseInt(count3)).to.be.equal(Number.parseInt(count1));
                         });
+                });
+        });
+}
+
+function callAutomaticCounterTests(rate, before, after, not) {
+    const url = rate === 100 ? "http://localhost:5000" : "http://localhost:5000?rateLimit=" + rate;
+    it(`data before rate:${rate} is same`, function () {
+        testAutomaticCounter2(url, "span.cache_data", before, false, not);
+    });
+    it(`view before rate:${rate} is same`, function () {
+        testAutomaticCounter2(url, "span.cache_view", before, false, not);
+    });
+    it(`data after rate:${rate} is different`, function () {
+        testAutomaticCounter2(url, "span.cache_data", after, true, not);
+    });
+    it(`view after rate:${rate} is different`, function () {
+        testAutomaticCounter2(url, "span.cache_view", after, true, not);
+    });
+}
+
+function testAutomaticCounter2(url, selector, wait, should_be_greater, not_visible = "") {
+    cy.viewport(1000, 600);
+    cy.visit(url);
+    cy.get(selector)
+        .invoke("text")
+        .then((count1) => {
+            //wait then get same value, it should be greater(or equal)
+            cy.wait(wait);
+            cy.get(selector)
+                .invoke("text")
+                .then((count2) => {
+                    if (should_be_greater) expect(Number.parseInt(count2)).to.be.greaterThan(Number.parseInt(count1));
+                    else expect(count2).to.be.equal(count1);
+                    cy.get("span.cache_ratelimit").should(not_visible + "be.visible");
                 });
         });
 }
