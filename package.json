@@ -49,12 +49,13 @@
   "scripts": {
     "build": "rollup -c",
     "dev": "run-p start:dev build:dev",
+    "test": "ava && npm cy:run",
     "build:dev": "rollup -c && rollup -c rollup.config.example.js -w",
     "start:dev": "sirv public --dev",
     "npmpublish": "npm publish",
     "cy:open": "cypress open",
     "cy:run": "cypress run",
-    "cy:ci": "start-server-and-test dev http://localhost:5000 cy:run",
+    "cy:ci": "start-server-and-test dev http://localhost:5000 test",
     "unit-test": "ava --watch"
   },
   "files": [
