@@ -5,9 +5,9 @@
 </script>
 
 {#if isPaused}
-    <button on:mouseup={unpause}> un-Pause </button>
+    <button class="pause" on:mouseup={unpause}> un-Pause </button>
 {:else}
-    <button on:mouseup={pause}> Pause </button>
+    <button class="pause" on:mouseup={pause}> Pause </button>
 {/if}
 
 <style>

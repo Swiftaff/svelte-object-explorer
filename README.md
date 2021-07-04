@@ -14,7 +14,23 @@ Sure you can do this with `console.log({object})` or add breakpoints while debug
 
 ...but sometimes you just want to see how a value changes over time while using your app without chucking it into the view with `why won't my button toggle: {variable}`, or perhaps you forgot what shape the data is in from that API call or store variable.
 
-Displays an unobtrusive toggle-able window, with one or multiple variables of most kinds of data: array, object, string, number, boolean, symbol, (not yet bigint)
+Displays an unobtrusive toggle-able window, with one or multiple variables of most kinds of data:
+
+-   string
+-   number - not including bigint
+-   boolean
+-   null
+-   undefined
+-   object
+-   array - long arrays are chunked for easier navigation
+-   symbol
+-   function
+-   HTML - simplified nested hierarchy of HTML tags and text based on a supplied Node
+-   SVELTE blocks - use with rollup-plugin-svelte-explorer to see inline blocks like:
+    -   #component
+    -   #if/else
+    -   #each
+    -   #await
 
 Manually expand/contract nested objects and arrays, or show all expanded, and hover to highlight elements of the same level.
 
@@ -33,10 +49,11 @@ Include **svelte-object-explorer** in the script section of any svelte file, but
   import SvelteObjectExplorer from 'svelte-object-explorer'
   let staticObject1 = { test1: "test1" }
   let staticObject2 = { test2: "test2" }
+  let html = document.body; // can be any Node
 </script>
 
 <SvelteObjectExplorer
- myStore = { staticObject1, staticObject2 }
+ myStore = { staticObject1, staticObject2, html } //optional, default will display basic HTML from body
  fade = {false} //optional, default true
  tabPosition = "top" //optional
  open = "dataFromProps" //optional
