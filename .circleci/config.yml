@@ -16,4 +16,4 @@ jobs:
                   command: npm run build
             - run:
                   name: Start dev server then run Cypress tests
-                  command: npm run test
+                  command: npm run cy:ci
