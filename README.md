@@ -25,7 +25,7 @@ Displays an unobtrusive toggle-able window, with one or multiple variables of mo
 -   array - long arrays are chunked for easier navigation
 -   symbol
 -   function
--   HTML - simplified nested hierarchy of HTML tags and text based on a supplied Node _NEW_
+-   HTML - simplified nested hierarchy of HTML tags and text based on a supplied Node _NEW in v2_
 
 Manually expand/contract nested objects and arrays, or show all expanded, and hover to highlight elements of the same level.
 

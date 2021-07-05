@@ -1,6 +1,6 @@
 {
   "name": "svelte-object-explorer",
-  "version": "1.1.6",
+  "version": "2.0.0",
   "svelte": "src/index.js",
   "module": "dist/index.mjs",
   "main": "dist/index.js",
@@ -33,7 +33,7 @@
     "rollup-plugin-json": "^4.0.0",
     "rollup-plugin-livereload": "^1.0.1",
     "rollup-plugin-node-resolve": "^4.2.4",
-    "rollup-plugin-svelte": "^5.1.1",
+    "rollup-plugin-svelte": "^6.1.1",
     "rollup-plugin-terser": "^5.2.0",
     "sirv-cli": "^0.4.5",
     "start-server-and-test": "^1.10.8",
