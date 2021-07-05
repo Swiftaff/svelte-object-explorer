@@ -25,6 +25,7 @@ describe("Toggle Main panel", function () {
     it("Clicking hide button, hides panel", function () {
         cy.get("div.toggle.toggleShow").click();
         cy.get("div.toggle.toggleHide");
+        cy.get("div.tree").should("not.exist");
     });
 
     it("Show button is visible", function () {
@@ -33,7 +34,8 @@ describe("Toggle Main panel", function () {
 
     it("Clicking show button, shows panel", function () {
         cy.get("div.toggle.toggleHide").click();
-        cy.get("div.tree.tree-hide").should("not.be.visible");
+        cy.wait(500);
+        cy.get("div.tree");
     });
 });
 
@@ -280,7 +282,9 @@ function testAutomaticCounter(url, selector, wait, should_be_greater, not_visibl
                 .then((count2) => {
                     if (should_be_greater) expect(Number.parseInt(count2)).to.be.greaterThan(Number.parseInt(count1));
                     else expect(count2).to.be.equal(count1);
-                    cy.get("span.cache_ratelimit").should(not_visible + "be.visible");
+
+                    if (not_visible) cy.get("span.cache_ratelimit").should("not.exist");
+                    else cy.get("span.cache_ratelimit");
                 });
         });
 }
