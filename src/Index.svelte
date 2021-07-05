@@ -3,7 +3,6 @@
     import TabButton from "../src/TabButton.svelte";
     import PauseButton from "../src/PauseButton.svelte";
     import CacheDisplay from "../src/CacheDisplay.svelte";
-    import TopLevelObjectRow from "../src/TopLevelObjectRow.svelte";
     import ChevronButtons from "../src/ChevronButtons.svelte";
     import RowText from "../src/RowText.svelte";
     import lib from "../src/lib.js";
@@ -21,11 +20,8 @@
 
     let isPaused = false;
     let hovering = false;
-    let showAll = false;
-    let openIndex = 0; // opens the relevant row if an object or array. 0 = 1st row
     let openIndexSetOnce = false;
 
-    let showAllArr = []; //populated later with all row references
     let showManuallySelected = ["0", "0.0"];
     let rowsToShow = [];
     let hoverRow = "none";
@@ -41,11 +37,11 @@
     };
     let mainLoop;
 
-    $: if (toggle) rowsToShow = showAll ? showAllArr : showManuallySelected;
+    $: if (toggle) rowsToShow = showManuallySelected;
     $: if (rateLimit === null) rateLimit = rateLimitDefault;
 
     onMount(async () => {
-        rowsToShow = showAll ? showAllArr : showManuallySelected;
+        rowsToShow = showManuallySelected;
         if (!myStore) myStore = lib.domParser();
         mainLoop = timer();
     });
@@ -79,28 +75,19 @@
                 cache.viewChanges = cache.viewChanges + 1;
                 cache.viewUpdated = new Date();
                 cache.dataUpdated = cache.viewUpdated;
-                cache.formatted = formatDate(cache.viewUpdated);
+                cache.formatted = transform_data.formatDate(cache.viewUpdated);
                 stringifiedMyStoreCache = JSON.stringify(cache.myStore);
 
                 topLevelObjectArray = transform_data.transform_data(cache); //this should trigger a redraw
-                //if (!openIndexSetOnce)
-                //    openIndex = transform_data.getOpenIndex(topLevelObjectArray, open, openIndexSetOnce);
-                showAllArr = transform_data.getAllIndexes(topLevelObjectArray, openIndex);
-            }
-        }
 
-        function formatDate(d) {
-            return (
-                d.toDateString() +
-                " " +
-                d.getUTCHours() +
-                ":" +
-                d.getUTCMinutes() +
-                ":" +
-                d.getUTCSeconds() +
-                ":" +
-                d.getUTCMilliseconds()
-            );
+                //open requested object
+                let openIndexRef;
+                if (!openIndexSetOnce) {
+                    openIndexRef = transform_data.getOpenIndex(topLevelObjectArray, open);
+                    openIndexSetOnce = true;
+                    if (openIndexRef) rowExpand(openIndexRef);
+                }
+            }
         }
     }
 
@@ -111,7 +98,6 @@
     }
 
     function rowContract(rowIndex) {
-        showAll = false;
         showManuallySelected = showManuallySelected.filter((row) => !row.startsWith(rowIndex));
     }
 
@@ -153,12 +139,11 @@
             <CacheDisplay {cache} {rateLimit} {rateLimitDefault} />
             <table>
                 {#each topLevelObjectArray as topLevelObject, topLevelObject_index}
-                    {#if openIndex === topLevelObject_index}
-                        <tr class="treeVal" on:mouseout={() => (hoverRow = null)}>
-                            <td class="treeVal">
-                                <!---->
-                                <pre>
-                                  {#if openIndex === topLevelObject_index}
+                    <tr class="treeVal" on:mouseout={() => (hoverRow = null)}>
+                        <td class="treeVal">
+                            <!---->
+                            <pre>
+                                  
                                     {#each topLevelObject.childRows as row}
                                       {#if (
                                         rowsToShow.includes(row.parentIndexRef) &&
@@ -173,11 +158,10 @@
                                         </div>
                                       {/if}
                                     {/each}
-                                  {/if}
+                                
                                 </pre>
-                            </td>
-                        </tr>
-                    {/if}
+                        </td>
+                    </tr>
                 {/each}
             </table>
         </div>

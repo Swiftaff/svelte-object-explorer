@@ -3,9 +3,7 @@ function domParser(node) {
     // { class: "classname", "svelte-explorer-tag": "H1", children: [el, el, el] }
 
     let html = node || document.body;
-    //console.log(html);
     let arr = getTag(html);
-    //console.log(arr);
 
     function getTag(el) {
         if (el && el.tagName && el.tagName !== "SCRIPT" && !el.className.includes("svelte-object-explorer-wrapper ")) {

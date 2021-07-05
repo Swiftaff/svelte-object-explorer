@@ -79,10 +79,7 @@
     let string = "< SvelteObjectExplorer {myStore} />";
 
     async function getAsyncTimer() {
-        console.log("getAsyncTimer");
         const res = await timeout(3000);
-        console.log(res);
-
         if (res) {
             return "async timer done";
         } else {
@@ -118,7 +115,7 @@
             {#if counter % 2}
                 <span>
                     level 2
-                    <span>level 3</span>
+                    <span>level 3 </span>
                 </span>
                 <span data-svelte-explorer-tag=":else" />
             {:else}
@@ -134,7 +131,7 @@
         <div>
             <span data-svelte-explorer-tag="#each array as person">
                 {#each array as person}
-                    <span>{person.first} {person.surname}</span>
+                    <span>{person.first} {person.surname}</span>,
                 {/each}
             </span>
         </div>

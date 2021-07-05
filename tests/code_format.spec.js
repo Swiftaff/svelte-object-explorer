@@ -286,7 +286,6 @@ test("recursive_get_chunked_array 28 for 3s", async (t) => {
         ],
     };
     const output = recursive_get_chunked_array(input, options);
-    //console.log(JSON.stringify(output));
     t.deepEqual(output, expected_output);
 });
 

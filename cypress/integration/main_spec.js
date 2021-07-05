@@ -52,11 +52,6 @@ describe("Toggle panel objects", function () {
         }
     });
 
-    // no longer works this way
-    //it("Test object should be open due to 'open' prop being set to 'variousTypes', showing 12 subitems", function () {
-    //    cy.get("div.row").should("have.length", 50);
-    //});
-
     it("Clicking first sub-item 'HTML' expand arrow, should expand item, showing 12 children of correct type", function () {
         cy.get("button.pause").click();
         cy.get("span.dataArrow").eq(1).click();
@@ -70,35 +65,35 @@ describe("Toggle panel objects", function () {
 });
 
 describe("Prop options", function () {
-    // no longer works this way
-    /*
     describe("Open", function () {
-        
-        it("Open = 'variousTypes', 1 correct panel is open", function () {
-            cy.viewport(1000, 600);
-            cy.visit("http://localhost:5000?open=variousTypes");
-            cy.get("tr.accordion.open").should("have.length", 1).contains("variousTypes");
-        });
-
         it("Open = null, No panels are open", function () {
             cy.viewport(1000, 600);
             cy.visit("http://localhost:5000");
-            cy.get("tr.accordion.open").should("not.exist");
+            //item 'longstring' with no panels open above it, should be in original position
+            nthSelectorEqualsText(3, "div.row span.key", "longstring");
         });
 
-        it("Open = 'customStoreValue', is not an object or array so no panels are open", function () {
+        it("Open = 'string1', is not an object or array so no panels are open", function () {
             cy.viewport(1000, 600);
-            cy.visit("http://localhost:5000?open=customStoreValue");
-            cy.get("tr.accordion.open").should("not.exist");
+            cy.visit("http://localhost:5000?open=string1");
+            //item 'longstring' with no panels open above it, should be in original position
+            nthSelectorEqualsText(3, "div.row span.key", "longstring");
         });
 
         it("Open = 'bananaman', is not a valid reference so no panels are open", function () {
             cy.viewport(1000, 600);
             cy.visit("http://localhost:5000?open=bananaman");
-            cy.get("tr.accordion.open").should("not.exist");
+            //item 'longstring' with no panels open above it, should be in original position
+            nthSelectorEqualsText(3, "div.row span.key", "longstring");
+        });
+
+        it("Open = 'html', is an object, so it is open, so longstring is further down", function () {
+            cy.viewport(1000, 600);
+            cy.visit("http://localhost:5000?open=html");
+            //item 'longstring' after expanded 'html' should be further down
+            nthSelectorEqualsText(15, "div.row span.key", "longstring");
         });
     });
-    */
 
     describe("Fade", function () {
         describe("Fade = true", function () {
@@ -256,50 +251,23 @@ describe("Panel data updates when App data updates", function () {
     });
 });
 
-function testAutomaticCounter(url, selector, firstWait, secondWait, should_be_greater, callback) {
-    cy.viewport(1000, 600);
-    cy.visit(url);
-    if (callback) callback();
-    cy.get(selector)
-        .invoke("text")
-        .then((count1) => {
-            //wait a bit then get same value, it should be the same since rateLimit is in place
-            cy.wait(firstWait);
-            cy.get(selector)
-                .invoke("text")
-                .then((count2) => {
-                    expect(Number.parseInt(count2)).to.be.equal(Number.parseInt(count1));
-
-                    //wait a bit more get same value, it should be greater
-                    cy.wait(secondWait);
-                    cy.get(selector)
-                        .invoke("text")
-                        .then((count3) => {
-                            if (should_be_greater)
-                                expect(Number.parseInt(count3)).to.be.greaterThan(Number.parseInt(count1));
-                            else expect(Number.parseInt(count3)).to.be.equal(Number.parseInt(count1));
-                        });
-                });
-        });
-}
-
 function callAutomaticCounterTests(rate, before, after, not) {
     const url = rate === 100 ? "http://localhost:5000" : "http://localhost:5000?rateLimit=" + rate;
     it(`data before rate:${rate} is same`, function () {
-        testAutomaticCounter2(url, "span.cache_data", before, false, not);
+        testAutomaticCounter(url, "span.cache_data", before, false, not);
     });
     it(`view before rate:${rate} is same`, function () {
-        testAutomaticCounter2(url, "span.cache_view", before, false, not);
+        testAutomaticCounter(url, "span.cache_view", before, false, not);
     });
     it(`data after rate:${rate} is different`, function () {
-        testAutomaticCounter2(url, "span.cache_data", after, true, not);
+        testAutomaticCounter(url, "span.cache_data", after, true, not);
     });
     it(`view after rate:${rate} is different`, function () {
-        testAutomaticCounter2(url, "span.cache_view", after, true, not);
+        testAutomaticCounter(url, "span.cache_view", after, true, not);
     });
 }
 
-function testAutomaticCounter2(url, selector, wait, should_be_greater, not_visible = "") {
+function testAutomaticCounter(url, selector, wait, should_be_greater, not_visible = "") {
     cy.viewport(1000, 600);
     cy.visit(url);
     cy.get(selector)

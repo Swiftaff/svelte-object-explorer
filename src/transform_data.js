@@ -58,27 +58,29 @@ function sort_byKey(a, b) {
     return 0;
 }
 
-function getOpenIndex(arr, open, openIndexSetOnce) {
-    console.log(arr);
+function getOpenIndex(arr, item_requested_to_open) {
     let i = null;
-    if (arr && arr.length) {
-        arr.map((item, index) => {
-            if (item.key === open && (item.type === "object" || item.type == "array")) i = index;
-            openIndexSetOnce = true;
+    if (open && arr && arr[0] && arr[0].childRows) {
+        const all_items_under_svelte_object_explorer = arr[0].childRows;
+        all_items_under_svelte_object_explorer.map((item) => {
+            if (item_requested_to_open === item.key && item.expandable) i = item.indexRef;
         });
     }
     return i;
 }
 
-function getAllIndexes(arrayToMap, openIndex) {
-    //update the showallarray with all rows from parentArr
-    //console.log(arrayToMap, openIndex);
-    let arr = [];
-    if (openIndex && arrayToMap[openIndex] && arrayToMap[openIndex].childRows)
-        arrayToMap[openIndex].childRows.map((row) => {
-            arr.push(row.index);
-        });
-    return arr;
+function formatDate(d) {
+    return (
+        d.toDateString() +
+        " " +
+        d.getUTCHours() +
+        ":" +
+        d.getUTCMinutes() +
+        ":" +
+        d.getUTCSeconds() +
+        ":" +
+        d.getUTCMilliseconds()
+    );
 }
 
-export default { transform_data, getOpenIndex, getAllIndexes };
+export default { transform_data, getOpenIndex, formatDate };
