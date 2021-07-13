@@ -129,6 +129,7 @@ function appendRowForSimpleTypes(row_settings, arr) {
             key,
             val,
             indent: level * indentSpaces,
+            is_last_multiline: true,
         });
 }
 
@@ -140,7 +141,7 @@ function appendRowForSimpleTypesMultiLine(row_settings, arr) {
     const array_of_rows = ("" + val).match(regex_to_split_into_chunks);
     const only_show_type_in_first_row = (settings, i) => (i ? "" : settings.type);
     let new_row_settings = row_settings;
-    const push_each_row = (val_new, i) => {
+    const push_each_row = (val_new, i, a) => {
         const key_new = i ? "" : key; //only show key in first row of multiline
         const indent = i ? key_length + level + 3 : level + 1;
         new_row_settings = {
@@ -148,6 +149,7 @@ function appendRowForSimpleTypesMultiLine(row_settings, arr) {
             key: key_new,
             val: val_new,
             indent: indent,
+            is_last_multiline: i === a.length - 1,
             type: only_show_type_in_first_row(new_row_settings, i),
         };
         // we don't change the indexRef - so that all rows have the same row reference and highlight together
@@ -198,6 +200,7 @@ function appendRowsForSvelteExplorerTag(row_settings, arr) {
         arr.push(getRowForBracketOpen(row_settings, children.length, brackets, "HTML", end_bracket.length));
         if (has_text) appendRowsByType(getRowForChild(row_settings, "", text, 0), arr);
         children.map((a, i) => appendRowsByType(getRowForChild(row_settings, i + has_text, a, i + has_text), arr));
+        //children.map((a, i) => appendRowsByType(getRowForChild(row_settings, i, a, i), arr));
         arr.push(getRowForBracketClose(row_settings, brackets, end_bracket.length));
     } else {
         const indent = level * indentSpaces;

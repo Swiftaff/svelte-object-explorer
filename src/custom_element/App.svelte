@@ -12,8 +12,8 @@
 
     let ratelimitDefault = 100;
     let stringifiedValueCache = "";
+    let is_from_dom = false;
 
-    export let is_custom_element = false;
     export let value;
     export let tabPosition = "top";
     export let open = null;
@@ -51,8 +51,9 @@
     function timer() {
         setInterval(() => {
             if (!value) {
-                value = lib.domParser();
+                is_from_dom = true;
             }
+            //console.log(value);
             refreshDataAndCache();
         }, ratelimit);
     }
@@ -60,8 +61,9 @@
     function refreshDataAndCache() {
         //console.log("refreshDataAndCache", value);
         if (toggle) {
+            if (is_from_dom) value = lib.domParser();
             const stringifiedValue = JSON.stringify(value);
-            if (stringifiedValue !== stringifiedValueCache || is_custom_element) {
+            if (stringifiedValue !== stringifiedValueCache) {
                 cache.dataUpdated = new Date();
                 cache.dataChanges = cache.dataChanges + 1;
                 stringifiedValueCache = stringifiedValue;
