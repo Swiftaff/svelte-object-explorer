@@ -27,7 +27,7 @@ export default [
         plugins: [svelte(removeWhitespace), resolve(), css({ output: "bundle.css" })],
     },
     {
-        input: "custom_element/main.js",
+        input: "src/custom_element/main.js",
         output: { file: "dist/custom_element.js", format: "es", name: "app" }, //, globals: ["svelte"] },
         //external: ["document"],
         plugins: [
