@@ -1,5 +1,5 @@
 <script>
-    import SvelteObjectExplorer from "./Index.svelte";
+    import SvelteObjectExplorerWebComponent from "../dist/custom_element.js";
     import { count } from "./ExampleCustomStore.js";
     let thisPage;
     let counter = 1;
@@ -96,8 +96,8 @@
     }
 </script>
 
-<SvelteObjectExplorer {myStore} {open} {fade} {tabPosition} {rateLimit} />
-
+<!--SvelteObjectExplorer {myStore} {open} {fade} {tabPosition} {rateLimit} /-->
+<svelte-object-explorer my_store={myStore} />
 <div bind:this={thisPage}>
     <h1>Svelte Object Explorer</h1>
 

@@ -4,7 +4,7 @@ function transform_data(cache) {
     let tempArr = [];
     let tempItem = {
         key: "Svelte Object Explorer",
-        val: cache.myStore,
+        val: cache.my_store,
     };
     tempItem.class = "";
     tempItem.valType = "";

@@ -23,7 +23,21 @@ export default [
     {
         input,
         output: { file: pkg.module, format: "es" },
-        external: ["svelte/internal"],
-        plugins: [svelte(removeWhitespace), css({ output: "bundle.css" })],
+        //external: ["svelte/internal"],
+        plugins: [svelte(removeWhitespace), resolve(), css({ output: "bundle.css" })],
+    },
+    {
+        input: "custom_element/main.js",
+        output: { file: "dist/custom_element.js", format: "es", name: "app" }, //, globals: ["svelte"] },
+        //external: ["document"],
+        plugins: [
+            svelte({ compilerOptions: { customElement: true, dev: false } }),
+            resolve({
+                browser: true,
+                dedupe: ["svelte"],
+            }),
+            css({ output: "bundle.css" }),
+            //commonjs(),
+        ],
     },
 ];

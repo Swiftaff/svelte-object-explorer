@@ -1,12 +1,14 @@
+<svelte:options tag="svelte-object-explorer" />
+
 <script>
     import { onMount } from "svelte";
-    import TabButton from "../src/TabButton.svelte";
-    import PauseButton from "../src/PauseButton.svelte";
-    import CacheDisplay from "../src/CacheDisplay.svelte";
-    import ChevronButtons from "../src/ChevronButtons.svelte";
-    import RowText from "../src/RowText.svelte";
-    import lib from "../src/lib.js";
-    import transform_data from "../src/transform_data.js";
+    import TabButton from "./TabButton.svelte";
+    import PauseButton from "./PauseButton.svelte";
+    import CacheDisplay from "./CacheDisplay.svelte";
+    import ChevronButtons from "./ChevronButtons.svelte";
+    import RowText from "./RowText.svelte";
+    import lib from "../lib.js";
+    import transform_data from "../transform_data.js";
 
     let rateLimitDefault = 100;
     let stringifiedmy_storeCache = "";
@@ -53,16 +55,8 @@
     }
 
     function refreshDataAndCache() {
+        //console.log("refreshDataAndCache", my_store);
         if (toggle) {
-            /*
-            attempt to allow bigint
-            const stringifiedmy_store = JSON.stringify(my_store, (key, value) =>
-                typeof value === "bigint" ? value.toString() + "n" : value
-            );
-            const stringifiedmy_storeCache = JSON.stringify(cache.my_store, (key, value) =>
-                typeof value === "bigint" ? value.toString() + "n" : value
-            );
-            */
             const stringifiedmy_store = JSON.stringify(my_store);
             if (stringifiedmy_store !== stringifiedmy_storeCache) {
                 cache.dataUpdated = new Date();
@@ -71,7 +65,7 @@
             }
             const time_since_last_check = cache.dataUpdated - cache.viewUpdated;
             if (time_since_last_check > rateLimit && !isPaused) {
-                cache.my_store = my_store;
+                cache.my_store = JSON.parse(JSON.stringify(my_store));
                 cache.viewChanges = cache.viewChanges + 1;
                 cache.viewUpdated = new Date();
                 cache.dataUpdated = cache.viewUpdated;
@@ -79,7 +73,7 @@
                 stringifiedmy_storeCache = JSON.stringify(cache.my_store);
 
                 topLevelObjectArray = transform_data.transform_data(cache); //this should trigger a redraw
-
+                //console.log("topLevelObjectArray", topLevelObjectArray);
                 //open requested object
                 let openIndexRef;
                 if (!openIndexSetOnce) {
@@ -141,25 +135,22 @@
                 {#each topLevelObjectArray as topLevelObject, topLevelObject_index}
                     <tr class="treeVal" on:mouseout={() => (hoverRow = null)}>
                         <td class="treeVal">
-                            <!---->
                             <pre>
-                                  
-                                    {#each topLevelObject.childRows as row}
-                                      {#if (
-                                        rowsToShow.includes(row.parentIndexRef) &&
-                                        (!row.bracket || (row.bracket && (row.expandable || rowsToShow.includes(row.indexRef))))
-                                      )}
-                                        <div
-                                          class={hoverRow === row.indexRef || row.parentIndexRef.startsWith(hoverRow) ? 'row hoverRow' : 'row'}
-                                          on:mouseover={() => (hoverRow = row.indexRef)}
-                                          on:mousedown={() => console.log(row.indexRef, topLevelObject.childRows, rowsToShow)}>
-                                          <RowText {row} isExpanded={(row.expandable && rowsToShow.includes(row.indexRef))} />
-                                          <ChevronButtons {row} {rowsToShow} {rowContract} {rowExpand} />
-                                        </div>
-                                      {/if}
-                                    {/each}
-                                
-                                </pre>
+                                  {#each topLevelObject.childRows as row}
+                                    {#if (
+                                      rowsToShow.includes(row.parentIndexRef) &&
+                                      (!row.bracket || (row.bracket && (row.expandable || rowsToShow.includes(row.indexRef))))
+                                    )}
+                                      <div
+                                        class={hoverRow === row.indexRef || row.parentIndexRef.startsWith(hoverRow) ? 'row hoverRow' : 'row'}
+                                        on:mouseover={() => (hoverRow = row.indexRef)}
+                                        on:mousedown={() => console.log(row.indexRef, topLevelObject.childRows, rowsToShow)}>
+                                        <RowText {row} isExpanded={(row.expandable && rowsToShow.includes(row.indexRef))} />
+                                        <ChevronButtons {row} {rowsToShow} {rowContract} {rowExpand} />
+                                      </div>
+                                    {/if}
+                                  {/each}
+                              </pre>
                         </td>
                     </tr>
                 {/each}
