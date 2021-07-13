@@ -1,8 +1,7 @@
 <svelte:options tag="svelte-object-explorer-chevron-buttons" />
 
 <script>
-    //import FaChevronRight from "svelte-icons/fa/FaChevronRight.svelte";
-    //import FaChevronDown from "svelte-icons/fa/FaChevronDown.svelte";
+    import icons from "./icons.js";
     export let row;
     export let rowsToShow;
     export let rowContract;
@@ -12,12 +11,12 @@
 {#if row}
     {#if row.expandable}
         {#if rowsToShow.includes(row.indexRef)}
-            <span class="smallest dataArrow" on:mousedown={() => rowContract(row.indexRef)}>
-                {@html "v"}<!--FaChevronDown /-->
+            <span class="smallest white dataArrow" on:mousedown={() => rowContract(row.indexRef)}>
+                {@html icons["fluent:chevron-down-12-filled"]}
             </span>
         {:else}
             <span class="smallest dataArrow" on:mousedown={() => rowExpand(row.indexRef)}>
-                {@html ">"}<!--FaChevronRight /-->
+                {@html icons["fluent:chevron-right-12-filled"]}
             </span>
         {/if}
     {/if}

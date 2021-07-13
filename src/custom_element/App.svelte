@@ -342,8 +342,17 @@
         height: 15px;
         display: inline-block;
         position: relative;
-        top: 2px;
+        top: 1px;
+        left: 0px !important;
         color: green;
+    }
+
+    .white {
+        color: white;
+    }
+
+    .val {
+        color: black;
     }
 
     .link {

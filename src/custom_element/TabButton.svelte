@@ -1,8 +1,7 @@
 <svelte:options tag="svelte-object-explorer-tab-button" />
 
 <script>
-    //import FaChevronDown from "svelte-icons/fa/FaChevronDown.svelte";
-    //import FaChevronUp from "svelte-icons/fa/FaChevronUp.svelte";
+    import icons from "./icons.js";
     export let toggle;
     export let tabPosition;
     export let fade;
@@ -20,12 +19,12 @@
     {#if toggle}
         Hide
         <span class="smaller">
-            {@html "v"}<!--FaChevronDown /-->
+            {@html icons["fluent:chevron-down-12-filled"]}
         </span>
     {:else}
         Show
         <span class="smaller">
-            {@html "^"}<!--FaChevronUp /-->
+            {@html icons["fluent:chevron-up-12-filled"]}
         </span>
     {/if}
 </div>

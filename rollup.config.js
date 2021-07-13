@@ -2,6 +2,7 @@ import svelte from "rollup-plugin-svelte";
 import resolve from "@rollup/plugin-node-resolve";
 import pkg from "./package.json";
 import css from "rollup-plugin-css-only";
+import rolluppluginiconifysvg from "rollup-plugin-iconify-svg";
 
 const input = "src/index.js";
 const removeWhitespace = {
@@ -31,6 +32,9 @@ export default [
         output: { file: "dist/custom_element.js", format: "es", name: "app" }, //, globals: ["svelte"] },
         //external: ["document"],
         plugins: [
+            rolluppluginiconifysvg({
+                targets: [{ src: "src/custom_element", dest: "src/custom_element/icons.js" }],
+            }),
             svelte({ compilerOptions: { customElement: true, dev: false } }),
             resolve({
                 browser: true,

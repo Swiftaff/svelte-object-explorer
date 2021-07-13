@@ -4,3 +4,4 @@ package-lock.json
 dist
 cypress/screenshots
 cypress/videos
+**/icons.js
