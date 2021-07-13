@@ -11,11 +11,3 @@
 {:else}
     <button class="pause" on:mouseup={pause}> Pause </button>
 {/if}
-
-<style>
-    button {
-        position: absolute;
-        top: 3px;
-        right: 3px;
-    }
-</style>

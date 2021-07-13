@@ -22,23 +22,3 @@
         {/if}
     {/if}
 {/if}
-
-<style>
-    .smallest {
-        width: 15px;
-        height: 15px;
-        display: inline-block;
-        position: relative;
-        top: 2px;
-        color: green;
-    }
-    .dataArrow {
-        position: absolute;
-        left: 0px;
-        cursor: pointer;
-    }
-
-    .dataArrow:hover {
-        color: black;
-    }
-</style>

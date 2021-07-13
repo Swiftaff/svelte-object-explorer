@@ -9,9 +9,9 @@
     import transform_data from "../src/transform_data.js";
 
     let rateLimitDefault = 100;
-    let stringifiedmy_storeCache = "";
+    let stringifiedmyStoreCache = "";
 
-    export let my_store;
+    export let myStore;
     export let tabPosition = "top";
     export let open = null;
     export let fade = false;
@@ -33,7 +33,7 @@
         dataUpdated: new Date(),
         viewUpdated: new Date(),
         formatted: "",
-        my_store: null,
+        myStore: null,
     };
     let mainLoop;
 
@@ -42,7 +42,7 @@
 
     onMount(async () => {
         rowsToShow = showManuallySelected;
-        if (!my_store) my_store = lib.domParser();
+        if (!myStore) myStore = lib.domParser();
         mainLoop = timer();
     });
 
@@ -56,27 +56,27 @@
         if (toggle) {
             /*
             attempt to allow bigint
-            const stringifiedmy_store = JSON.stringify(my_store, (key, value) =>
+            const stringifiedmyStore = JSON.stringify(myStore, (key, value) =>
                 typeof value === "bigint" ? value.toString() + "n" : value
             );
-            const stringifiedmy_storeCache = JSON.stringify(cache.my_store, (key, value) =>
+            const stringifiedmyStoreCache = JSON.stringify(cache.myStore, (key, value) =>
                 typeof value === "bigint" ? value.toString() + "n" : value
             );
             */
-            const stringifiedmy_store = JSON.stringify(my_store);
-            if (stringifiedmy_store !== stringifiedmy_storeCache) {
+            const stringifiedmyStore = JSON.stringify(myStore);
+            if (stringifiedmyStore !== stringifiedmyStoreCache) {
                 cache.dataUpdated = new Date();
                 cache.dataChanges = cache.dataChanges + 1;
-                stringifiedmy_storeCache = stringifiedmy_store;
+                stringifiedmyStoreCache = stringifiedmyStore;
             }
             const time_since_last_check = cache.dataUpdated - cache.viewUpdated;
             if (time_since_last_check > rateLimit && !isPaused) {
-                cache.my_store = my_store;
+                cache.myStore = myStore;
                 cache.viewChanges = cache.viewChanges + 1;
                 cache.viewUpdated = new Date();
                 cache.dataUpdated = cache.viewUpdated;
                 cache.formatted = transform_data.formatDate(cache.viewUpdated);
-                stringifiedmy_storeCache = JSON.stringify(cache.my_store);
+                stringifiedmyStoreCache = JSON.stringify(cache.myStore);
 
                 topLevelObjectArray = transform_data.transform_data(cache); //this should trigger a redraw
 

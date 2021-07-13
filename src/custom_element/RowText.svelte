@@ -26,22 +26,3 @@
         </span>
     {/if}
 {/if}
-
-<style>
-    .len {
-        color: black;
-        position: absolute;
-        right: 70px;
-        top: 0px;
-    }
-
-    .type {
-        color: green;
-        position: absolute;
-        top: 0px;
-        right: 5px;
-    }
-    .grey {
-        color: #666;
-    }
-</style>

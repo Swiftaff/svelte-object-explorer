@@ -1,6 +1,9 @@
 <script>
     import SvelteObjectExplorerWebComponent from "../dist/custom_element.js";
     import { count } from "./ExampleCustomStore.js";
+
+    //export let hideExplorer; //set to true for rollup-plugin-svelte-explorer cypress tests
+
     let thisPage;
     let counter = 1;
     let array = [
@@ -17,9 +20,9 @@
 
     incr();
     const longarray = new Array(101).fill("x").map((x, i) => "" + i);
-    let myStore;
+    let value;
     $: if (counter || $count) {
-        myStore = {
+        value = {
             html: thisPage,
             string1: "testy",
             longstring:
@@ -94,10 +97,11 @@
     function handleAsyncTimerClick() {
         promise = getAsyncTimer();
     }
+    //{#if !hideExplorer}<SvelteObjectExplorer {myStore} {open} {fade} {tabPosition} {rateLimit} />{/if}
 </script>
 
 <!--SvelteObjectExplorer {myStore} {open} {fade} {tabPosition} {rateLimit} /-->
-<svelte-object-explorer my_store={myStore} />
+<svelte-object-explorer {value} />
 <div bind:this={thisPage}>
     <h1>Svelte Object Explorer</h1>
 

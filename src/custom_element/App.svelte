@@ -11,9 +11,9 @@
     import transform_data from "../transform_data.js";
 
     let rateLimitDefault = 100;
-    let stringifiedmy_storeCache = "";
+    let stringifiedValueCache = "";
 
-    export let my_store;
+    export let value;
     export let tabPosition = "top";
     export let open = null;
     export let fade = false;
@@ -35,7 +35,7 @@
         dataUpdated: new Date(),
         viewUpdated: new Date(),
         formatted: "",
-        my_store: null,
+        value: null,
     };
     let mainLoop;
 
@@ -44,7 +44,7 @@
 
     onMount(async () => {
         rowsToShow = showManuallySelected;
-        if (!my_store) my_store = lib.domParser();
+        if (!value) value = lib.domParser();
         mainLoop = timer();
     });
 
@@ -55,22 +55,22 @@
     }
 
     function refreshDataAndCache() {
-        //console.log("refreshDataAndCache", my_store);
+        //console.log("refreshDataAndCache", value);
         if (toggle) {
-            const stringifiedmy_store = JSON.stringify(my_store);
-            if (stringifiedmy_store !== stringifiedmy_storeCache) {
+            const stringifiedValue = JSON.stringify(value);
+            if (stringifiedValue !== stringifiedValueCache) {
                 cache.dataUpdated = new Date();
                 cache.dataChanges = cache.dataChanges + 1;
-                stringifiedmy_storeCache = stringifiedmy_store;
+                stringifiedValueCache = stringifiedValue;
             }
             const time_since_last_check = cache.dataUpdated - cache.viewUpdated;
             if (time_since_last_check > rateLimit && !isPaused) {
-                cache.my_store = JSON.parse(JSON.stringify(my_store));
+                cache.value = JSON.parse(JSON.stringify(value));
                 cache.viewChanges = cache.viewChanges + 1;
                 cache.viewUpdated = new Date();
                 cache.dataUpdated = cache.viewUpdated;
                 cache.formatted = transform_data.formatDate(cache.viewUpdated);
-                stringifiedmy_storeCache = JSON.stringify(cache.my_store);
+                stringifiedValueCache = JSON.stringify(cache.value);
 
                 topLevelObjectArray = transform_data.transform_data(cache); //this should trigger a redraw
                 //console.log("topLevelObjectArray", topLevelObjectArray);
@@ -247,5 +247,165 @@
 
     .hoverRow {
         background-color: #68f !important;
+    }
+
+    .tree {
+        pointer-events: all;
+        transition: 0.2s;
+        position: fixed;
+        right: 0px;
+        top: 0px;
+        width: 500px;
+        height: 100vh;
+        background-color: #aaa;
+        z-index: 10000000;
+        overflow: auto;
+        font-size: small;
+
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.3em;
+
+        -webkit-box-shadow: -4px 4px 10px 0px rgba(0, 0, 0, 0.15);
+        -moz-box-shadow: -4px 4px 10px 0px rgba(0, 0, 0, 0.15);
+        box-shadow: -4px 4px 10px 0px rgba(0, 0, 0, 0.15);
+    }
+
+    .tree tr:nth-child(odd) {
+        background-color: #ccc;
+    }
+    .toggle:hover {
+        pointer-events: all;
+        opacity: 1;
+    }
+
+    .toggle {
+        pointer-events: all;
+        cursor: pointer;
+        position: fixed;
+        width: 70px;
+        height: 20px;
+        text-align: center;
+        transform: rotate(-90deg);
+        background-color: #aaa;
+        z-index: 10000000;
+
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.3em;
+    }
+
+    .toggletop {
+        top: 25px;
+    }
+
+    .togglemiddle {
+        top: calc(50vh - 25px);
+    }
+
+    .togglebottom {
+        bottom: 25px;
+    }
+
+    .toggleShow {
+        pointer-events: all;
+        transition: 0.2s;
+        right: 475px;
+    }
+
+    .toggleHide {
+        pointer-events: all;
+        transition: 0.2s;
+        right: -25px;
+    }
+
+    .accordion {
+        background-color: #666 !important;
+        color: white;
+    }
+
+    .icon1 {
+        width: 15px;
+        height: 15px;
+    }
+
+    .smaller {
+        width: 15px;
+        height: 15px;
+        display: inline-block;
+        position: relative;
+        top: 2px;
+    }
+
+    .smallest {
+        width: 15px;
+        height: 15px;
+        display: inline-block;
+        position: relative;
+        top: 2px;
+        color: green;
+    }
+
+    .link {
+        cursor: pointer;
+    }
+
+    .link:hover {
+        background-color: #888;
+    }
+
+    .dataArrow {
+        position: absolute;
+        left: 0px;
+        cursor: pointer;
+    }
+
+    .dataArrow:hover {
+        color: black;
+    }
+
+    .len {
+        color: black;
+        position: absolute;
+        right: 70px;
+        top: 0px;
+    }
+
+    .type {
+        color: green;
+        position: absolute;
+        top: 0px;
+        right: 5px;
+    }
+
+    .nopointer {
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .toggleShowAll,
+    .copyToClipbord {
+        display: inline;
+    }
+
+    #hiddenClipboard {
+        position: absolute;
+        left: -9999px;
+    }
+
+    .tree button {
+        position: absolute;
+        top: 3px;
+        right: 3px;
+    }
+
+    .grey {
+        color: #666;
+    }
+
+    button {
+        position: absolute;
+        top: 3px;
+        right: 3px;
     }
 </style>
