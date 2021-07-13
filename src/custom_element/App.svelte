@@ -10,14 +10,15 @@
     import lib from "../lib.js";
     import transform_data from "../transform_data.js";
 
-    let rateLimitDefault = 100;
+    let ratelimitDefault = 100;
     let stringifiedValueCache = "";
 
+    export let is_custom_element = false;
     export let value;
     export let tabPosition = "top";
     export let open = null;
     export let fade = false;
-    export let rateLimit = rateLimitDefault;
+    export let ratelimit = ratelimitDefault;
     export let initialToggleState = true;
 
     let isPaused = false;
@@ -40,32 +41,34 @@
     let mainLoop;
 
     $: if (toggle) rowsToShow = showManuallySelected;
-    $: if (rateLimit === null) rateLimit = rateLimitDefault;
+    $: if (ratelimit === null) ratelimit = ratelimitDefault;
 
     onMount(async () => {
         rowsToShow = showManuallySelected;
-        if (!value) value = lib.domParser();
         mainLoop = timer();
     });
 
     function timer() {
         setInterval(() => {
+            if (!value) {
+                value = lib.domParser();
+            }
             refreshDataAndCache();
-        }, rateLimit);
+        }, ratelimit);
     }
 
     function refreshDataAndCache() {
         //console.log("refreshDataAndCache", value);
         if (toggle) {
             const stringifiedValue = JSON.stringify(value);
-            if (stringifiedValue !== stringifiedValueCache) {
+            if (stringifiedValue !== stringifiedValueCache || is_custom_element) {
                 cache.dataUpdated = new Date();
                 cache.dataChanges = cache.dataChanges + 1;
                 stringifiedValueCache = stringifiedValue;
             }
             const time_since_last_check = cache.dataUpdated - cache.viewUpdated;
-            if (time_since_last_check > rateLimit && !isPaused) {
-                cache.value = JSON.parse(JSON.stringify(value));
+            if (time_since_last_check > ratelimit && !isPaused) {
+                cache.value = value;
                 cache.viewChanges = cache.viewChanges + 1;
                 cache.viewUpdated = new Date();
                 cache.dataUpdated = cache.viewUpdated;
@@ -130,7 +133,7 @@
             on:mouseleave={() => (hovering = false)}
         >
             <PauseButton {isPaused} {pause} {unpause} />
-            <CacheDisplay {cache} {rateLimit} {rateLimitDefault} />
+            <CacheDisplay {cache} {ratelimit} {ratelimitDefault} />
             <table>
                 {#each topLevelObjectArray as topLevelObject, topLevelObject_index}
                     <tr class="treeVal" on:mouseout={() => (hoverRow = null)}>
