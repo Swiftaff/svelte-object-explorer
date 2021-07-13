@@ -1,12 +1,21 @@
 function domParser(node) {
     // parses the dom from body downwards into a simplified ast, e.g.
     // { class: "classname", "svelte-explorer-tag": "H1", children: [el, el, el] }
-
+    //console.log("NODE", node);
     let html = node || document.body;
+    //console.log("html", html);
     let arr = getTag(html);
+    //console.log("arr", arr);
 
     function getTag(el) {
-        if (el && el.tagName && el.tagName !== "SCRIPT" && !el.className.includes("svelte-object-explorer-wrapper ")) {
+        //console.log("getTag", el.tagName);
+        if (
+            el &&
+            el.tagName &&
+            el.tagName !== "SCRIPT" &&
+            el.tagName !== "SVELTE-OBJECT-EXPLORER" &&
+            !el.className.includes("svelte-object-explorer-wrapper ")
+        ) {
             const textContent = el.firstChild && el.firstChild.nodeType === 3 ? el.firstChild.textContent : "";
             const svelteExplorerTag = isSvelteExplorerTag(el) ? el.dataset["svelteExplorerTag"] : el.tagName;
             return {
