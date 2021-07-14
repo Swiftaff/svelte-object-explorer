@@ -1,7 +1,7 @@
 <svelte:options tag="svelte-object-explorer-chevron-buttons" />
 
 <script>
-    import icons from "./icons.js";
+    import icons from "../../icons.js";
     export let row;
     export let rowsToShow;
     export let rowContract;

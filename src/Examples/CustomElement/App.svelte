@@ -7,8 +7,8 @@
     import CacheDisplay from "./CacheDisplay.svelte";
     import ChevronButtons from "./ChevronButtons.svelte";
     import RowText from "./RowText.svelte";
-    import lib from "../lib.js";
-    import transform_data from "../transform_data.js";
+    import lib from "../../lib.js";
+    import transform_data from "../../transform_data.js";
 
     let ratelimitDefault = 100;
     let stringifiedValueCache = "";
@@ -417,7 +417,7 @@
         color: #666;
     }
 
-    button {
+    .pause {
         position: absolute;
         top: 3px;
         right: 3px;

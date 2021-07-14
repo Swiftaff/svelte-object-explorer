@@ -1,6 +1,5 @@
 <script>
-    import FaChevronDown from "svelte-icons/fa/FaChevronDown.svelte";
-    import FaChevronUp from "svelte-icons/fa/FaChevronUp.svelte";
+    import icons from "./icons.js";
     export let toggle;
     export let tabPosition;
     export let fade;
@@ -18,12 +17,12 @@
     {#if toggle}
         Hide
         <span class="smaller">
-            <FaChevronDown />
+            {@html icons["fluent:chevron-down-12-filled"]}
         </span>
     {:else}
         Show
         <span class="smaller">
-            <FaChevronUp />
+            {@html icons["fluent:chevron-up-12-filled"]}
         </span>
     {/if}
 </div>
@@ -75,15 +74,6 @@
     .tree-hide {
         right: -500px;
         transition: 0.2s;
-    }
-
-    .tree table {
-        table-layout: fixed;
-        width: 480px;
-    }
-
-    .tree tr:nth-child(odd) {
-        background-color: #ccc;
     }
 
     .treeVal {
@@ -143,12 +133,6 @@
     .accordion {
         background-color: #666 !important;
         color: white;
-    }
-
-    pre {
-        margin: 0px;
-        white-space: normal;
-        padding: 0px;
     }
 
     .icon1 {
@@ -230,16 +214,5 @@
     .toggleShowAll,
     .copyToClipbord {
         display: inline;
-    }
-
-    #hiddenClipboard {
-        position: absolute;
-        left: -9999px;
-    }
-
-    .tree button {
-        position: absolute;
-        top: 3px;
-        right: 3px;
     }
 </style>

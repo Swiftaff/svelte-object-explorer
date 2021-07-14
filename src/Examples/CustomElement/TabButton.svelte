@@ -1,7 +1,7 @@
 <svelte:options tag="svelte-object-explorer-tab-button" />
 
 <script>
-    import icons from "./icons.js";
+    import icons from "../../icons.js";
     export let toggle;
     export let tabPosition;
     export let fade;

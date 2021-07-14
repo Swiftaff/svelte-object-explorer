@@ -3,8 +3,8 @@ import resolve from "@rollup/plugin-node-resolve";
 import pkg from "./package.json";
 import css from "rollup-plugin-css-only";
 import rolluppluginiconifysvg from "rollup-plugin-iconify-svg";
+import { terser } from "rollup-plugin-terser";
 
-const input = "src/index.js";
 const removeWhitespace = {
     preprocess: {
         markup: ({ content, filename }) => {
@@ -14,34 +14,44 @@ const removeWhitespace = {
         },
     },
 };
-
-export default [
-    {
-        input,
-        output: { file: pkg.main, format: "umd", name: "SvelteObjectExplorer" },
-        plugins: [svelte(removeWhitespace), resolve(), css({ output: "bundle.css" })],
-    },
-    {
-        input,
-        output: { file: pkg.module, format: "es" },
-        //external: ["svelte/internal"],
-        plugins: [svelte(removeWhitespace), resolve(), css({ output: "bundle.css" })],
-    },
-    {
-        input: "src/custom_element/main.js",
-        output: { file: "dist/custom_element.js", format: "es", name: "app" }, //, globals: ["svelte"] },
-        //external: ["document"],
-        plugins: [
-            rolluppluginiconifysvg({
-                targets: [{ src: "src/custom_element", dest: "src/custom_element/icons.js" }],
-            }),
-            svelte({ compilerOptions: { customElement: true, dev: false } }),
-            resolve({
-                browser: true,
-                dedupe: ["svelte"],
-            }),
-            css({ output: "bundle.css" }),
-            //commonjs(),
-        ],
-    },
+const plugins = [
+    rolluppluginiconifysvg(),
+    svelte(removeWhitespace),
+    resolve(),
+    css({ output: "bundle.css" }),
+    //terser(),
 ];
+
+//the main distributable
+//https://remarkablemark.org/blog/2019/07/12/rollup-commonjs-umd/
+const umd_dist = {
+    input: "src/index.js",
+    output: { file: pkg.main, format: "umd", name: "SvelteObjectExplorer" },
+    plugins,
+};
+
+//custom element distributable
+const custom_element_dist = {
+    input: "src/Examples/CustomElement/main.js",
+    output: { file: "dist/custom_element.js", format: "es", name: "app" },
+    plugins: [
+        rolluppluginiconifysvg(),
+        svelte({ compilerOptions: { customElement: true } }),
+        //resolve(),
+        css({ output: "bundle.css" }),
+        terser(),
+    ],
+};
+
+//svelte distributable does not need to be bundled and is accessed directly from package.json["svelte"]
+
+//below are just bundles for the examples
+
+//a copy of umd for testing
+const umd_bundle_for_example = {
+    input: "src/Examples/UMDmodule/main_example.js",
+    output: { file: "public/UMDmodule/bundle_soe.js", format: "umd", name: "SvelteObjectExplorer" },
+    plugins,
+};
+
+export default [umd_dist, umd_bundle_for_example, custom_element_dist];

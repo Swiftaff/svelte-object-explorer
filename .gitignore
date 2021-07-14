@@ -5,3 +5,4 @@ dist
 cypress/screenshots
 cypress/videos
 **/icons.js
+**/public

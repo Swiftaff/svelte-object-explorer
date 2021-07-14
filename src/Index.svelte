@@ -8,14 +8,15 @@
     import lib from "../src/lib.js";
     import transform_data from "../src/transform_data.js";
 
-    let rateLimitDefault = 100;
-    let stringifiedmyStoreCache = "";
+    let ratelimitDefault = 100;
+    let stringifiedValueCache = "";
+    let is_from_dom = false;
 
-    export let myStore;
+    export let value;
     export let tabPosition = "top";
     export let open = null;
     export let fade = false;
-    export let rateLimit = rateLimitDefault;
+    export let ratelimit = ratelimitDefault;
     export let initialToggleState = true;
 
     let isPaused = false;
@@ -33,53 +34,49 @@
         dataUpdated: new Date(),
         viewUpdated: new Date(),
         formatted: "",
-        myStore: null,
+        value: null,
     };
     let mainLoop;
 
     $: if (toggle) rowsToShow = showManuallySelected;
-    $: if (rateLimit === null) rateLimit = rateLimitDefault;
+    $: if (ratelimit === null) ratelimit = ratelimitDefault;
 
     onMount(async () => {
         rowsToShow = showManuallySelected;
-        if (!myStore) myStore = lib.domParser();
         mainLoop = timer();
     });
 
     function timer() {
         setInterval(() => {
+            if (!value) {
+                is_from_dom = true;
+            }
+            //console.log(value);
             refreshDataAndCache();
-        }, rateLimit);
+        }, ratelimit);
     }
 
     function refreshDataAndCache() {
+        //console.log("refreshDataAndCache", value);
         if (toggle) {
-            /*
-            attempt to allow bigint
-            const stringifiedmyStore = JSON.stringify(myStore, (key, value) =>
-                typeof value === "bigint" ? value.toString() + "n" : value
-            );
-            const stringifiedmyStoreCache = JSON.stringify(cache.myStore, (key, value) =>
-                typeof value === "bigint" ? value.toString() + "n" : value
-            );
-            */
-            const stringifiedmyStore = JSON.stringify(myStore);
-            if (stringifiedmyStore !== stringifiedmyStoreCache) {
+            if (is_from_dom) value = lib.domParser();
+            const stringifiedValue = JSON.stringify(value);
+            if (stringifiedValue !== stringifiedValueCache) {
                 cache.dataUpdated = new Date();
                 cache.dataChanges = cache.dataChanges + 1;
-                stringifiedmyStoreCache = stringifiedmyStore;
+                stringifiedValueCache = stringifiedValue;
             }
             const time_since_last_check = cache.dataUpdated - cache.viewUpdated;
-            if (time_since_last_check > rateLimit && !isPaused) {
-                cache.myStore = myStore;
+            if (time_since_last_check > ratelimit && !isPaused) {
+                cache.value = value;
                 cache.viewChanges = cache.viewChanges + 1;
                 cache.viewUpdated = new Date();
                 cache.dataUpdated = cache.viewUpdated;
                 cache.formatted = transform_data.formatDate(cache.viewUpdated);
-                stringifiedmyStoreCache = JSON.stringify(cache.myStore);
+                stringifiedValueCache = JSON.stringify(cache.value);
 
                 topLevelObjectArray = transform_data.transform_data(cache); //this should trigger a redraw
-
+                //console.log("topLevelObjectArray", topLevelObjectArray);
                 //open requested object
                 let openIndexRef;
                 if (!openIndexSetOnce) {
@@ -136,30 +133,27 @@
             on:mouseleave={() => (hovering = false)}
         >
             <PauseButton {isPaused} {pause} {unpause} />
-            <CacheDisplay {cache} {rateLimit} {rateLimitDefault} />
+            <CacheDisplay {cache} {ratelimit} {ratelimitDefault} />
             <table>
                 {#each topLevelObjectArray as topLevelObject, topLevelObject_index}
                     <tr class="treeVal" on:mouseout={() => (hoverRow = null)}>
                         <td class="treeVal">
-                            <!---->
                             <pre>
-                                  
-                                    {#each topLevelObject.childRows as row}
-                                      {#if (
-                                        rowsToShow.includes(row.parentIndexRef) &&
-                                        (!row.bracket || (row.bracket && (row.expandable || rowsToShow.includes(row.indexRef))))
-                                      )}
-                                        <div
-                                          class={hoverRow === row.indexRef || row.parentIndexRef.startsWith(hoverRow) ? 'row hoverRow' : 'row'}
-                                          on:mouseover={() => (hoverRow = row.indexRef)}
-                                          on:mousedown={() => console.log(row.indexRef, topLevelObject.childRows, rowsToShow)}>
-                                          <RowText {row} isExpanded={(row.expandable && rowsToShow.includes(row.indexRef))} />
-                                          <ChevronButtons {row} {rowsToShow} {rowContract} {rowExpand} />
-                                        </div>
-                                      {/if}
-                                    {/each}
-                                
-                                </pre>
+                                  {#each topLevelObject.childRows as row}
+                                    {#if (
+                                      rowsToShow.includes(row.parentIndexRef) &&
+                                      (!row.bracket || (row.bracket && (row.expandable || rowsToShow.includes(row.indexRef))))
+                                    )}
+                                      <div
+                                        class={hoverRow === row.indexRef || row.parentIndexRef.startsWith(hoverRow) ? 'row hoverRow' : 'row'}
+                                        on:mouseover={() => (hoverRow = row.indexRef)}
+                                        on:mousedown={() => console.log(row.indexRef, topLevelObject.childRows, rowsToShow)}>
+                                        <RowText {row} isExpanded={(row.expandable && rowsToShow.includes(row.indexRef))} />
+                                        <ChevronButtons {row} {rowsToShow} {rowContract} {rowExpand} />
+                                      </div>
+                                    {/if}
+                                  {/each}
+                              </pre>
                         </td>
                     </tr>
                 {/each}

@@ -1,8 +1,5 @@
 <script>
-    import SvelteObjectExplorerWebComponent from "../dist/custom_element.js";
-    import { count } from "./ExampleCustomStore.js";
-
-    //export let hideExplorer; //set to true for rollup-plugin-svelte-explorer cypress tests
+    import { count } from "../.../../ExampleCustomStore.js";
 
     let thisPage;
     let counter = 1;
@@ -19,8 +16,14 @@
     }
 
     incr();
-    const longarray = new Array(101).fill("x").map((x, i) => "" + i);
-    let value;
+
+    export let value;
+    let params = new URL(document.location).searchParams;
+    export let open = params.get("open");
+    export let fade = params.get("fade");
+    export let tabPosition = params.get("tabPosition");
+    export let ratelimit = params.get("rateLimit");
+
     $: if (counter || $count) {
         value = {
             html: thisPage,
@@ -29,7 +32,7 @@
                 "Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet.",
             array,
             array2: [[["test1", "test2"], "test2"], "test2"],
-            longarray,
+            longarray: new Array(101).fill("x").map((x, i) => "" + i),
             object: {
                 test1: {
                     test1: { test1: { test1: "test1", test2: "test2" }, test2: "test2" },
@@ -73,11 +76,6 @@
             customStoreValue: $count,
         };
     }
-    let params = new URL(document.location).searchParams;
-    let open = params.get("open");
-    let fade = params.get("fade");
-    let tabPosition = params.get("tabPosition");
-    let rateLimit = params.get("rateLimit");
 
     let string = "< SvelteObjectExplorer {myStore} />";
 
@@ -97,11 +95,8 @@
     function handleAsyncTimerClick() {
         promise = getAsyncTimer();
     }
-    //{#if !hideExplorer}<SvelteObjectExplorer {myStore} {open} {fade} {tabPosition} {rateLimit} />{/if}
 </script>
 
-<!--SvelteObjectExplorer {myStore} {open} {fade} {tabPosition} {rateLimit} /-->
-<svelte-object-explorer {value} />
 <div bind:this={thisPage}>
     <h1>Svelte Object Explorer</h1>
 
