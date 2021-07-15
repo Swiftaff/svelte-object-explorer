@@ -3,6 +3,7 @@
 <script>
     import { onMount } from "svelte";
     import TabButton from "./TabButton.svelte";
+    import ResetButton from "./ResetButton.svelte";
     import PauseButton from "./PauseButton.svelte";
     import CacheDisplay from "./CacheDisplay.svelte";
     import ChevronButtons from "./ChevronButtons.svelte";
@@ -82,13 +83,13 @@
                 stringifiedValueCache = JSON.stringify(cache.value);
 
                 topLevelObjectArray = transform_data.transform_data(cache); //this should trigger a redraw
-                //console.log("topLevelObjectArray", topLevelObjectArray);
-                //open requested object
-                let openIndexRef;
-                if (!openIndexSetOnce) {
-                    openIndexRef = transform_data.getOpenIndex(topLevelObjectArray, open);
-                    openIndexSetOnce = true;
-                    if (openIndexRef) rowExpand(openIndexRef);
+            }
+            //open requested object
+            if (!openIndexSetOnce) {
+                let openIndexRef = transform_data.getOpenIndex(topLevelObjectArray, open);
+                if (openIndexRef) {
+                    rowExpand(openIndexRef);
+                    if (showManuallySelected.includes(openIndexRef)) openIndexSetOnce = true;
                 }
             }
         }
@@ -127,6 +128,11 @@
     function pause() {
         isPaused = true;
     }
+
+    function reset() {
+        cache.viewChanges = 1;
+        cache.dataChanges = 1;
+    }
 </script>
 
 <div class="svelte-object-explorer-wrapper">
@@ -138,6 +144,7 @@
             on:mouseover={() => (hovering = true)}
             on:mouseleave={() => (hovering = false)}
         >
+            <ResetButton {reset} />
             <PauseButton {isPaused} {pause} {unpause} />
             <CacheDisplay {cache} {ratelimit} {ratelimitDefault} />
             <table>
@@ -425,5 +432,10 @@
         position: absolute;
         top: 3px;
         right: 3px;
+    }
+    .reset {
+        position: absolute;
+        top: 3px;
+        right: 50px;
     }
 </style>
