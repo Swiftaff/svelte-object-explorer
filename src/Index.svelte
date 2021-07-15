@@ -10,7 +10,6 @@
 
     let ratelimitDefault = 100;
     let stringifiedValueCache = "";
-    let is_from_dom = false;
 
     export let value;
     export let tabPosition = "top";
@@ -48,19 +47,23 @@
 
     function timer() {
         setInterval(() => {
-            if (!value) {
-                is_from_dom = true;
-            }
             //console.log(value);
             refreshDataAndCache();
         }, ratelimit);
     }
 
     function refreshDataAndCache() {
-        //console.log("refreshDataAndCache", value);
         if (toggle) {
-            if (is_from_dom) value = lib.domParser();
-            const stringifiedValue = JSON.stringify(value);
+            if (window && window.svelteobjectexplorer) {
+                const obj = window.svelteobjectexplorer;
+                if ("value" in obj) value = obj.value;
+                if ("open" in obj) open = obj.open;
+                if ("fade" in obj) fade = obj.fade;
+                if ("tabPosition" in obj) tabPosition = obj.tabPosition;
+                if ("ratelimit" in obj) ratelimit = obj.ratelimit;
+            }
+            let newvalue = value || lib.domParser();
+            const stringifiedValue = JSON.stringify(newvalue);
             if (stringifiedValue !== stringifiedValueCache) {
                 cache.dataUpdated = new Date();
                 cache.dataChanges = cache.dataChanges + 1;
@@ -68,7 +71,7 @@
             }
             const time_since_last_check = cache.dataUpdated - cache.viewUpdated;
             if (time_since_last_check > ratelimit && !isPaused) {
-                cache.value = value;
+                cache.value = newvalue;
                 cache.viewChanges = cache.viewChanges + 1;
                 cache.viewUpdated = new Date();
                 cache.dataUpdated = cache.viewUpdated;
