@@ -46,14 +46,14 @@
   },
   "scripts": {
     "build": "rollup -c",
-    "dev": "run-p build start:dev",
-    "test": "ava && npm run cy:run",
-    "start:dev": "sirv public --dev",
+    "dev": "sirv public --dev",
+    "build_and_dev": "run-p build dev",
     "npmpublish": "npm publish",
     "cy:open": "cypress open",
     "cy:run": "cypress run",
-    "cy:ci": "run-p start:dev cy:run",
-    "unit-test": "ava --watch"
+    "cy:ci": "run-p dev cy:run",
+    "unit-test": "ava --watch",
+    "test": "ava && npm run cy:run"
   },
   "files": [
     "src",

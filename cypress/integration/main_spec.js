@@ -10,7 +10,10 @@ const u = "undefined";
 const S = "symbol";
 const F = "arrow fn";
 const f = "function";
-const test_urls = ["/CustomElement", "/SvelteComponent", "/UMDmodule"];
+const customElement = "/CustomElement";
+const svelteComponent = "/SvelteComponent";
+const umdModule = "/UMDmodule";
+const test_urls = [customElement, svelteComponent, umdModule];
 
 test_urls.forEach((url, site_index) => {
     describe(url + ": " + "Toggle Main panel", function () {
@@ -73,7 +76,7 @@ test_urls.forEach((url, site_index) => {
             it("Open = null, No panels are open", function () {
                 cy.viewport(1000, 600);
                 cy.visit(url);
-                wait_if_second_site(site_index);
+                wait_based_on_url(site_index);
                 //item 'longstring' with no panels open above it, should be in original position
                 nthSelectorEqualsText(3, "div.row span.key", "longstring");
             });
@@ -81,7 +84,7 @@ test_urls.forEach((url, site_index) => {
             it("Open = 'string1', is not an object or array so no panels are open", function () {
                 cy.viewport(1000, 600);
                 cy.visit(url + "?open=string1");
-                wait_if_second_site(site_index);
+                wait_based_on_url(site_index);
                 //item 'longstring' with no panels open above it, should be in original position
                 nthSelectorEqualsText(3, "div.row span.key", "longstring");
             });
@@ -89,7 +92,7 @@ test_urls.forEach((url, site_index) => {
             it("Open = 'bananaman', is not a valid reference so no panels are open", function () {
                 cy.viewport(1000, 600);
                 cy.visit(url + "?open=bananaman");
-                wait_if_second_site(site_index);
+                wait_based_on_url(site_index);
                 //item 'longstring' with no panels open above it, should be in original position
                 nthSelectorEqualsText(3, "div.row span.key", "longstring");
             });
@@ -97,7 +100,7 @@ test_urls.forEach((url, site_index) => {
             it("Open = 'html', is an object, so it is open, so longstring is further down", function () {
                 cy.viewport(1000, 600);
                 cy.visit(url + "?open=html");
-                wait_if_second_site(site_index);
+                wait_based_on_url(site_index);
                 //item 'longstring' after expanded 'html' should be further down
                 nthSelectorEqualsText(15, "div.row span.key", "longstring");
             });
@@ -151,18 +154,18 @@ test_urls.forEach((url, site_index) => {
             });
         });
 
-        describe.skip(url + ": " + "rateLimit", function () {
+        describe(url + ": " + "rateLimit", function () {
             describe(
                 url + ": " + "rateLimit = default 100. Autocounter should increase cache automatically each second",
                 function () {
-                    callAutomaticCounterTests(url, 100, 0, 150, "not.");
+                    callAutomaticCounterTests(url, 100, 0, 1100, "not.");
                 }
             );
             describe(url + ": " + "rateLimit = 500. Autocounter should still increase cache each second", function () {
-                callAutomaticCounterTests(url, 500, 100, 750, "");
+                callAutomaticCounterTests(url, 500, 250, 1100, "");
             });
             describe(url + ": " + "rateLimit = 2000. Autocounter should increase cache each 2 seconds", function () {
-                callAutomaticCounterTests(url, 2000, 1500, 5000, "");
+                callAutomaticCounterTests(url, 2000, 500, 3000, "");
             });
         });
     });
@@ -171,7 +174,7 @@ test_urls.forEach((url, site_index) => {
         it("Manual: Clicking counter buttons should change the manual counter", function () {
             cy.viewport(1000, 600);
             cy.visit(url);
-            wait_if_second_site(site_index);
+            wait_based_on_url(site_index);
 
             //customStoreValue is initially set to 0
             nthSelectorEqualsText(22, "div.row span.key", "customStoreValue");
@@ -274,7 +277,7 @@ function callAutomaticCounterTests(url, rate, before, after, not) {
     it(`data before rate:${rate} is same`, function () {
         testAutomaticCounter(full_url, "span.cache_data", before, false, not);
     });
-    /*it(`view before rate:${rate} is same`, function () {
+    it(`view before rate:${rate} is same`, function () {
         testAutomaticCounter(full_url, "span.cache_view", before, false, not);
     });
     it(`data after rate:${rate} is different`, function () {
@@ -282,13 +285,13 @@ function callAutomaticCounterTests(url, rate, before, after, not) {
     });
     it(`view after rate:${rate} is different`, function () {
         testAutomaticCounter(full_url, "span.cache_view", after, true, not);
-    });*/
+    });
 }
 
 function testAutomaticCounter(url, selector, wait, should_be_greater, not_visible = "") {
     cy.viewport(1000, 600);
     cy.visit(url);
-    //cy.wait(2000);
+    cy.wait(2000);
     cy.get(".reset").click();
     cy.get(selector)
         .invoke("text")
@@ -316,6 +319,6 @@ function nthSelectorEqualsText(n, selector, compare_text) {
         });
 }
 
-function wait_if_second_site(site_index) {
-    if (site_index === 1) cy.wait(1000);
+function wait_based_on_url(url) {
+    if (url !== customElement) cy.wait(1000);
 }

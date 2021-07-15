@@ -61,7 +61,7 @@ const example_page_umd = {
     input: "./src/Examples/UMDmodule/main.js",
     output: { ...example_page_output, file: "public/UMDmodule/bundle.js" },
     plugins: [
-        svelte({ compilerOptions: { dev: true } }),
+        svelte({ ...removeWhitespace, compilerOptions: { dev: true } }),
         css({ output: "bundle.css" }),
         resolve({ browser: true, dedupe: ["svelte"] }),
         commonjs(),
