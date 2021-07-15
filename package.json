@@ -51,7 +51,7 @@
     "npmpublish": "npm publish",
     "cy:open": "cypress open",
     "cy:run": "cypress run",
-    "cy:ci": "run-p dev cy:run",
+    "cy:ci": "start-server-and-test dev http://localhost:5000 cy:run",
     "unit-test": "ava --watch",
     "test": "ava && npm run cy:run"
   },
