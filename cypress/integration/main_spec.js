@@ -16,7 +16,7 @@ const umdModule = "/UMDmodule";
 const test_urls = [customElement, svelteComponent, umdModule];
 
 test_urls.forEach((url, site_index) => {
-    describe(url + ": " + "Toggle Main panel", function () {
+    describe.only(url + ": " + "Toggle Main panel", function () {
         it("Panel is visible", function () {
             cy.viewport(1000, 600);
             cy.visit(url);

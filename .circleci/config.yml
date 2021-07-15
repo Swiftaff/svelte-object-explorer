@@ -17,3 +17,5 @@ jobs:
             - run:
                   name: Start dev server then run Cypress tests
                   command: npm run cy:ci
+            - store_artifacts:
+                  path: /root/project/cypress/screenshots
