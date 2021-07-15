@@ -1,5 +1,5 @@
 <script>
-    import { count } from "../.../../ExampleCustomStore.js";
+    import { count } from "./ExampleCustomStore.js";
 
     let thisPage;
     let counter = 1;
@@ -12,17 +12,22 @@
     function incr() {
         setInterval(() => {
             counter++;
+            const props = { value, open, fade, tabPosition, ratelimit };
+            sendprops(props);
+            window.svelteobjectexplorer = props;
+            //console.log("window.svelteobjectexplorer", window.svelteobjectexplorer);
         }, 1000);
     }
 
     incr();
 
-    export let value;
+    let value;
     let params = new URL(document.location).searchParams;
-    export let open = params.get("open");
-    export let fade = params.get("fade");
-    export let tabPosition = params.get("tabPosition");
-    export let ratelimit = params.get("rateLimit");
+    let open = params.get("open");
+    let fade = params.get("fade");
+    let tabPosition = params.get("tabPosition");
+    let ratelimit = params.get("rateLimit");
+    export let sendprops = () => {};
 
     $: if (counter || $count) {
         value = {

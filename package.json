@@ -46,12 +46,9 @@
   },
   "scripts": {
     "build": "rollup -c",
-    "dev": "run-p start:dev build:dev build:svelte_component build:custom_element build:umd_module",
+    "dev": "run-p start:dev build:dev",
     "test": "ava && npm run cy:run",
     "build:dev": "rollup -c",
-    "build:svelte_component": "rollup -c src/Examples/SvelteComponent/rollup.config.js -w",
-    "build:custom_element": "rollup -c src/Examples/CustomElement/rollup.config.js -w",
-    "build:umd_module": "rollup -c src/Examples/UMDmodule/rollup.config.js -w",
     "start:dev": "sirv public --dev",
     "npmpublish": "npm publish",
     "cy:open": "cypress open",
