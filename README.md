@@ -48,18 +48,18 @@ Include **svelte-object-explorer** in the script section of any svelte file, but
 </script>
 
 <SvelteObjectExplorer
- myStore = { staticObject1, staticObject2, html } //optional, default will display basic HTML from body
+ value = { staticObject1, staticObject2, html } //optional, default will display basic HTML from body
  fade = {false} //optional, default true
- tabPosition = "top" //optional
+ tabposition = "top" //optional
  open = "dataFromProps" //optional
- rateLimit = {1000} //optional, default 100
- initialToggleState = {true} //optional, default true
+ ratelimit = {1000} //optional, default 100
+ initialtogglestate = {true} //optional, default true
 />
 // ...
 // the rest of your app
 ```
 
-`myStore` can be any javaScript object of values that you want to track, e.g.
+`value` can be any javaScript object of values that you want to track, e.g.
 
 -   variables from your component
 -   variables from component props
@@ -68,7 +68,7 @@ Include **svelte-object-explorer** in the script section of any svelte file, but
 
 `fade` is an optional boolean, which fades the panel when not hovered
 
-`tabPosition` is an optional string, which affects the position of the "Show/Hide" tab.
+`tabposition` is an optional string, which affects the position of the "Show/Hide" tab.
 
 -   "top" is default
 -   "middle"
@@ -76,9 +76,18 @@ Include **svelte-object-explorer** in the script section of any svelte file, but
 
 `open` is an optional string, the name of one of the objects you supplied in myStore, to auto-expand it on load
 
-`rateLimit` is an optional integer, for the rate at which the view should update (to avoid it getting bogged down by very fast data updates. The default is 100 (milliseconds)
+`ratelimit` is an optional integer, for the rate at which the view should update (to avoid it getting bogged down by very fast data updates. The default is 100 (milliseconds)
 
-`initialToggleState` is an optional boolean, for whether the tab is open (true) or closed (false) on startup
+`initialtogglestate` is an optional boolean, for whether the tab is open (true) or closed (false) on startup
+
+## New in v2
+
+-   changes to some of the option names above
+-   mostly refactored code
+-   now includes basic dom node parsing
+-   if you use as above code, the Svelte Component version is still imported by default, but this can sometimes mean some style clashes with your app, so...
+-   ...you can use the custom element ES module version instead which sandboxes styles in its shadowRoot. Replace above `import SvelteObjectExplorer from 'svelte-object-explorer'` with `from 'svelte-object-explorer/dist/index.mjs'`
+-   ...or you can skip including it in your svelte app code at all, and just include the custom element IIFE file in your index.html instead. Copy the file at `svelte-object-explorer/dist/index.js` (note .js not .mjs). In this case you need to pass the options above as a 'svelteobjectexplorer' window object instead, i.e. `window.svelteobjectexplorer = { value, open, fade, tabposition, ratelimit }`.
 
 > It's not clever, it's not pretty...
 
