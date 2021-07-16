@@ -17,31 +17,45 @@ const removeWhitespace = {
 };
 const plugins = [
     rolluppluginiconifysvg({ logging: "some" }),
-    svelte(removeWhitespace),
+    svelte({ ...removeWhitespace, emitCss: false }),
     resolve(),
-    css({ output: "bundle.css" }),
     terser(),
+    //css({ output: "bundle.css" }),
 ];
 
-const example_page_output = { sourcemap: true, format: "iife", name: "app" };
-
-//the main distributable
-//https://remarkablemark.org/blog/2019/07/12/rollup-commonjs-umd/
-const dist_umd = {
-    input: "src/index.js",
-    output: { file: pkg.main, format: "umd", name: "SvelteObjectExplorer" },
-    plugins,
-};
-
-//custom element distributable
-const dist_custom_element = {
-    input: "src/Examples/CustomElement/main.js",
-    output: { file: "dist/custom_element.js", format: "es", name: "app" },
+//the main custom element distributable as IIFE index.js
+const dist_custom_element_iife = {
+    input: "./src/Examples/CustomElement/main_iife.js",
+    output: [
+        { file: pkg.main, sourcemap: true, format: "iife", name: "SvelteObjectExplorerCustomElementIIFE" },
+        {
+            // a copy of iife for testing
+            file: "public/CustomElementIIFE/iife_copy.js",
+            format: "iife",
+            name: "SvelteObjectExplorerCustomElementIIFE",
+        },
+    ],
     plugins: [
         rolluppluginiconifysvg({ logging: "some" }),
-        svelte({ compilerOptions: { customElement: true } }),
+        svelte({ ...removeWhitespace, compilerOptions: { customElement: true } }),
         resolve(),
-        css({ output: "bundle.css" }),
+        terser(),
+    ],
+};
+
+//custom element distributable as ES module index.mjs
+const dist_custom_element_es = {
+    input: "./src/Examples/CustomElement/main_es.js",
+    output: {
+        file: "./dist/index.mjs",
+        sourcemap: true,
+        format: "es",
+        name: "SvelteObjectExplorerCustomElementESModule",
+    },
+    plugins: [
+        rolluppluginiconifysvg({ logging: "some" }),
+        svelte({ ...removeWhitespace, compilerOptions: { customElement: true } }),
+        resolve(),
         terser(),
     ],
 };
@@ -50,42 +64,29 @@ const dist_custom_element = {
 
 //below are just bundles for the examples
 
-//a copy of umd for testing
-const example_page_umd_bundle = {
-    input: "src/Examples/UMDmodule/main_example.js",
-    output: { file: "public/UMDmodule/bundle_soe.js", format: "umd", name: "SvelteObjectExplorer" },
+const example_page_iife = {
+    input: "./src/Examples/IIFE/main.js",
+    output: { format: "iife", name: "app", file: "public/CustomElementIIFE/bundle.js" },
     plugins,
-};
-
-const example_page_umd = {
-    input: "./src/Examples/UMDmodule/main.js",
-    output: { ...example_page_output, file: "public/UMDmodule/bundle.js" },
-    plugins: [
-        svelte({ ...removeWhitespace, compilerOptions: { dev: true } }),
-        css({ output: "bundle.css" }),
-        resolve({ browser: true, dedupe: ["svelte"] }),
-        commonjs(),
-    ],
 };
 
 const example_page_svelte_component = {
     input: "./src/Examples/SvelteComponent/main.js",
-    output: { ...example_page_output, file: "public/SvelteComponent/bundle.js" },
+    output: { format: "iife", name: "app", file: "public/SvelteComponent/bundle.js" },
     plugins,
 };
 
-const example_page_custom_element = {
-    input: "./src/Examples/CustomElement/main_example.js",
-    output: { ...example_page_output, file: "public/CustomElement/bundle.js" },
+const example_page_custom_element_es = {
+    input: "./src/Examples/CustomElement/main.js",
+    output: { format: "iife", name: "app", file: "public/CustomElementES/bundle.js" },
     plugins,
 };
 
 export default [
-    dist_umd,
-    dist_custom_element,
+    dist_custom_element_iife,
+    dist_custom_element_es,
 
-    example_page_umd,
-    example_page_umd_bundle,
+    example_page_iife,
     example_page_svelte_component,
-    example_page_custom_element,
+    example_page_custom_element_es,
 ];

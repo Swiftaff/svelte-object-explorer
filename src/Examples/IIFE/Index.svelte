@@ -7,5 +7,5 @@
     let ratelimit;
 </script>
 
-<!--SvelteObjectExplorer {value} {open} {fade} {tabPosition} {ratelimit} /-->
+<!--SvelteObjectExplorerWebComponentIIFE is added separately via index.html -->
 <Example bind:value bind:open bind:fade bind:tabPosition bind:ratelimit />

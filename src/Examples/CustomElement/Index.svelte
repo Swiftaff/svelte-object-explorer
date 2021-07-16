@@ -1,5 +1,5 @@
 <script>
-    import SvelteObjectExplorerWebComponent from "../../../dist/custom_element.js";
+    import SvelteObjectExplorerWebComponentESModule from "../../../dist/index.mjs";
     import Example from "../Example.svelte";
     let value;
     let open;

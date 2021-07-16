@@ -10,11 +10,11 @@ const u = "undefined";
 const S = "symbol";
 const F = "arrow fn";
 const f = "function";
-const customElement = "/CustomElement";
+const customElementES = "/CustomElementES";
 const svelteComponent = "/SvelteComponent";
-const umdModule = "/UMDmodule";
-const test_urls = [customElement, svelteComponent, umdModule];
-//const test_urls = [customElement];
+const customElementIIFE = "/CustomElementIIFE";
+const test_urls = [customElementES, svelteComponent, customElementIIFE];
+//const test_urls = [customElementES];
 
 test_urls.forEach((url, site_index) => {
     describe(url + ": " + "Toggle Main panel", function () {
@@ -77,7 +77,7 @@ test_urls.forEach((url, site_index) => {
             it("Open = null, No panels are open", function () {
                 cy.viewport(1000, 600);
                 cy.visit(url);
-                wait_based_on_url(site_index);
+                cy.wait(1000);
                 //item 'longstring' with no panels open above it, should be in original position
                 nthSelectorEqualsText(3, "div.row span.key", "longstring");
             });
@@ -85,7 +85,7 @@ test_urls.forEach((url, site_index) => {
             it("Open = 'string1', is not an object or array so no panels are open", function () {
                 cy.viewport(1000, 600);
                 cy.visit(url + "?open=string1");
-                wait_based_on_url(site_index);
+                cy.wait(1000);
                 //item 'longstring' with no panels open above it, should be in original position
                 nthSelectorEqualsText(3, "div.row span.key", "longstring");
             });
@@ -93,7 +93,7 @@ test_urls.forEach((url, site_index) => {
             it("Open = 'bananaman', is not a valid reference so no panels are open", function () {
                 cy.viewport(1000, 600);
                 cy.visit(url + "?open=bananaman");
-                wait_based_on_url(site_index);
+                cy.wait(1000);
                 //item 'longstring' with no panels open above it, should be in original position
                 nthSelectorEqualsText(3, "div.row span.key", "longstring");
             });
@@ -101,7 +101,7 @@ test_urls.forEach((url, site_index) => {
             it("Open = 'html', is an object, so it is open, so longstring is further down", function () {
                 cy.viewport(1000, 600);
                 cy.visit(url + "?open=html");
-                wait_based_on_url(site_index);
+                cy.wait(1000);
                 //item 'longstring' after expanded 'html' should be further down
                 nthSelectorEqualsText(15, "div.row span.key", "longstring");
             });
@@ -175,7 +175,7 @@ test_urls.forEach((url, site_index) => {
         it("Manual: Clicking counter buttons should change the manual counter", function () {
             cy.viewport(1000, 600);
             cy.visit(url);
-            wait_based_on_url(site_index);
+            cy.wait(1000);
 
             //customStoreValue is initially set to 0
             nthSelectorEqualsText(22, "div.row span.key", "customStoreValue");
@@ -318,8 +318,4 @@ function nthSelectorEqualsText(n, selector, compare_text) {
         .then((text) => {
             expect(text).to.equal(compare_text);
         });
-}
-
-function wait_based_on_url(url) {
-    if (url !== customElement) cy.wait(1000);
 }

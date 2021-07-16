@@ -3,6 +3,8 @@
   "version": "2.0.0",
   "svelte": "src/Index.svelte",
   "main": "dist/index.js",
+  "browser": "dist/index.js",
+  "module": "dist/index.mjs",
   "description": "A Svelte component to view objects similar to the console to easily see your state or stores",
   "homepage": "https://github.com/Swiftaff/svelte-object-explorer",
   "repository": {
