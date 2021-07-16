@@ -39,10 +39,7 @@ jobs:
             - attach_workspace:
                   at: ~/
             - run:
-                  name: Start dev server
-                  command: npm run dev
-            - run:
-                  name: Run Cypress tests
+                  name: Start dev server and run Cypress tests
                   command: npm run cy:ci:es
             - store_artifacts:
                   path: /root/project/cypress/screenshots
@@ -56,10 +53,7 @@ jobs:
             - attach_workspace:
                   at: ~/
             - run:
-                  name: Start dev server
-                  command: npm run dev
-            - run:
-                  name: Run Cypress tests
+                  name: Start dev server and run Cypress tests
                   command: npm run cy:ci:iife
             - store_artifacts:
                   path: /root/project/cypress/screenshots
@@ -73,10 +67,7 @@ jobs:
             - attach_workspace:
                   at: ~/
             - run:
-                  name: Start dev server
-                  command: npm run dev
-            - run:
-                  name: Run Cypress tests
+                  name: Start dev server and run Cypress tests
                   command: npm run cy:ci:svelte
             - store_artifacts:
                   path: /root/project/cypress/screenshots
