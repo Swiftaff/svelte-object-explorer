@@ -1,6 +1,7 @@
 version: 2
 jobs:
     build:
+        working_directory: ~/tmp
         docker:
             - image: cypress/base:14.17.0
               environment:
@@ -14,33 +15,42 @@ jobs:
                   name: Build
                   command: npm run build
     test1:
+        working_directory: ~/tmp
         docker:
             - image: cypress/base:14.17.0
               environment:
                   TERM: xterm
         steps:
+            - attach_workspace:
+                  at: ~/
             - run:
                   name: Start dev server then run Cypress tests
                   command: npm run cy:ci:es
             - store_artifacts:
                   path: /root/project/cypress/screenshots
     test2:
+        working_directory: ~/tmp
         docker:
             - image: cypress/base:14.17.0
               environment:
                   TERM: xterm
         steps:
+            - attach_workspace:
+                  at: ~/
             - run:
                   name: Start dev server then run Cypress tests
                   command: npm run cy:ci:iife
             - store_artifacts:
                   path: /root/project/cypress/screenshots
     test3:
+        working_directory: ~/tmp
         docker:
             - image: cypress/base:14.17.0
               environment:
                   TERM: xterm
         steps:
+            - attach_workspace:
+                  at: ~/
             - run:
                   name: Start dev server then run Cypress tests
                   command: npm run cy:ci:svelte
