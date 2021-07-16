@@ -34,6 +34,12 @@ const dist_custom_element_iife = {
             format: "iife",
             name: "SvelteObjectExplorerCustomElementIIFE",
         },
+        {
+            // a copy of iife for testing
+            file: "public/VanillaAndIIFE/iife_copy.js",
+            format: "iife",
+            name: "SvelteObjectExplorerCustomElementIIFE",
+        },
     ],
     plugins: [
         rolluppluginiconifysvg({ logging: "some" }),

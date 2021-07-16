@@ -134,20 +134,20 @@ module.exports = (index) => {
             });
         });
 
-        describe(url + ": " + "tabPosition", function () {
-            it("The 'Show' Panel is in the top, because of prop 'tabPosition=top'", function () {
+        describe(url + ": " + "tabposition", function () {
+            it("The 'Show' Panel is in the top, because of prop 'tabposition=top'", function () {
                 cy.viewport(1000, 600);
-                cy.visit(url + "?tabPosition=top");
+                cy.visit(url + "?tabposition=top");
                 cy.get("div.toggle.toggleShow.toggletop");
             });
-            it("The 'Show' Panel is in the middle, because of prop 'tabPosition=middle'", function () {
+            it("The 'Show' Panel is in the middle, because of prop 'tabposition=middle'", function () {
                 cy.viewport(1000, 600);
-                cy.visit(url + "?tabPosition=middle");
+                cy.visit(url + "?tabposition=middle");
                 cy.get("div.toggle.toggleShow.togglemiddle");
             });
-            it("The 'Show' Panel is in the bottom, because of prop 'tabPosition=bottom'", function () {
+            it("The 'Show' Panel is in the bottom, because of prop 'tabposition=bottom'", function () {
                 cy.viewport(1000, 600);
-                cy.visit(url + "?tabPosition=bottom");
+                cy.visit(url + "?tabposition=bottom");
                 cy.get("div.toggle.toggleShow.togglebottom");
             });
         });

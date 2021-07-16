@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf8" />
+
+        <title>Svelte Object Explorer - Custom Element IIFE</title>
+        <script defer src="CustomElementIIFE/iife_copy.js"></script>
+        <script defer>
+            setTimeout(() => {
+                window.svelteobjectexplorer = {
+                    value: { test: { test: "test" } },
+                    tabposition: "middle",
+                    fade: true,
+                    open: "test",
+                    ratelimit: 1000,
+                };
+            }, 2000);
+        </script>
+    </head>
+    <style>
+        body {
+            background-color: black;
+            color: #222;
+        }
+    </style>
+    <body>
+        <h1>Example Page</h1>
+        <h2>Example heading 2</h2>
+    </body>
+</html>
