@@ -1,7 +1,7 @@
 <script>
     import icons from "./icons.js";
     export let toggle;
-    export let tabPosition;
+    export let tabposition;
     export let fade;
     export let hovering;
     export let doToggle;
@@ -10,7 +10,7 @@
 <div
     class={(toggle ? "toggle toggleShow" : "toggle toggleHide") +
         " toggle" +
-        tabPosition +
+        tabposition +
         (fade ? (hovering ? " noFade" : " fade") : " noFade")}
     on:mousedown={doToggle}
 >

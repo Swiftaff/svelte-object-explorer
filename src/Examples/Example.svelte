@@ -12,7 +12,7 @@
     function incr() {
         setInterval(() => {
             counter++;
-            const props = { value, open, fade, tabPosition, ratelimit };
+            const props = { value, open, fade, tabposition, ratelimit };
             sendprops(props);
             window.svelteobjectexplorer = props;
             //console.log("window.svelteobjectexplorer", window.svelteobjectexplorer);
@@ -25,7 +25,7 @@
     let params = new URL(document.location).searchParams;
     let open = params.get("open");
     let fade = params.get("fade");
-    let tabPosition = params.get("tabPosition");
+    let tabposition = params.get("tabposition");
     let ratelimit = params.get("rateLimit");
     export let sendprops = () => {};
 

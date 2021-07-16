@@ -15,11 +15,11 @@
     let stringifiedValueCache = "";
 
     export let value;
-    export let tabPosition = "top";
+    export let tabposition = "top";
     export let open = null;
     export let fade = false;
     export let ratelimit = ratelimitDefault;
-    export let initialToggleState = true;
+    export let initialtogglestate = true;
 
     let isPaused = false;
     let hovering = false;
@@ -28,7 +28,7 @@
     let showManuallySelected = ["0", "0.0"];
     let rowsToShow = [];
     let hoverRow = "none";
-    let toggle = initialToggleState;
+    let toggle = initialtogglestate;
     let topLevelObjectArray = [];
     let cache = {
         dataChanges: 0,
@@ -63,7 +63,7 @@
                 if ("value" in obj) value = obj.value;
                 if ("open" in obj) open = obj.open;
                 if ("fade" in obj) fade = obj.fade;
-                if ("tabPosition" in obj) tabPosition = obj.tabPosition;
+                if ("tabposition" in obj) tabposition = obj.tabposition;
                 if ("ratelimit" in obj) ratelimit = obj.ratelimit;
             }
             let newvalue = value || lib.domParser();
@@ -136,7 +136,7 @@
 </script>
 
 <div class="svelte-object-explorer-wrapper">
-    <TabButton {toggle} {tabPosition} {fade} {hovering} {doToggle} />
+    <TabButton {toggle} {tabposition} {fade} {hovering} {doToggle} />
     {#if toggle}
         <div
             id="svelteObjectExplorer"

@@ -3,9 +3,9 @@
     let value;
     let open;
     let fade;
-    let tabPosition;
+    let tabposition;
     let ratelimit;
 </script>
 
 <!--SvelteObjectExplorerWebComponentIIFE is added separately via index.html -->
-<Example bind:value bind:open bind:fade bind:tabPosition bind:ratelimit />
+<Example bind:value bind:open bind:fade bind:tabposition bind:ratelimit />
