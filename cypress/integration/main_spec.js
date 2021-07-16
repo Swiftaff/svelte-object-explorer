@@ -14,9 +14,10 @@ const customElement = "/CustomElement";
 const svelteComponent = "/SvelteComponent";
 const umdModule = "/UMDmodule";
 const test_urls = [customElement, svelteComponent, umdModule];
+//const test_urls = [customElement];
 
 test_urls.forEach((url, site_index) => {
-    describe.only(url + ": " + "Toggle Main panel", function () {
+    describe(url + ": " + "Toggle Main panel", function () {
         it("Panel is visible", function () {
             cy.viewport(1000, 600);
             cy.visit(url);
