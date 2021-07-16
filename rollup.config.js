@@ -16,7 +16,7 @@ const removeWhitespace = {
     },
 };
 const plugins = [
-    rolluppluginiconifysvg(),
+    rolluppluginiconifysvg({ logging: "some" }),
     svelte(removeWhitespace),
     resolve(),
     css({ output: "bundle.css" }),
@@ -38,9 +38,9 @@ const dist_custom_element = {
     input: "src/Examples/CustomElement/main.js",
     output: { file: "dist/custom_element.js", format: "es", name: "app" },
     plugins: [
-        rolluppluginiconifysvg(),
+        rolluppluginiconifysvg({ logging: "some" }),
         svelte({ compilerOptions: { customElement: true } }),
-        //resolve(),
+        resolve(),
         css({ output: "bundle.css" }),
         terser(),
     ],

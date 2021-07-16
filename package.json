@@ -48,7 +48,6 @@
     "build": "rollup -c",
     "dev": "sirv public --dev",
     "build_and_dev": "run-p build dev",
-    "npmpublish": "npm publish",
     "cy:open": "cypress open",
     "cy:run": "cypress run",
     "cy:ci": "start-server-and-test dev http://localhost:5000 cy:run",
