@@ -8,9 +8,19 @@ jobs:
                   TERM: xterm
         steps:
             - checkout
+            - restore_cache:
+                  keys:
+                      - 'v2-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}'
+                      - "v2-deps-{{ .Branch }}-"
+                      - v2-deps-
             - run:
                   name: Set up dependencies
-                  command: npm install
+                  command: npm ci
+            - save_cache:
+                  key: 'v2-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}'
+                  paths:
+                      - ~/.npm
+                      - ~/.cache
             - run:
                   name: Build
                   command: npm run build
@@ -29,8 +39,11 @@ jobs:
             - attach_workspace:
                   at: ~/
             - run:
-                  name: Start dev server then run Cypress tests
-                  command: npm run cy:ci:es
+                  name: Start dev server
+                  command: npm run dev
+            - run:
+                  name: Run Cypress tests
+                  command: npm run cy:es
             - store_artifacts:
                   path: /root/project/cypress/screenshots
     test2:
@@ -43,8 +56,11 @@ jobs:
             - attach_workspace:
                   at: ~/
             - run:
-                  name: Start dev server then run Cypress tests
-                  command: npm run cy:ci:iife
+                  name: Start dev server
+                  command: npm run dev
+            - run:
+                  name: Run Cypress tests
+                  command: npm run cy:iife
             - store_artifacts:
                   path: /root/project/cypress/screenshots
     test3:
@@ -57,8 +73,11 @@ jobs:
             - attach_workspace:
                   at: ~/
             - run:
-                  name: Start dev server then run Cypress tests
-                  command: npm run cy:ci:svelte
+                  name: Start dev server
+                  command: npm run dev
+            - run:
+                  name: Run Cypress tests
+                  command: npm run cy:svelte
             - store_artifacts:
                   path: /root/project/cypress/screenshots
 

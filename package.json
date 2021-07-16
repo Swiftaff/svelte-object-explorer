@@ -57,9 +57,6 @@
     "cy:es": "cypress run --spec cypress/integration/customElementES.js",
     "cy:iife": "cypress run --spec cypress/integration/customElementIIFE.js",
     "cy:svelte": "cypress run --spec cypress/integration/svelteComponent.js",
-    "cy:ci:es": "run-p dev cy:es",
-    "cy:ci:iife": "run-p dev cy:iife",
-    "cy:ci:svelte": "run-p dev cy:svelte",
     "unit-test": "ava --watch"
   },
   "files": [
