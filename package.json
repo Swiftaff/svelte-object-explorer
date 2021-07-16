@@ -48,13 +48,19 @@
   },
   "scripts": {
     "build": "rollup -c",
-    "dev": "sirv public --dev",
+    "dev": "sirv public --dev --port=5000",
     "build_and_dev": "run-p build dev",
+    "test": "ava && npm run test_local",
+    "test_local": "run-p dev cy:test_local",
     "cy:open": "cypress open",
-    "cy:run": "cypress run",
-    "cy:ci": "start-server-and-test dev http://localhost:5000 cy:run",
-    "unit-test": "ava --watch",
-    "test": "ava && npm run cy:run"
+    "cy:test_local": "cypress run --spec cypress/integration/run_all.js",
+    "cy:es": "cypress run --spec cypress/integration/customElementES.js",
+    "cy:iife": "cypress run --spec cypress/integration/customElementIIFE.js",
+    "cy:svelte": "cypress run --spec cypress/integration/svelteComponent.js",
+    "cy:ci:es": "run-p dev cy:es",
+    "cy:ci:iife": "run-p dev cy:iife",
+    "cy:ci:svelte": "run-p dev cy:svelte",
+    "unit-test": "ava --watch"
   },
   "files": [
     "src",

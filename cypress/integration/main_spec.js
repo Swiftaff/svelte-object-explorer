@@ -10,13 +10,10 @@ const u = "undefined";
 const S = "symbol";
 const F = "arrow fn";
 const f = "function";
-const customElementES = "/CustomElementES";
-const svelteComponent = "/SvelteComponent";
-const customElementIIFE = "/CustomElementIIFE";
-const test_urls = [customElementES, svelteComponent, customElementIIFE];
-//const test_urls = [customElementES];
+const example_urls = ["/CustomElementES", "/CustomElementIIFE", "/SvelteComponent"];
 
-test_urls.forEach((url, site_index) => {
+module.exports = (index) => {
+    const url = example_urls[index];
     describe(url + ": " + "Toggle Main panel", function () {
         it("Panel is visible", function () {
             cy.viewport(1000, 600);
@@ -272,7 +269,8 @@ test_urls.forEach((url, site_index) => {
             });
         });
     });
-});
+};
+
 function callAutomaticCounterTests(url, rate, before, after, not) {
     const full_url = rate === 100 ? url : url + "?rateLimit=" + rate;
     it(`data before rate:${rate} is same`, function () {
