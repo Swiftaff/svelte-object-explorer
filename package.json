@@ -57,6 +57,9 @@
     "cy:es": "cypress run --spec cypress/integration/customElementES.js",
     "cy:iife": "cypress run --spec cypress/integration/customElementIIFE.js",
     "cy:svelte": "cypress run --spec cypress/integration/svelteComponent.js",
+    "cy:ci:es": "start-server-and-test dev http://localhost:5000 cy:es",
+    "cy:ci:iife": "start-server-and-test dev http://localhost:5000 cy:iife",
+    "cy:ci:svelte": "start-server-and-test dev http://localhost:5000 cy:svelte",
     "unit-test": "ava --watch"
   },
   "files": [
