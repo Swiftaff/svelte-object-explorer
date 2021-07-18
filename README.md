@@ -42,52 +42,77 @@ Include **svelte-object-explorer** in the script section of any svelte file, but
 // App.svelte
 <script>
   import SvelteObjectExplorer from 'svelte-object-explorer'
-  let staticObject1 = { test1: "test1" }
-  let staticObject2 = { test2: "test2" }
+
+  // example value watching 2 properties
   let html = document.body; // can be any Node
+  let staticObject1 = { test1: "test1" }
+  let value = { html, staticObject1 }
 </script>
 
-<SvelteObjectExplorer
- value = { staticObject1, staticObject2, html } //optional, default will display basic HTML from body
- fade = {false} //optional, default true
- tabposition = "top" //optional
- open = "dataFromProps" //optional
- ratelimit = {1000} //optional, default 100
- initialtogglestate = {true} //optional, default true
-/>
+<SvelteObjectExplorer {value} />
 // ...
 // the rest of your app
 ```
 
-`value` can be any javaScript object of values that you want to track, e.g.
+## Options
+
+`value` can be any javaScript object of values that you want to track, e.g. `(Default = document.body)`
 
 -   variables from your component
 -   variables from component props
 -   values from a store
+-   any DOM node, e.g. document.body
 -   outputs from a function...
 
-`fade` is an optional boolean, which fades the panel when not hovered
+`fade` is an optional boolean, which fades the panel when not hovered. `(Default = false)`
 
 `tabposition` is an optional string, which affects the position of the "Show/Hide" tab.
 
--   "top" is default
+-   "top" `(Default)`
 -   "middle"
 -   "bottom"
 
-`open` is an optional string, the name of one of the objects you supplied in myStore, to auto-expand it on load
+`open` is an optional string, the name of one of the objects you supplied in myStore, to auto-expand it on load `(Default = null)`
 
-`ratelimit` is an optional integer, for the rate at which the view should update (to avoid it getting bogged down by very fast data updates. The default is 100 (milliseconds)
+`ratelimit` is an optional integer, for the rate at which the view should update (to avoid it getting bogged down by very fast data updates. `Default = 100 [milliseconds])`
 
-`initialtogglestate` is an optional boolean, for whether the tab is open (true) or closed (false) on startup
+`initialtogglestate` is an optional boolean, for whether the tab is open (true) or closed (false) on startup. `Default = false`
 
-## New in v2
+## New in v2.1
 
 -   changes to some of the option names above
 -   mostly refactored code
+-   no external dependencies (except dev dependencies)
 -   now includes basic dom node parsing
--   if you use as above code, the Svelte Component version is still imported by default, but this can sometimes mean some style clashes with your app, so...
--   ...you can use the custom element ES module version instead which sandboxes styles in its shadowRoot. Replace above `import SvelteObjectExplorer from 'svelte-object-explorer'` with `from 'svelte-object-explorer/dist/index.mjs'`
--   ...or you can skip including it in your svelte app code at all, and just include the custom element IIFE file in your index.html instead. Copy the file at `svelte-object-explorer/dist/index.js` (note .js not .mjs). In this case you need to pass the options above as a 'svelteobjectexplorer' window object instead, i.e. `window.svelteobjectexplorer = { value, open, fade, tabposition, ratelimit }`.
+-   3 ways to use it
+
+    1.  use the Svelte Component version as above - but this can sometimes mean some style clashes with your app, so...
+    1.  ...you can use the custom element ES module version instead which sandboxes styles in its shadowRoot.
+
+        -   replace import from above
+
+        ```
+        /* import SvelteObjectExplorer from 'svelte-object-explorer' */
+        import SvelteObjectExplorer from 'svelte-object-explorer/dist/index.mjs'
+        ```
+
+        -   replace svelte element with custom element
+
+        ```
+        <!--SvelteObjectExplorer {value} /-->
+        <svelte-object-explorer {value} />
+        ```
+
+    1.  ...or you can skip including it in your svelte app code at all, and just include the custom element IIFE file in your index.html instead. This will automatically mount the Custom Element version to the `body`. This should mean you can use it with any vanilla front-end javaScript or other frameworks like React or Vue.
+
+        -   See example `index.html` in this repo's public directory at `/public/VanillaAndIIFE` which imports the copy `iife_copy.js` of the `dist/index.js` (note .js not .mjs)
+        -   In this case you need to pass the options above as a global `svelteobjectexplorer` window object instead, see example JS in the index.html above, e.g.
+
+        ```
+        let value = "whatever you're watching";
+        //...assign other options if needed
+        window.svelteobjectexplorer = { value, open, fade, tabposition, ratelimit }
+        ```
 
 > It's not clever, it's not pretty...
 
