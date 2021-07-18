@@ -1,13 +1,15 @@
+<svelte:options tag="svelte-object-explorer" />
+
 <script>
     import { onMount } from "svelte";
-    import TabButton from "../src/TabButton.svelte";
-    import ResetButton from "../src/ResetButton.svelte";
-    import PauseButton from "../src/PauseButton.svelte";
-    import CacheDisplay from "../src/CacheDisplay.svelte";
-    import ChevronButtons from "../src/ChevronButtons.svelte";
-    import RowText from "../src/RowText.svelte";
-    import lib from "../src/lib.js";
-    import transform_data from "../src/transform_data.js";
+    import TabButton from "./TabButton.svelte";
+    import ResetButton from "./ResetButton.svelte";
+    import PauseButton from "./PauseButton.svelte";
+    import CacheDisplay from "./CacheDisplay.svelte";
+    import ChevronButtons from "./ChevronButtons.svelte";
+    import RowText from "./RowText.svelte";
+    import lib from "../../lib.js";
+    import transform_data from "../../transform_data.js";
 
     let ratelimitDefault = 100;
     let stringifiedValueCache = "";
@@ -54,6 +56,7 @@
     }
 
     function refreshDataAndCache() {
+        //console.log("refreshDataAndCache", value);
         if (toggle) {
             if (window && window.svelteobjectexplorer) {
                 const obj = window.svelteobjectexplorer;
@@ -125,6 +128,7 @@
     function pause() {
         isPaused = true;
     }
+
     function reset() {
         cache.viewChanges = 1;
         cache.dataChanges = 1;
@@ -259,5 +263,179 @@
 
     .hoverRow {
         background-color: #68f !important;
+    }
+
+    .tree {
+        pointer-events: all;
+        transition: 0.2s;
+        position: fixed;
+        right: 0px;
+        top: 0px;
+        width: 500px;
+        height: 100vh;
+        background-color: #aaa;
+        z-index: 10000000;
+        overflow: auto;
+        font-size: small;
+
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.3em;
+
+        -webkit-box-shadow: -4px 4px 10px 0px rgba(0, 0, 0, 0.15);
+        -moz-box-shadow: -4px 4px 10px 0px rgba(0, 0, 0, 0.15);
+        box-shadow: -4px 4px 10px 0px rgba(0, 0, 0, 0.15);
+    }
+
+    .tree tr:nth-child(odd) {
+        background-color: #ccc;
+    }
+    .toggle:hover {
+        pointer-events: all;
+        opacity: 1;
+    }
+
+    .toggle {
+        pointer-events: all;
+        cursor: pointer;
+        position: fixed;
+        width: 70px;
+        height: 20px;
+        text-align: center;
+        transform: rotate(-90deg);
+        background-color: #aaa;
+        z-index: 10000000;
+
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.3em;
+    }
+
+    .toggletop {
+        top: 25px;
+    }
+
+    .togglemiddle {
+        top: calc(50vh - 25px);
+    }
+
+    .togglebottom {
+        bottom: 25px;
+    }
+
+    .toggleShow {
+        pointer-events: all;
+        transition: 0.2s;
+        right: 475px;
+    }
+
+    .toggleHide {
+        pointer-events: all;
+        transition: 0.2s;
+        right: -25px;
+    }
+
+    .accordion {
+        background-color: #666 !important;
+        color: white;
+    }
+
+    .icon1 {
+        width: 15px;
+        height: 15px;
+    }
+
+    .smaller {
+        width: 15px;
+        height: 15px;
+        display: inline-block;
+        position: relative;
+        top: 2px;
+    }
+
+    .smallest {
+        width: 15px;
+        height: 15px;
+        display: inline-block;
+        position: relative;
+        top: 1px;
+        left: 0px !important;
+        color: green;
+    }
+
+    .white {
+        color: white;
+    }
+
+    .val {
+        color: black;
+    }
+
+    .link {
+        cursor: pointer;
+    }
+
+    .link:hover {
+        background-color: #888;
+    }
+
+    .dataArrow {
+        position: absolute;
+        left: 0px;
+        cursor: pointer;
+    }
+
+    .dataArrow:hover {
+        color: black;
+    }
+
+    .len {
+        color: black;
+        position: absolute;
+        right: 70px;
+        top: 0px;
+    }
+
+    .type {
+        color: green;
+        position: absolute;
+        top: 0px;
+        right: 5px;
+    }
+
+    .nopointer {
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .toggleShowAll,
+    .copyToClipbord {
+        display: inline;
+    }
+
+    #hiddenClipboard {
+        position: absolute;
+        left: -9999px;
+    }
+
+    .tree button {
+        position: absolute;
+        top: 3px;
+        right: 3px;
+    }
+
+    .grey {
+        color: #666;
+    }
+
+    .pause {
+        position: absolute;
+        top: 3px;
+        right: 3px;
+    }
+    .reset {
+        position: absolute;
+        top: 3px;
+        right: 50px;
     }
 </style>

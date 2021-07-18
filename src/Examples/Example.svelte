@@ -1,6 +1,6 @@
 <script>
-    import SvelteObjectExplorer from "./Index.svelte";
     import { count } from "./ExampleCustomStore.js";
+
     let thisPage;
     let counter = 1;
     let array = [
@@ -12,21 +12,32 @@
     function incr() {
         setInterval(() => {
             counter++;
+            const props = { value, open, fade, tabposition, ratelimit };
+            sendprops(props);
+            window.svelteobjectexplorer = props;
+            //console.log("window.svelteobjectexplorer", window.svelteobjectexplorer);
         }, 1000);
     }
 
     incr();
-    const longarray = new Array(101).fill("x").map((x, i) => "" + i);
-    let myStore;
+
+    let value;
+    let params = new URL(document.location).searchParams;
+    let open = params.get("open");
+    let fade = params.get("fade");
+    let tabposition = params.get("tabposition");
+    let ratelimit = params.get("rateLimit");
+    export let sendprops = () => {};
+
     $: if (counter || $count) {
-        myStore = {
+        value = {
             html: thisPage,
             string1: "testy",
             longstring:
                 "Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet.",
             array,
             array2: [[["test1", "test2"], "test2"], "test2"],
-            longarray,
+            longarray: new Array(101).fill("x").map((x, i) => "" + i),
             object: {
                 test1: {
                     test1: { test1: { test1: "test1", test2: "test2" }, test2: "test2" },
@@ -70,11 +81,6 @@
             customStoreValue: $count,
         };
     }
-    let params = new URL(document.location).searchParams;
-    let open = params.get("open");
-    let fade = params.get("fade");
-    let tabPosition = params.get("tabPosition");
-    let rateLimit = params.get("rateLimit");
 
     let string = "< SvelteObjectExplorer {myStore} />";
 
@@ -95,8 +101,6 @@
         promise = getAsyncTimer();
     }
 </script>
-
-<SvelteObjectExplorer {myStore} {open} {fade} {tabPosition} {rateLimit} />
 
 <div bind:this={thisPage}>
     <h1>Svelte Object Explorer</h1>

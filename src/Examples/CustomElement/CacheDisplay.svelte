@@ -1,3 +1,5 @@
+<svelte:options tag="svelte-object-explorer-cache-display" />
+
 <script>
     export let cache;
     export let ratelimit;

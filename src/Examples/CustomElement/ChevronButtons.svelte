@@ -1,5 +1,7 @@
+<svelte:options tag="svelte-object-explorer-chevron-buttons" />
+
 <script>
-    import icons from "./icons.js";
+    import icons from "../../icons.js";
     export let row;
     export let rowsToShow;
     export let rowContract;
@@ -19,28 +21,3 @@
         {/if}
     {/if}
 {/if}
-
-<style>
-    .smallest {
-        width: 15px;
-        height: 15px;
-        display: inline-block;
-        position: relative;
-        top: 1px;
-        left: 0px !important;
-        color: green;
-    }
-    .dataArrow {
-        position: absolute;
-        left: 0px;
-        cursor: pointer;
-    }
-
-    .dataArrow:hover {
-        color: black;
-    }
-
-    .white {
-        color: white;
-    }
-</style>

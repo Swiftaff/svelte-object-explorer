@@ -1,6 +1,9 @@
 .DS_Store
 node_modules
 package-lock.json
-dist
 cypress/screenshots
 cypress/videos
+**/icons.js
+**/public/*/*.js
+**/public/*/*.css
+**/public/*/*.map
