@@ -260,4 +260,7 @@
     .hoverRow {
         background-color: #68f !important;
     }
+    .val {
+        color: black;
+    }
 </style>

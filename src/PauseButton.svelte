@@ -11,7 +11,7 @@
 {/if}
 
 <style>
-    button {
+    button.pause {
         position: absolute;
         top: 3px;
         right: 3px;
