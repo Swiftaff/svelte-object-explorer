@@ -6,32 +6,46 @@ export const move_styles_to_root_element = (filepath) => {
     // workaround for https://github.com/sveltejs/svelte/issues/4274
     return {
         writeBundle() {
-            transformCeCss(filepath).catch((err) => {
+            transformCSS(filepath).catch((err) => {
                 console.error(err);
             });
         },
     };
 };
 
-const transformCeCss = async (file) => {
+const transformCSS = async (file) => {
     const code = await readFile(file, { encoding: "utf8" });
-    const transformed = transform(code);
+    const transformed = transform_bundled_file(code);
     await writeFile(file, transformed);
 };
-const assignment = "this.shadowRoot.innerHTML = ";
 
-const transform = (code) => {
-    const parts = code.split(assignment);
+const transform_bundled_file = (code) => {
+    const assignment_with_terser = "this.shadowRoot.innerHTML=";
+    const assignment_without_terser = "this.shadowRoot.innerHTML = ";
+    let parts = code.split(assignment_with_terser);
+    const bundler_is_using_terser = parts.length > 1;
+    if (!bundler_is_using_terser) parts = code.split(assignment_without_terser);
     let aggregated = "";
     const partsWithOnlyOneStyle = parts.map((part, i) => {
-        const withoutAnyStyleString = part.replace(/^`<style>(.+?)<\/style>`;/, (_, css) => {
-            aggregated += css;
-            return "";
-        });
-
-        if (i === parts.length - 1) {
-            return assignment + "`<style>" + aggregated + "<style>`;" + withoutAnyStyleString;
-        }
+        const is_root_element = i === parts.length - 1;
+        const regex_styles_wrapped_with_double_quotes = new RegExp('^"<style>(.+?)</style>",', "g");
+        const regex_styles_wrapped_with_single_quotes = new RegExp("^'<style>(.+?)</style>',", "g");
+        const regex_styles_wrapped_with_backtick_quotes = new RegExp("^`<style>(.+?)</style>`;", "g");
+        const remove_and_aggregate_styles = (quote, assignment, _whole_capture, css_capture_group) => {
+            aggregated += css_capture_group;
+            return is_root_element ? assignment + `${quote}<style>` + aggregated + `<style>${quote},` : "";
+        };
+        const withoutAnyStyleString = bundler_is_using_terser
+            ? part
+                  .replace(regex_styles_wrapped_with_double_quotes, (a, b) =>
+                      remove_and_aggregate_styles('"', assignment_with_terser, a, b)
+                  )
+                  .replace(regex_styles_wrapped_with_single_quotes, (a, b) =>
+                      remove_and_aggregate_styles("'", assignment_with_terser, a, b)
+                  )
+            : part.replace(regex_styles_wrapped_with_backtick_quotes, (a, b) =>
+                  remove_and_aggregate_styles("`", assignment_without_terser, a, b)
+              );
 
         return withoutAnyStyleString;
     });

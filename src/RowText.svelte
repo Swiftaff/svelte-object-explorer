@@ -47,4 +47,7 @@
     .white {
         color: white;
     }
+    .val {
+        color: black;
+    }
 </style>

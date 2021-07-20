@@ -19,7 +19,7 @@ const plugins = [
 //the main custom element distributable as IIFE index.js
 const dist_custom_element_iife = {
     input: "./src/Examples/CustomElement/main_iife.js",
-    output: [{ file: "./" + pkg.main, sourcemap: true, format: "iife", name: "SvelteObjectExplorerCustomElementIIFE" }],
+    output: [{ file: pkg.main, sourcemap: true, format: "iife", name: "SvelteObjectExplorerCustomElementIIFE" }],
     plugins: [
         rolluppluginiconifysvg({ logging: "some" }),
         svelte(create_custom_element),
@@ -41,7 +41,7 @@ const dist_custom_element_iife_copy1 = {
     ],
     plugins: [
         rolluppluginiconifysvg({ logging: "some" }),
-        svelte(removeWhitespace),
+        svelte(create_custom_element),
         resolve(),
         move_styles_to_root_element("./public/CustomElementIIFE/iife_copy.js"),
         terser(),
@@ -73,7 +73,7 @@ const dist_custom_element_es = {
     input: "./src/Examples/CustomElement/main_es.js",
     output: [
         {
-            file: "./dist/index.mjs",
+            file: pkg.module,
             sourcemap: true,
             format: "es",
             name: "SvelteObjectExplorerCustomElementESModule",
@@ -83,26 +83,10 @@ const dist_custom_element_es = {
         rolluppluginiconifysvg({ logging: "some" }),
         svelte(create_custom_element),
         resolve(),
-        move_styles_to_root_element("./dist/index.mjs"),
-        //terser(),
+        move_styles_to_root_element("./" + pkg.module),
+        terser(),
     ],
 };
-
-/*const dist_custom_element_es_old = {
-    input: "./src/Examples/CustomElement/main_es.js",
-    output: {
-        file: "./dist/index_old.mjs",
-        sourcemap: false, //true,
-        format: "es",
-        name: "SvelteObjectExplorerCustomElementESModule",
-    },
-    plugins: [
-        rolluppluginiconifysvg({ logging: "some" }),
-        svelte({ ...removeWhitespace, compilerOptions: { customElement: true } }),
-        resolve(),
-        //terser(),
-    ],
-};*/
 
 //svelte distributable does not need to be bundled and is accessed directly from package.json["svelte"]
 
