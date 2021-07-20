@@ -1,6 +1,6 @@
 {
   "name": "svelte-object-explorer",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "svelte": "src/Index.svelte",
   "main": "dist/index.js",
   "browser": "dist/index.js",
