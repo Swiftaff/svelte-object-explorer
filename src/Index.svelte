@@ -18,6 +18,7 @@
     export let fade = false;
     export let ratelimit = ratelimitDefault;
     export let initialtogglestate = true;
+    export let plugins = [];
 
     let isPaused = false;
     let hovering = false;
@@ -62,9 +63,11 @@
                 if ("fade" in obj) fade = obj.fade;
                 if ("tabposition" in obj) tabposition = obj.tabposition;
                 if ("ratelimit" in obj) ratelimit = obj.ratelimit;
+                if ("plugins" in obj) plugins = obj.plugins;
             }
-            let newvalue = value || lib.domParser();
-            const stringifiedValue = JSON.stringify(newvalue);
+            let newPlugins = plugins;
+            let newValue = { value: value || lib.domParser(), plugins: newPlugins };
+            const stringifiedValue = JSON.stringify(newValue);
             if (stringifiedValue !== stringifiedValueCache) {
                 cache.dataUpdated = new Date();
                 cache.dataChanges = cache.dataChanges + 1;
@@ -72,12 +75,13 @@
             }
             const time_since_last_check = cache.dataUpdated - cache.viewUpdated;
             if (time_since_last_check > ratelimit && !isPaused) {
-                cache.value = newvalue;
+                cache.value = newValue.value;
+                cache.plugins = newValue.plugins;
                 cache.viewChanges = cache.viewChanges + 1;
                 cache.viewUpdated = new Date();
                 cache.dataUpdated = cache.viewUpdated;
                 cache.formatted = transform_data.formatDate(cache.viewUpdated);
-                stringifiedValueCache = JSON.stringify(cache.value);
+                stringifiedValueCache = JSON.stringify({ value: cache.value, plugins: newPlugins });
 
                 topLevelObjectArray = transform_data.transform_data(cache); //this should trigger a redraw
             }

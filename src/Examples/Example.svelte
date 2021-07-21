@@ -1,6 +1,6 @@
 <script>
     import { count } from "./ExampleCustomStore.js";
-
+    import example_plugins from "./ExamplePlugins.js";
     let thisPage;
     let counter = 1;
     let array = [
@@ -12,7 +12,7 @@
     function incr() {
         setInterval(() => {
             counter++;
-            const props = { value, open, fade, tabposition, ratelimit };
+            const props = { value, open, fade, tabposition, ratelimit, plugins };
             sendprops(props);
             window.svelteobjectexplorer = props;
             //console.log("window.svelteobjectexplorer", window.svelteobjectexplorer);
@@ -27,12 +27,24 @@
     let fade = params.get("fade");
     let tabposition = params.get("tabposition");
     let ratelimit = params.get("rateLimit");
+    let plugins = example_plugins;
     export let sendprops = () => {};
 
     $: if (counter || $count) {
         value = {
             html: thisPage,
             string1: "testy",
+            customObjectToTestPlugin1: {
+                name: "custom_object1",
+                specific_key1: "test1",
+                value_key_a: "abc",
+            },
+            customObjectToTestPlugin2: {
+                name: "custom_object2",
+                specific_key2: "test2",
+                value_key_b: "ABC",
+                value_key_c: 2,
+            },
             longstring:
                 "Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet.",
             array,

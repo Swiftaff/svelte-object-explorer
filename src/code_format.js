@@ -2,9 +2,11 @@ import lib from "./lib.js";
 const indentSpaces = 2;
 const max_array_length = 10;
 const max_line_length = 38;
+let global_plugins = [];
 
-export default function convertObjectToArrayOfOutputPanelRows({ key, val }) {
+export default function convertObjectToArrayOfOutputPanelRows({ key, val }, supplied_plugins) {
     let arr = [];
+    global_plugins = supplied_plugins;
     // [{indexRef, parentIndexRef, output, type, bracket(optional), expandable(optional), len(optional)}]
     let row_settings = { indexRef: "0.0", parentIndexRef: "0", key, val, level: 0 };
     appendRowsByType(row_settings, arr);
@@ -12,7 +14,7 @@ export default function convertObjectToArrayOfOutputPanelRows({ key, val }) {
 }
 
 function appendRowsByType(row_settings, arr) {
-    const type = getTypeName(row_settings.val, row_settings.type, row_settings.key);
+    const type = getTypeName(row_settings.val, row_settings.type);
     const simpleTypes = ["string", "number", "boolean", "null", "undefined"];
     const new_settings = { ...row_settings, type };
     const type_matcher = {
@@ -30,8 +32,31 @@ function appendRowsByType(row_settings, arr) {
     if (type in type_matcher) type_matcher[type](new_settings, arr);
 }
 
-function getTypeName(value, type, key) {
-    return type || getNullOrOtherType(value);
+function getTypeName(value, type) {
+    return type || getPluginsTypeOrStandardType(value);
+
+    function getPluginsTypeOrStandardType(value) {
+        return global_plugins && Array.isArray(global_plugins) && global_plugins.length
+            ? getTypeFromPlugins(value)
+            : getNullOrOtherType(value);
+    }
+
+    function getTypeFromPlugins(value) {
+        //console.log("getPluginsTypeOrStandardType", value, global_plugins);
+        let parsed_plugin_type = false;
+        global_plugins.find((plugin) => {
+            if (plugin.type_parser(value)) {
+                parsed_plugin_type = plugin.type_name;
+                //console.log("parsed_plugin_type", parsed_plugin_type);
+                return true; // find breaks loop on true
+            } else {
+                return false;
+            }
+        });
+        return parsed_plugin_type || getNullOrOtherType(value);
+    }
+
+    // default types below
 
     function getNullOrOtherType(value) {
         return value === null ? "null" : getObjectOrStandardType(value);

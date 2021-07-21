@@ -8,7 +8,7 @@ function transform_data(cache) {
     };
     tempItem.class = "";
     tempItem.valType = "";
-    tempItem.childRows = code_format(tempItem);
+    tempItem.childRows = code_format(tempItem, cache.plugins);
     tempArr.push(tempItem);
     tempArr.sort(sort_byKey);
     tempArr = tempArr.map((item, index) => {
