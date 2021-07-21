@@ -3,10 +3,12 @@ const indentSpaces = 2;
 const max_array_length = 10;
 const max_line_length = 38;
 let global_plugins = [];
+let global_plugins_simple_types = [];
 
 export default function convertObjectToArrayOfOutputPanelRows({ key, val }, supplied_plugins) {
     let arr = [];
     global_plugins = supplied_plugins;
+    global_plugins_simple_types = global_plugins.filter((p) => p && p.simple).map((p) => p.type_name);
     // [{indexRef, parentIndexRef, output, type, bracket(optional), expandable(optional), len(optional)}]
     let row_settings = { indexRef: "0.0", parentIndexRef: "0", key, val, level: 0 };
     appendRowsByType(row_settings, arr);
@@ -15,7 +17,7 @@ export default function convertObjectToArrayOfOutputPanelRows({ key, val }, supp
 
 function appendRowsByType(row_settings, arr) {
     const type = getTypeName(row_settings.val, row_settings.type);
-    const simpleTypes = ["string", "number", "boolean", "null", "undefined"];
+    const simpleTypes = ["string", "number", "boolean", "null", "undefined", ...global_plugins_simple_types];
     const new_settings = { ...row_settings, type };
     const type_matcher = {
         object: appendRowsForObject,
