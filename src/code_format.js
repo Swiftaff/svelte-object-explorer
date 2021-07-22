@@ -2,13 +2,16 @@ import lib from "./lib.js";
 const indentSpaces = 2;
 const max_array_length = 10;
 const max_line_length = 38;
-let global_plugins = [];
+let global_plugins = {};
 let global_plugins_simple_types = [];
 
 export default function convertObjectToArrayOfOutputPanelRows({ key, val }, supplied_plugins) {
     let arr = [];
     global_plugins = supplied_plugins;
-    global_plugins_simple_types = global_plugins.filter((p) => p && p.simple).map((p) => p.type_name);
+    global_plugins_simple_types = Object.entries(global_plugins)
+        .filter((p) => p[1] && p[1].simple)
+        .map((p) => p[0]);
+    console.log("global_plugins_simple_types", global_plugins_simple_types);
     // [{indexRef, parentIndexRef, output, type, bracket(optional), expandable(optional), len(optional)}]
     let row_settings = { indexRef: "0.0", parentIndexRef: "0", key, val, level: 0 };
     appendRowsByType(row_settings, arr);
@@ -38,7 +41,7 @@ function getTypeName(value, type) {
     return type || getPluginsTypeOrStandardType(value);
 
     function getPluginsTypeOrStandardType(value) {
-        return global_plugins && Array.isArray(global_plugins) && global_plugins.length
+        return global_plugins && Object.keys(global_plugins).length
             ? getTypeFromPlugins(value)
             : getNullOrOtherType(value);
     }
@@ -46,9 +49,9 @@ function getTypeName(value, type) {
     function getTypeFromPlugins(value) {
         //console.log("getPluginsTypeOrStandardType", value, global_plugins);
         let parsed_plugin_type = false;
-        global_plugins.find((plugin) => {
-            if (plugin.type_parser(value)) {
-                parsed_plugin_type = plugin.type_name;
+        Object.entries(global_plugins).find((plugin_array) => {
+            if (plugin_array[1] && plugin_array[1].type_parser && plugin_array[1].type_parser(value)) {
+                parsed_plugin_type = plugin_array[0];
                 //console.log("parsed_plugin_type", parsed_plugin_type);
                 return true; // find breaks loop on true
             } else {
@@ -147,12 +150,22 @@ function appendRowsForArrayLongSubArray(row_settings, arr, parent_item_start) {
 }
 
 function appendRowForSimpleTypes(row_settings, arr) {
-    const { key, val, level, ...rest } = row_settings;
+    const { key, level, type, ...rest } = row_settings;
+    let { val } = rest;
+    if (
+        global_plugins[type] &&
+        global_plugins[type].simple &&
+        typeof global_plugins[type].simple === "function" &&
+        global_plugins_simple_types.includes(type)
+    ) {
+        val = global_plugins[type].simple(val);
+    }
     const row_is_too_wide = val && "" + val.length > max_line_length - level * indentSpaces;
-    if (row_is_too_wide) appendRowForSimpleTypesMultiLine(row_settings, arr);
+    if (row_is_too_wide) appendRowForSimpleTypesMultiLine({ ...row_settings, val }, arr);
     else
         arr.push({
-            ...rest,
+            ...row_settings,
+            //...rest,
             key,
             val,
             indent: level * indentSpaces,

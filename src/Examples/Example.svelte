@@ -34,12 +34,13 @@
         value = {
             html: thisPage,
             string1: "testy",
-            customObjectToTestPlugin1: {
+            pluginTest1: {
                 name: "custom_object1",
                 specific_key1: "test1",
                 value_key_a: "abc",
             },
-            customObjectToTestPlugin2: {
+            pluginTest2: "string: starts with string",
+            pluginTest3: {
                 name: "custom_object2",
                 specific_key2: "test2",
                 value_key_b: "ABC",

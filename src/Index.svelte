@@ -18,7 +18,7 @@
     export let fade = false;
     export let ratelimit = ratelimitDefault;
     export let initialtogglestate = true;
-    export let plugins = [];
+    export let plugins = {};
 
     let isPaused = false;
     let hovering = false;
