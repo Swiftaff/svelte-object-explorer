@@ -4,24 +4,31 @@ const max_array_length = 10;
 const max_line_length = 38;
 let global_plugins = {};
 let global_plugins_simple_types = [];
+let global_plugins_non_simple_types = [];
 
 export default function convertObjectToArrayOfOutputPanelRows({ key, val }, supplied_plugins) {
     let arr = [];
-    global_plugins = supplied_plugins;
-    global_plugins_simple_types = Object.entries(global_plugins)
-        .filter((p) => p[1] && p[1].simple)
-        .map((p) => p[0]);
-    console.log("global_plugins_simple_types", global_plugins_simple_types);
+    assign_global_variables(supplied_plugins);
     // [{indexRef, parentIndexRef, output, type, bracket(optional), expandable(optional), len(optional)}]
     let row_settings = { indexRef: "0.0", parentIndexRef: "0", key, val, level: 0 };
     appendRowsByType(row_settings, arr);
     return arr;
 }
 
+function assign_global_variables(supplied_plugins) {
+    global_plugins = supplied_plugins;
+    global_plugins_simple_types = Object.entries(global_plugins)
+        .filter((p) => p[1] && p[1].simple)
+        .map((p) => p[0]);
+    global_plugins_non_simple_types = Object.entries(global_plugins)
+        .filter((p) => p[1] && !p[1].simple)
+        .map((p) => p[0]);
+}
+
 function appendRowsByType(row_settings, arr) {
     const type = getTypeName(row_settings.val, row_settings.type);
-    const simpleTypes = ["string", "number", "boolean", "null", "undefined", ...global_plugins_simple_types];
     const new_settings = { ...row_settings, type };
+    const simpleTypesObj = get_simpleTypesObj();
     const type_matcher = {
         object: appendRowsForObject,
         array: appendRowsForArray,
@@ -32,10 +39,17 @@ function appendRowsByType(row_settings, arr) {
         function: appendRowsForFunction,
         HTML: appendRowsForSvelteExplorerTag,
         Node: appendRowsForDomNode,
+        ...simpleTypesObj,
     };
-    if (simpleTypes.includes(type)) appendRowForSimpleTypes(new_settings, arr);
     if (type in type_matcher) type_matcher[type](new_settings, arr);
 }
+
+function get_simpleTypesObj() {
+  const simpleTypes = ["string", "number", "boolean", "null", "undefined", ...global_plugins_simple_types];
+    const simpleTypesObj = {};
+  simpleTypes.forEach((t) => (simpleTypesObj[t] = appendRowForSimpleTypes));
+  return simpleTypesObj;o
+ }
 
 function getTypeName(value, type) {
     return type || getPluginsTypeOrStandardType(value);
