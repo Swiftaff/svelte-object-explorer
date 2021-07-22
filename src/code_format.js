@@ -3,123 +3,114 @@ const indentSpaces = 2;
 const max_array_length = 10;
 const max_line_length = 38;
 let global_plugins = {};
-let global_plugins_simple_types = [];
-let global_plugins_non_simple_types = [];
 
 export default function convertObjectToArrayOfOutputPanelRows({ key, val }, supplied_plugins) {
     let arr = [];
-    assign_global_variables(supplied_plugins);
+    global_plugins = supplied_plugins;
     // [{indexRef, parentIndexRef, output, type, bracket(optional), expandable(optional), len(optional)}]
     let row_settings = { indexRef: "0.0", parentIndexRef: "0", key, val, level: 0 };
     appendRowsByType(row_settings, arr);
     return arr;
 }
 
-function assign_global_variables(supplied_plugins) {
-    global_plugins = supplied_plugins;
-    global_plugins_simple_types = Object.entries(global_plugins)
-        .filter((p) => p[1] && p[1].simple)
-        .map((p) => p[0]);
-    global_plugins_non_simple_types = Object.entries(global_plugins)
-        .filter((p) => p[1] && !p[1].simple)
-        .map((p) => p[0]);
-}
-
 function appendRowsByType(row_settings, arr) {
-    const type = getTypeName(row_settings.val, row_settings.type);
-    const new_settings = { ...row_settings, type };
-    const simpleTypesObj = get_simpleTypesObj();
-    const type_matcher = {
+    const type_formatters = {
         object: appendRowsForObject,
         array: appendRowsForArray,
-        "ARRAY+": appendRowsForArrayLong, //raw long array, before being converted to object
-        "ARRAY+OBJECT": appendRowsForArrayLongObject, //after being converted to object
+        "ARRAY+": appendRowsForArrayLong, // raw long array, before being converted to object
+        "ARRAY+OBJECT": appendRowsForArrayLongObject, // after being converted to object
         "ARRAY+SUB_ARRAY": appendRowsForArrayLongSubArray,
         symbol: appendRowForSymbol,
         function: appendRowsForFunction,
         HTML: appendRowsForSvelteExplorerTag,
         Node: appendRowsForDomNode,
-        ...simpleTypesObj,
+        ...getSimpleTypesObj(["string", "number", "boolean", "null", "undefined"]),
     };
-    if (type in type_matcher) type_matcher[type](new_settings, arr);
+    apply_formatter_for_type(type_formatters, row_settings, arr);
 }
 
-function get_simpleTypesObj() {
-  const simpleTypes = ["string", "number", "boolean", "null", "undefined", ...global_plugins_simple_types];
+function apply_formatter_for_type(type_formatters, row_settings, arr) {
+    const new_settings = getUpdatedTypeAndValue(row_settings);
+    if (new_settings.format_type in type_formatters) type_formatters[new_settings.format_type](new_settings, arr);
+}
+
+function getUpdatedTypeAndValue(row_settings) {
+    let val = row_settings.val;
+    const type = getTypeName(val);
+    if (type in global_plugins && global_plugins[type].transform) {
+        val = global_plugins[type].transform(val);
+    }
+    const format_type = getNullOrOtherType(val);
+    return { ...row_settings, val, type, format_type };
+}
+
+function getSimpleTypesObj(simpleTypes) {
     const simpleTypesObj = {};
-  simpleTypes.forEach((t) => (simpleTypesObj[t] = appendRowForSimpleTypes));
-  return simpleTypesObj;o
- }
+    simpleTypes.forEach((t) => (simpleTypesObj[t] = appendRowForSimpleTypes));
+    return simpleTypesObj;
+}
 
-function getTypeName(value, type) {
-    return type || getPluginsTypeOrStandardType(value);
+function getTypeName(value) {
+    return global_plugins && Object.keys(global_plugins).length ? getTypeFromPlugins(value) : getNullOrOtherType(value);
+}
 
-    function getPluginsTypeOrStandardType(value) {
-        return global_plugins && Object.keys(global_plugins).length
-            ? getTypeFromPlugins(value)
-            : getNullOrOtherType(value);
-    }
+function getTypeFromPlugins(value) {
+    let parsed_plugin_type = false;
+    Object.entries(global_plugins).find((plugin_array) => {
+        if (plugin_array[1] && plugin_array[1].type_parser && plugin_array[1].type_parser(value)) {
+            parsed_plugin_type = plugin_array[0];
+            return true; // find breaks loop on true
+        } else {
+            return false;
+        }
+    });
+    return parsed_plugin_type || getNullOrOtherType(value);
+}
 
-    function getTypeFromPlugins(value) {
-        //console.log("getPluginsTypeOrStandardType", value, global_plugins);
-        let parsed_plugin_type = false;
-        Object.entries(global_plugins).find((plugin_array) => {
-            if (plugin_array[1] && plugin_array[1].type_parser && plugin_array[1].type_parser(value)) {
-                parsed_plugin_type = plugin_array[0];
-                //console.log("parsed_plugin_type", parsed_plugin_type);
-                return true; // find breaks loop on true
-            } else {
-                return false;
-            }
-        });
-        return parsed_plugin_type || getNullOrOtherType(value);
-    }
+// default types below
 
-    // default types below
+function getNullOrOtherType(value) {
+    return value === null ? "null" : getObjectOrStandardType(value);
+}
 
-    function getNullOrOtherType(value) {
-        return value === null ? "null" : getObjectOrStandardType(value);
-    }
+function getObjectOrStandardType(value) {
+    return typeof value === "object" ? getArrayOrObject(value) : typeof value;
+}
 
-    function getObjectOrStandardType(value) {
-        return typeof value === "object" ? getArrayOrObject(value) : typeof value;
-    }
+function getArrayOrObject(value) {
+    return Array.isArray(value) ? getArrayOrLongArray(value) : getObjectOrSpecialObject(value);
+}
 
-    function getArrayOrObject(value) {
-        return Array.isArray(value) ? getArrayOrLongArray(value) : getObjectOrSpecialObject(value);
-    }
+function getArrayOrLongArray(value) {
+    return value.length > max_array_length ? "ARRAY+" : "array";
+}
 
-    function getArrayOrLongArray(value) {
-        return value.length > max_array_length ? "ARRAY+" : "array";
-    }
+function getObjectOrSpecialObject(value) {
+    const longArraySubArrayProperties = ["start", "end", "sub_array"];
+    const svelteExplorerTagProperties = ["class", "svelte-explorer-tag", "children", "textContent"];
+    return object_has_only_these_properties(value, longArraySubArrayProperties)
+        ? "ARRAY+OBJECT"
+        : object_has_only_these_properties(value, svelteExplorerTagProperties)
+        ? "HTML"
+        : isNode(value)
+        ? "Node"
+        : "object";
+}
 
-    function getObjectOrSpecialObject(value) {
-        const longArraySubArrayProperties = ["start", "end", "sub_array"];
-        const svelteExplorerTagProperties = ["class", "svelte-explorer-tag", "children", "textContent"];
-        return object_has_only_these_properties(value, longArraySubArrayProperties)
-            ? "ARRAY+OBJECT"
-            : object_has_only_these_properties(value, svelteExplorerTagProperties)
-            ? "HTML"
-            : isNode(value)
-            ? "Node"
-            : "object";
-    }
+function object_has_only_these_properties(value, arr) {
+    return arr.filter((prop) => prop in value).length === arr.length;
+}
 
-    function object_has_only_these_properties(value, arr) {
-        return arr.filter((prop) => prop in value).length === arr.length;
-    }
-
-    function isNode(o) {
-        return typeof Node === "object"
-            ? o instanceof Node
-            : o && typeof o === "object" && typeof o.nodeType === "number" && typeof o.nodeName === "string";
-    }
+function isNode(o) {
+    return typeof Node === "object"
+        ? o instanceof Node
+        : o && typeof o === "object" && typeof o.nodeType === "number" && typeof o.nodeName === "string";
 }
 
 function appendRowsForObject(row_settings, arr) {
     const children = Object.entries(row_settings.val);
     const brackets = "{}";
-    arr.push(getRowForBracketOpen(row_settings, children.length, brackets, "object"));
+    arr.push(getRowForBracketOpen(row_settings, children.length, brackets, row_settings.type));
     children.forEach(([k, v], i) => appendRowsByType(getRowForChild(row_settings, k, v, i), arr));
     arr.push(getRowForBracketClose(row_settings, brackets));
 }
@@ -164,22 +155,12 @@ function appendRowsForArrayLongSubArray(row_settings, arr, parent_item_start) {
 }
 
 function appendRowForSimpleTypes(row_settings, arr) {
-    const { key, level, type, ...rest } = row_settings;
-    let { val } = rest;
-    if (
-        global_plugins[type] &&
-        global_plugins[type].simple &&
-        typeof global_plugins[type].simple === "function" &&
-        global_plugins_simple_types.includes(type)
-    ) {
-        val = global_plugins[type].simple(val);
-    }
+    const { key, level, val } = row_settings;
     const row_is_too_wide = val && "" + val.length > max_line_length - level * indentSpaces;
     if (row_is_too_wide) appendRowForSimpleTypesMultiLine({ ...row_settings, val }, arr);
     else
         arr.push({
             ...row_settings,
-            //...rest,
             key,
             val,
             indent: level * indentSpaces,
@@ -188,7 +169,7 @@ function appendRowForSimpleTypes(row_settings, arr) {
 }
 
 function appendRowForSimpleTypesMultiLine(row_settings, arr) {
-    const { key, val, level } = row_settings;
+    const { key, val, level } = row_settings; //, ...rest } = row_settings;
     const key_length = ("" + key).length;
     const available_chars_based_on_indent = max_line_length - key_length - level * indentSpaces;
     const regex_to_split_into_chunks = new RegExp("[^]{1," + available_chars_based_on_indent + "}", "gi");
@@ -200,9 +181,12 @@ function appendRowForSimpleTypesMultiLine(row_settings, arr) {
         const indent = i ? key_length + level + 3 : level + 1;
         new_row_settings = {
             ...new_row_settings,
+            //...rest,
             key: key_new,
             val: val_new,
             indent: indent,
+            is_multiline: true,
+            is_first_multiline: i === 0,
             is_last_multiline: i === a.length - 1,
             type: only_show_type_in_first_row(new_row_settings, i),
         };
@@ -218,7 +202,7 @@ function appendRowsForFunction(row_settings, arr) {
     const val_as_array = val_as_string.split("\n");
 
     const brackets = "{}";
-    const type = val_as_array[0] && val_as_array[0].substring(0, 1) === "f" ? "function" : "arrow fn";
+    const type = val_as_array[0] && val_as_array[0].substring(0, 8) === "function" ? "function" : "arrow fn";
     arr.push(getRowForBracketOpen(row_settings, val_as_array.length, brackets, type));
     for (let i = 0; i < val_as_array.length; i++) {
         const function_row = val_as_array[i].trim();

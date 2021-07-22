@@ -14,8 +14,11 @@
                 {/if}
                 <span class="val">{row.val.substring(0, row.val.length - row.bracket)}</span>
             {:else}{" ".repeat(row.indent)}{#if "key" in row && row.key !== ""}<span class="key">{row.key}</span>: {/if}
-                {#if row.type === "string"}<span class="white">"</span>{/if}<span class="val">{row.val}</span
-                >{#if row.is_last_multiline && (!row.type || row.type === "string")}<span class="white">"</span
+                {#if (!row.is_multiline || (row.is_multiline && row.is_first_multiline)) && (row.type === "string" || row.format_type === "string")}<span
+                        class="white">"</span
+                    >{/if}<span class="val">{row.val}</span
+                >{#if (!row.is_multiline || (row.is_multiline && row.is_last_multiline)) && (row.type === "string" || row.format_type === "string")}<span
+                        class="white">"</span
                     >{/if}{/if}
             {#if row.type && row.type !== "ARRAY+OBJECT" && row.type !== "ARRAY+SUB_ARRAY"}
                 <span class="type">{row.type}</span>
