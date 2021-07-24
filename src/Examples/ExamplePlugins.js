@@ -18,6 +18,11 @@ plugins = {
     row_render: (row_settings, globals) => { return row_settings }
     // function = supply a function to generate the required output rows in the panel, overriding any standard
     // falsey   = it will use the standard row_render for the base type of your value
+
+    row_html: (row_settings, globals) => { return row_settings }
+    // function = supply a function to generate html for the required output rows in the panel, overriding any standard
+    //            This then totally bypasses the svelte-object-explorer text display so you can fully customise the html within each row!
+    // falsey   = it will use the standard row_render for the base type of your value
   },...
 }
 */
