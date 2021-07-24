@@ -24,7 +24,7 @@ plugins = {
 
 const customType1a = {
     type_parser: (v) => v && v.specific_key1 && v.value_key_a, // defined as an object with these 2 keys
-    transform: (value) => `${value.specific_key1} [${value.value_key_a}]`, // displays as string with 2 keys joined
+    transform: (v) => `${v.specific_key1} [${v.value_key_a}]`, // displays as string with 2 keys joined
     row_render: (row_settings, globals) => {
         const { level } = row_settings;
         return {
@@ -37,7 +37,7 @@ const customType1a = {
 
 const customType1b = {
     type_parser: (v) => v && v.specific_key1 && v.value_key_a && v.value_key_b, // defined as an object with these 3 keys
-    transform: (value) => `${value.specific_key1} [${value.value_key_a}${value.value_key_b}]`, // displays as string with 3 keys joined
+    transform: (v) => `${v.specific_key1} [${v.value_key_a}${v.value_key_b}]`, // displays as string with 3 keys joined
     row_render: (row_settings, globals) => {
         //renders multiple rows
         const { level } = row_settings;
@@ -68,11 +68,23 @@ const customType2 = {
 };
 
 const customType3 = {
-    type_parser: (v) => v && v.specific_key2 && v.value_key_b && v.value_key_c, // defined as an object with these 2 keys
-    transform: (value) => {
-        const { specific_key2, ...rest } = value;
+    type_parser: (v) => v && v.specific_key2 && v.value_key_b && v.value_key_c, // defined as an object with these 3 keys
+    transform: (v) => {
+        const { specific_key2, ...rest } = v;
         return rest; // displays as an object, and for some reason we want to display only 2 of it's keys
     },
 };
 
-export default { customType1b, customType1a, customType2, customType3 };
+const customType4 = {
+    type_parser: (v) => v && v.specific_key2 && v.value_key_b && v.value_key_c && v.value_key_d, // defined as an object with these 4 keys
+    row_html: (row_settings, globals) => {
+        const margin = row_settings.level * globals.indentSpaces * 10 + "px";
+        const text = row_settings.val.specific_key2;
+        const html = `<div style="background-color: red; margin-left:${margin}">${text}</div>`;
+        return { ...row_settings, html };
+    },
+};
+
+//TODO - ordering matters, change to array
+
+export default { customType1b, customType1a, customType2, customType4, customType3 };

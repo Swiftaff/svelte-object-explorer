@@ -52,6 +52,13 @@
                 value_key_b: "ABC",
                 value_key_c: 2,
             },
+            pluginTest4: {
+                name: "custom_object2",
+                specific_key2: "test2",
+                value_key_b: "ABC",
+                value_key_c: 2,
+                value_key_d: Symbol("test"),
+            },
             longstring:
                 "Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet.",
             array,

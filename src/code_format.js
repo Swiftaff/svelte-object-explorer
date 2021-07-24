@@ -32,27 +32,42 @@ function appendRowsByType(row_settings, arr) {
 function apply_formatter_for_type(type_formatters, row_settings, arr) {
     const new_settings = getUpdatedTypeAndValue(row_settings);
     if (new_settings.row_render) {
-        append_arr_with_plugin_rows(new_settings.row_render, new_settings, arr);
+        append_arr_with_plugin_rows(new_settings, arr);
+    } else if (new_settings.row_html) {
+        console.log("if (new_settings.row_html)");
+        append_arr_with_plugin_html(new_settings, arr);
     } else if (new_settings.format_type in type_formatters)
         type_formatters[new_settings.format_type](new_settings, arr);
 }
 
 function getUpdatedTypeAndValue(row_settings) {
     let val = row_settings.val;
-    let row_render;
+    let row_render, row_html;
     const type = getTypeName(val);
     if (type in global_plugins) {
         if (global_plugins[type].transform) val = global_plugins[type].transform(val);
         row_render = global_plugins[type].row_render; //may be undefined
+        row_html = global_plugins[type].row_html; //may be undefined
     }
 
     const format_type = getNullOrOtherType(val);
-    return { ...row_settings, val, type, format_type, row_render };
+    return { ...row_settings, val, type, format_type, row_render, row_html };
 }
 
-function append_arr_with_plugin_rows(plugin_render_function, settings, arr) {
+function append_arr_with_plugin_rows(settings, arr) {
     const globals = { indentSpaces };
-    let new_settings = plugin_render_function(settings, globals);
+    const { row_render } = settings;
+    let new_settings = row_render(settings, globals);
+
+    if (!Array.isArray(new_settings)) new_settings = [new_settings];
+    new_settings.forEach((row) => arr.push(row));
+}
+
+function append_arr_with_plugin_html(settings, arr) {
+    //console.log("append_arr_with_plugin_html", settings);
+    const globals = { indentSpaces };
+    const { row_html } = settings;
+    let new_settings = row_html(settings, globals);
 
     if (!Array.isArray(new_settings)) new_settings = [new_settings];
     new_settings.forEach((row) => arr.push(row));

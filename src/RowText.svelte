@@ -4,8 +4,8 @@
 </script>
 
 {#if row}
-    {#if row.type === "Tag"}
-        {row.tag}
+    {#if row.html}
+        {@html row.html}
     {:else}
         <span
             >{#if isExpanded}{" ".repeat(row.indent)}{#if "key" in row && row.key !== ""}<span class="key"
