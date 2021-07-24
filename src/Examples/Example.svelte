@@ -34,10 +34,16 @@
         value = {
             html: thisPage,
             string1: "testy",
-            pluginTest1: {
+            pluginTest1a: {
                 name: "custom_object1",
                 specific_key1: "test1",
                 value_key_a: "abc",
+            },
+            pluginTest1b: {
+                name: "custom_object1",
+                specific_key1: "test1",
+                value_key_a: "abc",
+                value_key_b: "123",
             },
             pluginTest2: "string: starts with string",
             pluginTest3: {

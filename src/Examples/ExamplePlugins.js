@@ -14,13 +14,52 @@ plugins = {
     //            e.g. as above example, if the value is an object with many keys,
     //            perhaps only show two of its key/vals concatenated
     // falsey   = no transformation needed, displays as-is
+
+    row_render: (row_settings, globals) => { return row_settings }
+    // function = supply a function to generate the required output rows in the panel, overriding any standard
+    // falsey   = it will use the standard row_render for the base type of your value
   },...
 }
 */
 
-const customType1 = {
+const customType1a = {
     type_parser: (v) => v && v.specific_key1 && v.value_key_a, // defined as an object with these 2 keys
     transform: (value) => `${value.specific_key1} [${value.value_key_a}]`, // displays as string with 2 keys joined
+    row_render: (row_settings, globals) => {
+        const { level } = row_settings;
+        return {
+            ...row_settings,
+            val: "*" + row_settings.val,
+            indent: level * globals.indentSpaces,
+        };
+    },
+};
+
+const customType1b = {
+    type_parser: (v) => v && v.specific_key1 && v.value_key_a && v.value_key_b, // defined as an object with these 3 keys
+    transform: (value) => `${value.specific_key1} [${value.value_key_a}${value.value_key_b}]`, // displays as string with 3 keys joined
+    row_render: (row_settings, globals) => {
+        //renders multiple rows
+        const { level } = row_settings;
+        return [
+            {
+                ...row_settings,
+                val: "*" + row_settings.val,
+                indent: level * globals.indentSpaces,
+                is_multiline: true,
+                is_first_multiline: true,
+            },
+            {
+                ...row_settings,
+                val: "second line",
+                indent: row_settings.key.length + 2 + level * globals.indentSpaces,
+                key: "",
+                type: "",
+                is_multiline: true,
+                is_last_multiline: true,
+            },
+        ];
+    },
 };
 
 const customType2 = {
@@ -36,4 +75,4 @@ const customType3 = {
     },
 };
 
-export default { customType1, customType2, customType3 };
+export default { customType1b, customType1a, customType2, customType3 };
