@@ -28,7 +28,7 @@
 </div>
 
 <style>
-    .svelte-object-explorer-wrapper {
+    /*.svelte-object-explorer-wrapper {
         position: fixed;
         top: 0px;
         left: 0px;
@@ -39,7 +39,7 @@
         z-index: 100000000000000000 !important;
         pointer-events: none;
         font-family: "Roboto", "Arial", sans-serif !important;
-    }
+    }*/
 
     .fade {
         opacity: 0.3 !important;
@@ -49,7 +49,7 @@
         opacity: 1 !important;
     }
 
-    .tree {
+    /*.tree {
         pointer-events: all;
         transition: 0.2s;
         position: fixed;
@@ -83,7 +83,7 @@
         overflow: auto;
         background-color: #666 !important;
         color: white;
-    }
+    }*/
 
     .toggle:hover {
         pointer-events: all;
@@ -130,7 +130,7 @@
         right: -25px;
     }
 
-    .accordion {
+    /*.accordion {
         background-color: #666 !important;
         color: white;
     }
@@ -138,7 +138,7 @@
     .icon1 {
         width: 15px;
         height: 15px;
-    }
+    }*/
 
     .smaller {
         width: 15px;
@@ -148,7 +148,7 @@
         top: 2px;
     }
 
-    .smallest {
+    /*.smallest {
         width: 15px;
         height: 15px;
         display: inline-block;
@@ -215,5 +215,5 @@
     .toggleShowAll,
     .copyToClipbord {
         display: inline;
-    }
+    }*/
 </style>
