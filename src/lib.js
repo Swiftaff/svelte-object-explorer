@@ -18,18 +18,22 @@ function domParser(node) {
         ) {
             const textContent = el.nodeName === "#text" ? el.nodeValue : "";
             const svelteExplorerTag = isSvelteExplorerTag(el) ? el.dataset["svelteExplorerTag"] : el.nodeName;
+            const svelteExplorerTagType = isSvelteExplorerTag(el) ? el.dataset["svelteExplorerTagType"] : "";
             return textContent
                 ? textContent
                 : {
                       class: el.className,
                       "svelte-explorer-tag": svelteExplorerTag,
-                      children:
-                          isSvelteExplorerTag(el) &&
+                      is_svelte_explorer_tag: isSvelteExplorerTag(el),
+                      "svelte-explorer-tag-type": svelteExplorerTagType,
+                      children: getChildren(el),
+                      /*isSvelteExplorerTag(el)
+                          && svelteExplorerTag.substring(0, 10) !== "#component" &&
                           svelteExplorerTag.substring(0, 3) !== "#if" &&
                           svelteExplorerTag.substring(0, 5) !== "#each" &&
                           svelteExplorerTag.substring(0, 6) !== "#await"
-                              ? []
-                              : getChildren(el),
+                          ? []
+                          : getChildren(el),*/
                       textContent,
                   };
         } else {

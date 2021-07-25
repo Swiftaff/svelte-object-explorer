@@ -10,6 +10,7 @@ export default function convertObjectToArrayOfOutputPanelRows({ key, val }, supp
     // [{indexRef, parentIndexRef, output, type, bracket(optional), expandable(optional), len(optional)}]
     let row_settings = { indexRef: "0.0", parentIndexRef: "0", key, val, level: 0 };
     appendRowsByType(row_settings, arr);
+    console.log("Arr", arr);
     return arr;
 }
 
@@ -30,11 +31,17 @@ function appendRowsByType(row_settings, arr) {
 }
 
 function apply_formatter_for_type(type_formatters, row_settings, arr) {
+    const just_for_testing_main_node =
+        row_settings &&
+        row_settings.val &&
+        row_settings.val["svelte-explorer-tag"] &&
+        row_settings.val["svelte-explorer-tag"] === "MAIN";
+
     const new_settings = getUpdatedTypeAndValue(row_settings);
+    if (just_for_testing_main_node) console.log("###apply_formatter_for_type", new_settings);
     if (new_settings.row_render) {
         append_arr_with_plugin_rows(new_settings, arr);
     } else if (new_settings.row_html) {
-        console.log("if (new_settings.row_html)");
         append_arr_with_plugin_html(new_settings, arr);
     } else if (new_settings.format_type in type_formatters)
         type_formatters[new_settings.format_type](new_settings, arr);
@@ -64,13 +71,28 @@ function append_arr_with_plugin_rows(settings, arr) {
 }
 
 function append_arr_with_plugin_html(settings, arr) {
-    //console.log("append_arr_with_plugin_html", settings);
+    console.log("append_arr_with_plugin_html", settings);
     const globals = { indentSpaces };
     const { row_html } = settings;
     let new_settings = row_html(settings, globals);
 
     if (!Array.isArray(new_settings)) new_settings = [new_settings];
-    new_settings.forEach((row) => arr.push(row));
+    new_settings.forEach((row) => {
+        if (row.insert_children) {
+            for (let i = 0; i < row.val.children.length; i++) {
+                const child_row = getRowForChild(row, i, row.val.children[i], i);
+                //appendRowsByType(row, arr);
+                console.log("##children", child_row, last(arr)); //JSON.parse(JSON.stringify(arr)));
+                appendRowsByType(child_row, arr);
+            }
+        } else {
+            arr.push(row);
+        }
+    });
+}
+
+function last(arr) {
+    return arr[arr.length - 1];
 }
 
 function getSimpleTypesObj(simpleTypes) {
@@ -251,6 +273,12 @@ function appendRowsForDomNode(row_settings, arr) {
 }
 
 function appendRowsForSvelteExplorerTag(row_settings, arr) {
+    const just_for_testing_main_node =
+        row_settings &&
+        row_settings.val &&
+        row_settings.val["svelte-explorer-tag"] &&
+        row_settings.val["svelte-explorer-tag"] === "MAIN";
+    if (just_for_testing_main_node) console.log("####appendRowsForSvelteExplorerTag", row_settings);
     const { key, val, level, ...rest } = row_settings;
     const text = row_settings.val.textContent;
     const children = row_settings.val.children;
@@ -261,14 +289,23 @@ function appendRowsForSvelteExplorerTag(row_settings, arr) {
     const brackets = is_svelte_tag ? start_bracket + end_bracket : start_bracket + ">" + end_bracket;
     const has_text = text.length ? 1 : 0;
     if (children.length || has_text) {
+        if (just_for_testing_main_node) console.log("####appendRowsForSvelteExplorerTag a", last(arr)); //JSON.parse(JSON.stringify(arr)));
         arr.push(getRowForBracketOpen(row_settings, children.length, brackets, "HTML", end_bracket.length));
-        if (has_text) appendRowsByType(getRowForChild(row_settings, "", text, 0), arr);
-        children.map((a, i) => appendRowsByType(getRowForChild(row_settings, i + has_text, a, i + has_text), arr));
-        //children.map((a, i) => appendRowsByType(getRowForChild(row_settings, i, a, i), arr));
-        arr.push(getRowForBracketClose(row_settings, brackets, end_bracket.length));
+        if (just_for_testing_main_node) console.log("####appendRowsForSvelteExplorerTag a", last(arr)); // JSON.parse(JSON.stringify(arr)));
+        if (has_text) {
+            appendRowsByType(getRowForChild(row_settings, "", text, 0), arr);
+        } else {
+            children.forEach((a, i) => {
+                appendRowsByType(getRowForChild(row_settings, i, a, i), arr);
+                //appendRowsByType(getRowForChild(row_settings, i + has_text, a, i + has_text), arr);
+            });
+            // old children.map((a, i) => appendRowsByType(getRowForChild(row_settings, i, a, i), arr));
+            arr.push(getRowForBracketClose(row_settings, brackets, end_bracket.length));
+        }
     } else {
         const indent = level * indentSpaces;
         arr.push({ ...rest, key, val: brackets, indent });
+        if (just_for_testing_main_node) console.log("####appendRowsForSvelteExplorerTag b", arr);
     }
 }
 
@@ -392,5 +429,6 @@ function getRowForChild(row_settings, key, val, index) {
     const indexRef = row_settings.indexRef + "." + index;
     const parentIndexRef = row_settings.indexRef;
     const level = row_settings.level + 1;
+    //console.log("val", val, row_settings.level, level);
     return { indexRef, parentIndexRef, index, key, val, level };
 }

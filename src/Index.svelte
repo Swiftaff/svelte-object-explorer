@@ -158,9 +158,9 @@
                                       (!row.bracket || (row.bracket && (row.expandable || rowsToShow.includes(row.indexRef))))
                                     )}
                                       <div
-                                        class={hoverRow === row.indexRef || row.parentIndexRef.startsWith(hoverRow) ? 'row hoverRow' : 'row'}
+                                        class={row.html ? '' : hoverRow === row.indexRef || row.parentIndexRef.startsWith(hoverRow) ? 'row hoverRow' : 'row'}
                                         on:mouseover={() => (hoverRow = row.indexRef)}
-                                        on:mousedown={() => console.log(row.indexRef, topLevelObject.childRows, rowsToShow)}>
+                                        on:mousedown={() => console.log(row.indexRef, row.val, row.level, topLevelObject.childRows, rowsToShow)}>
                                         <RowText {row} isExpanded={(row.expandable && rowsToShow.includes(row.indexRef))} />
                                         <ChevronButtons {row} {rowsToShow} {rowContract} {rowExpand} />
                                       </div>
@@ -254,7 +254,7 @@
         padding-left: 15px;
         display: block;
         white-space: pre;
-        height: 1.5em;
+        /*height: 1.5em;*/
     }
 
     .row:nth-child(even) {
