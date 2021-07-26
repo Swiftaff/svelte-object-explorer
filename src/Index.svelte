@@ -158,10 +158,10 @@
                                       (!row.bracket || (row.bracket && (row.expandable || rowsToShow.includes(row.indexRef))))
                                     )}
                                       <div
-                                        class={row.html ? '' : hoverRow === row.indexRef || row.parentIndexRef.startsWith(hoverRow) ? 'row hoverRow' : 'row'}
+                                        class={hoverRow === row.indexRef || row.parentIndexRef.startsWith(hoverRow) ? 'row hoverRow' : 'row'}
                                         on:mouseover={() => (hoverRow = row.indexRef)}
                                         on:mousedown={() => console.log(row.indexRef, row.val, row.level, topLevelObject.childRows, rowsToShow)}>
-                                        <RowText {row} isExpanded={(row.expandable && rowsToShow.includes(row.indexRef))} />
+                                        <RowText {row} isExpanded={rowsToShow.includes(row.indexRef)} />
                                         <ChevronButtons {row} {rowsToShow} {rowContract} {rowExpand} />
                                       </div>
                                     {/if}
