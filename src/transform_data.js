@@ -8,13 +8,14 @@ function transform_data(cache) {
     };
     tempItem.class = "";
     tempItem.valType = "";
-    tempItem.childRows = code_format(tempItem, cache.plugins);
+    const { rows, expanded } = code_format(tempItem, cache.plugins);
+    tempItem.childRows = rows;
     tempArr.push(tempItem);
     tempArr.sort(sort_byKey);
     tempArr = tempArr.map((item, index) => {
         return { ...item, index };
     });
-    return tempArr;
+    return { rows: tempArr, expanded };
 }
 
 function displayValType(val) {
@@ -60,7 +61,7 @@ function sort_byKey(a, b) {
 
 function getOpenIndex(arr, item_requested_to_open) {
     let i = null;
-    if (open && arr && arr[0] && arr[0].childRows) {
+    if (item_requested_to_open && arr && arr[0] && arr[0].childRows) {
         const all_items_under_svelte_object_explorer = arr[0].childRows;
         all_items_under_svelte_object_explorer.map((item) => {
             if (item_requested_to_open === item.key && item.expandable) i = item.indexRef;

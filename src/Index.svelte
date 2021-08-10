@@ -74,6 +74,7 @@
                 stringifiedValueCache = stringifiedValue;
             }
             const time_since_last_check = cache.dataUpdated - cache.viewUpdated;
+            let expanded_from_tags = [];
             if (time_since_last_check > ratelimit && !isPaused) {
                 cache.value = newValue.value;
                 cache.plugins = newValue.plugins;
@@ -83,7 +84,9 @@
                 cache.formatted = transform_data.formatDate(cache.viewUpdated);
                 stringifiedValueCache = JSON.stringify({ value: cache.value, plugins: newPlugins });
 
-                topLevelObjectArray = transform_data.transform_data(cache); //this should trigger a redraw
+                const { rows, expanded } = transform_data.transform_data(cache);
+                if (expanded && Array.isArray(expanded)) expanded_from_tags = expanded;
+                topLevelObjectArray = rows; //this should trigger a redraw
             }
             //open requested object
             if (!openIndexSetOnce) {
@@ -91,6 +94,10 @@
                 if (openIndexRef) {
                     rowExpand(openIndexRef);
                     if (showManuallySelected.includes(openIndexRef)) openIndexSetOnce = true;
+                }
+                if (expanded_from_tags.length) {
+                    expanded_from_tags.forEach(rowExpand);
+                    openIndexSetOnce = true;
                 }
             }
         }

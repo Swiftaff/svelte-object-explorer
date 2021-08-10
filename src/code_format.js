@@ -3,15 +3,15 @@ const indentSpaces = 2;
 const max_array_length = 10;
 const max_line_length = 38;
 let global_plugins = {};
+let global_expanded = [];
 
 export default function convertObjectToArrayOfOutputPanelRows({ key, val }, supplied_plugins) {
-    let arr = [];
+    let rows = [];
     global_plugins = supplied_plugins;
     // [{indexRef, parentIndexRef, output, type, bracket(optional), expandable(optional), len(optional)}]
     let row_settings = { indexRef: "0.0", parentIndexRef: "0", key, val, level: 0 };
-    appendRowsByType(row_settings, arr);
-    console.log("Arr", arr);
-    return arr;
+    appendRowsByType(row_settings, rows);
+    return { rows, expanded: global_expanded };
 }
 
 function appendRowsByType(row_settings, arr) {
@@ -30,16 +30,26 @@ function appendRowsByType(row_settings, arr) {
     apply_formatter_for_type(type_formatters, row_settings, arr);
 }
 
-function apply_formatter_for_type(type_formatters, row_settings, arr) {
-    const just_for_testing_main_node =
-        row_settings &&
-        row_settings.val &&
-        row_settings.val["svelte-explorer-tag"] &&
-        row_settings.val["svelte-explorer-tag"] === "MAIN";
+function globalExpandedPush(rowIndex) {
+    const parents = rowIndex.split(".");
+    let thisIndex = "";
+    parents.forEach((parent, i) => {
+        const dot_except_first = i ? "." : "";
+        thisIndex = thisIndex + dot_except_first + parent;
+        global_expanded = global_expanded.filter((row) => row !== thisIndex);
+        global_expanded.push(thisIndex);
+    });
+}
 
+function apply_formatter_for_type(type_formatters, row_settings, arr) {
+    // const is_svelte_explorer_expander =
+    //    row_settings && row_settings.val && row_settings.val["is_svelte_explorer_expander"];
     const new_settings = getUpdatedTypeAndValue(row_settings);
-    if (just_for_testing_main_node) console.log("###apply_formatter_for_type", new_settings);
-    if (new_settings.row_render) {
+    //if (is_svelte_explorer_expander) console.log("###apply_formatter_for_type", new_settings.indexRef);
+    if (is_svelte_explorer_expander) {
+        globalExpandedPush(new_settings.indexRef);
+        return;
+    } else if (new_settings.row_render) {
         append_arr_with_plugin_rows(new_settings, arr);
     } else if (new_settings.row_html) {
         append_arr_with_plugin_html(new_settings, arr);
@@ -71,7 +81,7 @@ function append_arr_with_plugin_rows(settings, arr) {
 }
 
 function append_arr_with_plugin_html(settings, arr) {
-    console.log("append_arr_with_plugin_html", settings);
+    //console.log("append_arr_with_plugin_html", settings);
     const globals = { indentSpaces };
     const { row_html } = settings;
     let new_settings = row_html(settings, globals);
@@ -82,7 +92,7 @@ function append_arr_with_plugin_html(settings, arr) {
             for (let i = 0; i < row.val.children.length; i++) {
                 const child_row = getRowForChild(row, i, row.val.children[i], i);
                 //appendRowsByType(row, arr);
-                console.log("##children", child_row, last(arr)); //JSON.parse(JSON.stringify(arr)));
+                //console.log("##children", child_row, last(arr)); //JSON.parse(JSON.stringify(arr)));
                 appendRowsByType(child_row, arr);
             }
         } else {
@@ -278,7 +288,7 @@ function appendRowsForSvelteExplorerTag(row_settings, arr) {
         row_settings.val &&
         row_settings.val["svelte-explorer-tag"] &&
         row_settings.val["svelte-explorer-tag"] === "MAIN";
-    if (just_for_testing_main_node) console.log("####appendRowsForSvelteExplorerTag", row_settings);
+    //if (just_for_testing_main_node) console.log("####appendRowsForSvelteExplorerTag", row_settings);
     const { key, val, level, ...rest } = row_settings;
     const text = row_settings.val.textContent;
     const children = row_settings.val.children;
@@ -289,9 +299,9 @@ function appendRowsForSvelteExplorerTag(row_settings, arr) {
     const brackets = is_svelte_tag ? start_bracket + end_bracket : start_bracket + ">" + end_bracket;
     const has_text = text.length ? 1 : 0;
     if (children.length || has_text) {
-        if (just_for_testing_main_node) console.log("####appendRowsForSvelteExplorerTag a", last(arr)); //JSON.parse(JSON.stringify(arr)));
+        //if (just_for_testing_main_node) console.log("####appendRowsForSvelteExplorerTag a", last(arr)); //JSON.parse(JSON.stringify(arr)));
         arr.push(getRowForBracketOpen(row_settings, children.length, brackets, "HTML", end_bracket.length));
-        if (just_for_testing_main_node) console.log("####appendRowsForSvelteExplorerTag a", last(arr)); // JSON.parse(JSON.stringify(arr)));
+        //if (just_for_testing_main_node) console.log("####appendRowsForSvelteExplorerTag a", last(arr)); // JSON.parse(JSON.stringify(arr)));
         if (has_text) {
             appendRowsByType(getRowForChild(row_settings, "", text, 0), arr);
         } else {
@@ -305,7 +315,7 @@ function appendRowsForSvelteExplorerTag(row_settings, arr) {
     } else {
         const indent = level * indentSpaces;
         arr.push({ ...rest, key, val: brackets, indent });
-        if (just_for_testing_main_node) console.log("####appendRowsForSvelteExplorerTag b", arr);
+        //if (just_for_testing_main_node) console.log("####appendRowsForSvelteExplorerTag b", arr);
     }
 }
 

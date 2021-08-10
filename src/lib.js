@@ -9,23 +9,23 @@ function domParser(node) {
 
     function getTag(el) {
         //console.log("getTag", el.tagName);
-        if (
-            el &&
-            el.nodeName &&
-            el.nodeName !== "SCRIPT" &&
-            el.nodeName !== "SVELTE-OBJECT-EXPLORER" &&
-            (!el.className || (el.className && !el.className.includes("svelte-object-explorer-wrapper ")))
-        ) {
+        if (isHtmlNodeOrSvelteExplorerTag(el)) {
+            const isSETag = isSvelteExplorerTag(el);
+            const isExpander = isSvelteExplorerExpander(el);
             const textContent = el.nodeName === "#text" ? el.nodeValue : "";
-            const svelteExplorerTag = isSvelteExplorerTag(el) ? el.dataset["svelteExplorerTag"] : el.nodeName;
-            const svelteExplorerTagType = isSvelteExplorerTag(el) ? el.dataset["svelteExplorerTagType"] : "";
+            const svelteExplorerTag = isSETag ? el.dataset["svelteExplorerTag"] : el.nodeName;
+            const svelteExplorerTagType = isSETag ? el.dataset["svelteExplorerTagType"] : "";
+            const svelteExplorerTagShape = isSETag ? el.dataset["svelteExplorerTagShape"] : "whole";
             return textContent
                 ? textContent
+                : isExpander
+                ? { is_svelte_explorer_expander: true }
                 : {
                       class: el.className,
                       "svelte-explorer-tag": svelteExplorerTag,
-                      is_svelte_explorer_tag: isSvelteExplorerTag(el),
+                      is_svelte_explorer_tag: isSETag,
                       "svelte-explorer-tag-type": svelteExplorerTagType,
+                      "svelte-explorer-tag-shape": svelteExplorerTagShape,
                       children: getChildren(el),
                       /*isSvelteExplorerTag(el)
                           && svelteExplorerTag.substring(0, 10) !== "#component" &&
@@ -34,15 +34,29 @@ function domParser(node) {
                           svelteExplorerTag.substring(0, 6) !== "#await"
                           ? []
                           : getChildren(el),*/
-                      textContent,
+                      textContent, //TODO check if just not needed if it is always ""?
                   };
         } else {
             return null;
         }
     }
 
+    function isHtmlNodeOrSvelteExplorerTag(el) {
+        return (
+            el &&
+            el.nodeName &&
+            el.nodeName !== "SCRIPT" &&
+            el.nodeName !== "SVELTE-OBJECT-EXPLORER" &&
+            (!el.className || (el.className && !el.className.includes("svelte-object-explorer-wrapper ")))
+        );
+    }
+
     function isSvelteExplorerTag(el) {
         return el.dataset && el.dataset["svelteExplorerTag"];
+    }
+
+    function isSvelteExplorerExpander(el) {
+        return el.nodeName === "SVELTE-OBJECT-EXPLORER-EXPAND";
     }
 
     function getChildren(el) {
