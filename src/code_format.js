@@ -42,8 +42,8 @@ function globalExpandedPush(rowIndex) {
 }
 
 function apply_formatter_for_type(type_formatters, row_settings, arr) {
-    // const is_svelte_explorer_expander =
-    //    row_settings && row_settings.val && row_settings.val["is_svelte_explorer_expander"];
+    const is_svelte_explorer_expander =
+        row_settings && row_settings.val && row_settings.val["is_svelte_explorer_expander"];
     const new_settings = getUpdatedTypeAndValue(row_settings);
     //if (is_svelte_explorer_expander) console.log("###apply_formatter_for_type", new_settings.indexRef);
     if (is_svelte_explorer_expander) {
@@ -278,7 +278,7 @@ function appendRowForSymbol(row_settings, arr) {
 }
 
 function appendRowsForDomNode(row_settings, arr) {
-    const converted = lib.domParser(row_settings.val);
+    const converted = lib.domParser(row_settings.val, global_plugins);
     appendRowsForSvelteExplorerTag({ ...row_settings, val: converted }, arr);
 }
 

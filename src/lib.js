@@ -1,8 +1,9 @@
-function domParser(node) {
+function domParser(optional_node, optional_plugins) {
     // parses the dom from body downwards into a simplified ast, e.g.
     // { class: "classname", "svelte-explorer-tag": "H1", children: [el, el, el] }
     //console.log("NODE", node);
-    let html = node || document.body;
+    let html = optional_node || document.body;
+    let plugins = optional_plugins || {};
     //console.log("html", html);
     let arr = getTag(html);
     //console.log("arr", arr);
@@ -11,7 +12,7 @@ function domParser(node) {
         //console.log("getTag", el.tagName);
         if (isHtmlNodeOrSvelteExplorerTag(el)) {
             const isSETag = isSvelteExplorerTag(el);
-            const isExpander = isSvelteExplorerExpander(el);
+            const isExpander = getExpanderFromPlugins(el, plugins);
             const textContent = el.nodeName === "#text" ? el.nodeValue : "";
             const svelteExplorerTag = isSETag ? el.dataset["svelteExplorerTag"] : el.nodeName;
             const svelteExplorerTagType = isSETag ? el.dataset["svelteExplorerTagType"] : "";
@@ -41,6 +42,19 @@ function domParser(node) {
         }
     }
 
+    function getExpanderFromPlugins(el, plugins) {
+        let parsed_plugin_expander = false;
+        Object.entries(plugins).find((plugin_array) => {
+            if (plugin_array[1] && plugin_array[1].row_expander && plugin_array[1].row_expander(el)) {
+                parsed_plugin_expander = plugin_array[0];
+                return true; // find breaks loop on true
+            } else {
+                return false;
+            }
+        });
+        return parsed_plugin_expander;
+    }
+
     function isHtmlNodeOrSvelteExplorerTag(el) {
         return (
             el &&
@@ -53,10 +67,6 @@ function domParser(node) {
 
     function isSvelteExplorerTag(el) {
         return el.dataset && el.dataset["svelteExplorerTag"];
-    }
-
-    function isSvelteExplorerExpander(el) {
-        return el.nodeName === "SVELTE-OBJECT-EXPLORER-EXPAND";
     }
 
     function getChildren(el) {
