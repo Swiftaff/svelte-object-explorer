@@ -1,6 +1,7 @@
 <script>
     import { onMount } from "svelte";
     import TabButton from "../src/TabButton.svelte";
+    import WidthAdjust from "../src/WidthAdjust.svelte";
     import ResetButton from "../src/ResetButton.svelte";
     import PauseButton from "../src/PauseButton.svelte";
     import CacheDisplay from "../src/CacheDisplay.svelte";
@@ -11,6 +12,9 @@
 
     let ratelimitDefault = 100;
     let stringifiedValueCache = "";
+    let width = 500;
+    let is_adjusting_width = false;
+    let local_storage_key = "svelte-object-explorer";
 
     export let value;
     export let tabposition = "top";
@@ -45,7 +49,23 @@
     onMount(async () => {
         rowsToShow = showManuallySelected;
         mainLoop = timer();
+        get_or_init_settings();
     });
+
+    function get_or_init_settings() {
+        let got_local_storage = localStorage.getItem(local_storage_key);
+        if (got_local_storage) {
+            let settings = JSON.parse(got_local_storage);
+            if (settings) {
+                if ("width" in settings) width = settings.width;
+            }
+        } else save_settings();
+    }
+
+    function save_settings() {
+        let settings = { width };
+        localStorage.setItem(local_storage_key, JSON.stringify(settings));
+    }
 
     function timer() {
         setInterval(() => {
@@ -143,21 +163,30 @@
 </script>
 
 <div class="svelte-object-explorer-wrapper">
-    <TabButton {toggle} {tabposition} {fade} {hovering} {doToggle} />
+    <TabButton {toggle} {tabposition} {fade} {hovering} {doToggle} {width} {is_adjusting_width} />
+    <WidthAdjust bind:width bind:is_adjusting_width {save_settings} />
     {#if toggle}
         <div
             id="svelteObjectExplorer"
-            class={"tree" + (toggle ? "" : " tree-hide") + (fade ? (hovering ? " noFade" : " fade") : " noFade")}
+            class={"tree" + (fade ? (hovering ? " noFade" : " fade") : " noFade")}
+            style={"width: " +
+                width +
+                "px;" +
+                (toggle ? "" : "right: -" + width + "px;" + (is_adjusting_width ? "" : " transition: 0.2s;"))}
             on:mouseover={() => (hovering = true)}
             on:mouseleave={() => (hovering = false)}
         >
             <ResetButton {reset} />
             <PauseButton {isPaused} {pause} {unpause} />
             <CacheDisplay {cache} {ratelimit} {ratelimitDefault} />
-            <table>
+            <table style={"width: " + (width - 20) + "px; table-layout: fixed;"}>
                 {#each topLevelObjectArray as topLevelObject, topLevelObject_index}
-                    <tr class="treeVal" on:mouseout={() => (hoverRow = null)}>
-                        <td class="treeVal">
+                    <tr
+                        class="treeVal"
+                        style={"max-width: " + (width - 20) + "px;"}
+                        on:mouseout={() => (hoverRow = null)}
+                    >
+                        <td class="treeVal" style={"max-width: " + (width - 20) + "px;"}>
                             <pre>
                                   {#each topLevelObject.childRows as row}
                                     {#if (
@@ -165,13 +194,13 @@
                                       (!row.bracket || (row.bracket && (row.expandable || rowsToShow.includes(row.indexRef))))
                                     )}
                                       <div
-                                        class={hoverRow === row.indexRef || row.parentIndexRef.startsWith(hoverRow) ? 'row hoverRow' : 'row'}
-                                        on:mouseover={() => (hoverRow = row.indexRef)}
-                                        on:mousedown={() => console.log(row.indexRef, row.val, row.level, topLevelObject.childRows, rowsToShow)}>
-                                        <RowText {row} isExpanded={rowsToShow.includes(row.indexRef)} />
-                                        <ChevronButtons {row} {rowsToShow} {rowContract} {rowExpand} />
-                                      </div>
-                                    {/if}
+                                      class={hoverRow === row.indexRef || row.parentIndexRef.startsWith(hoverRow) ? 'row hoverRow' : 'row'}
+                                      on:mouseover={() => (hoverRow = row.indexRef)}
+                                      on:mousedown={() => console.log(row.indexRef, row.val, row.level, topLevelObject.childRows, rowsToShow)}>
+                                      <RowText {row} isExpanded={rowsToShow.includes(row.indexRef)} />
+                                      <ChevronButtons {row} {rowsToShow} {rowContract} {rowExpand} />
+                                    </div>
+                                  {/if}
                                   {/each}
                               </pre>
                         </td>
@@ -191,7 +220,7 @@
         height: 100vh;
         padding: 0px;
         margin: 0px;
-        z-index: 100000000000000000 !important;
+        z-index: 1000000000 !important;
         pointer-events: none;
         font-family: "Roboto", "Arial", sans-serif !important;
     }
@@ -206,11 +235,9 @@
 
     .tree {
         pointer-events: all;
-        transition: 0.2s;
         position: fixed;
         right: 0px;
         top: 0px;
-        width: 500px;
         height: 100vh;
         background-color: #aaa;
         z-index: 10000000;
@@ -226,16 +253,6 @@
         box-shadow: -4px 4px 10px 0px rgba(0, 0, 0, 0.15);
     }
 
-    .tree-hide {
-        right: -500px;
-        transition: 0.2s;
-    }
-
-    .tree table {
-        table-layout: fixed;
-        width: 480px;
-    }
-
     .tree tr:nth-child(odd) {
         background-color: #ccc;
     }
@@ -243,7 +260,6 @@
     .treeVal {
         min-height: 10px;
         overflow-wrap: break-word;
-        max-width: 480px;
         overflow: auto;
         background-color: #666 !important;
         color: white;
@@ -261,7 +277,6 @@
         padding-left: 15px;
         display: block;
         white-space: pre;
-        /*height: 1.5em;*/
     }
 
     .row:nth-child(even) {
