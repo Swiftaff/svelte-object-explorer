@@ -1,8 +1,12 @@
 <script>
+    import { beforeUpdate, afterUpdate } from "svelte";
+
     export let width;
     export let is_adjusting_width;
     export let save_settings;
+    export let panel;
 
+    let left = 0;
     let start_x = 0;
     let start_w = width;
     let tabWidth = 30;
@@ -19,29 +23,30 @@
     }
 
     function mousemove(e) {
-        let new_width = start_w + start_x - e.clientX;
-        let new_width_is_within_limits = new_width > 440 && new_width < innerWidth - tabWidth;
-        if (is_adjusting_width && new_width_is_within_limits) width = new_width;
+        if (is_adjusting_width) {
+            let new_width = start_w + start_x - e.clientX;
+            let new_width_is_within_limits = new_width > 440 && new_width < innerWidth - tabWidth;
+            if (new_width_is_within_limits) width = new_width;
+        }
     }
+
+    beforeUpdate(() => {
+        if (panel) left = panel.getBoundingClientRect().left;
+    });
 </script>
 
 <svelte:window bind:innerWidth on:mousemove={mousemove} on:mouseup={drag_stop} />
 
-<div class="width_adjust" style={"right: " + (width + 5) + "px;"} on:mousedown={drag_start}>
-    <div class="width_adjust_inner">
-        <div class="width_adjust_inner2" />
-    </div>
+<div class="width_adjust_hover_zone" style={"left:" + (left - 5) + "px"} on:mousedown={drag_start}>
+    <div class="width_adjust_highlight" />
 </div>
-<div class="width_adjust_underlay" style={is_adjusting_width ? "visibility:visible" : "visibility:hidden"} />
 
 <style>
-    .width_adjust,
-    .width_adjust_inner,
-    .width_adjust_inner2 {
+    .width_adjust_hover_zone,
+    .width_adjust_highlight {
         width: 10px;
         height: 100vh;
         position: absolute;
-        top: 0;
         z-index: 1000000020;
         pointer-events: all;
         cursor: ew-resize;
@@ -49,30 +54,17 @@
         -moz-user-select: none;
     }
 
-    .width_adjust_inner {
-        width: 6px;
-        right: 2px;
-    }
-
-    .width_adjust_inner2 {
-        width: 3px;
-        right: 2px;
-    }
-
-    .width_adjust:hover:not(:active) .width_adjust_inner {
+    .width_adjust_hover_zone:hover:not(:active) .width_adjust_highlight {
         background-color: blue;
-        transition: background-color 400ms linear;
+        transition: background-color 200ms linear;
+        width: 6px;
+        left: 2px;
     }
 
-    .width_adjust:active .width_adjust_inner2 {
+    .width_adjust_hover_zone:active .width_adjust_highlight {
         background-color: black;
-        transition: background-color 0ms linear;
-    }
-
-    .width_adjust_underlay {
-        width: 100vw;
-        height: 100vh;
-        z-index: 1000000010;
-        position: absolute;
+        transition: background-color 200ms linear;
+        width: 2px;
+        left: 4px;
     }
 </style>

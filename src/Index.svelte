@@ -15,6 +15,7 @@
     let width = 500;
     let is_adjusting_width = false;
     let local_storage_key = "svelte-object-explorer";
+    let panel;
 
     export let value;
     export let tabposition = "top";
@@ -164,9 +165,10 @@
 
 <div class="svelte-object-explorer-wrapper">
     <TabButton {toggle} {tabposition} {fade} {hovering} {doToggle} {width} {is_adjusting_width} />
-    <WidthAdjust bind:width bind:is_adjusting_width {save_settings} />
     {#if toggle}
+        <WidthAdjust bind:width bind:is_adjusting_width {save_settings} {panel} />
         <div
+            bind:this={panel}
             id="svelteObjectExplorer"
             class={"tree" + (fade ? (hovering ? " noFade" : " fade") : " noFade")}
             style={"width: " +
