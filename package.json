@@ -48,7 +48,7 @@
   "scripts": {
     "build": "rollup -c",
     "dev": "sirv public --dev --port=5000",
-    "build_and_dev": "run-p build dev",
+    "build_and_dev": "run-s build dev",
     "test": "ava && npm run test_local",
     "test_local": "run-p dev cy:test_local",
     "cy:open": "cypress open",
