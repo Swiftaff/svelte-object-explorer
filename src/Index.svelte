@@ -7,8 +7,7 @@
     import CacheDisplay from "../src/CacheDisplay.svelte";
     import ChevronButtons from "../src/ChevronButtons.svelte";
     import RowText from "../src/RowText.svelte";
-    import lib from "../src/lib.js";
-    import transform_data from "../src/transform_data.js";
+    import lib from "../src/lib/index.js";
 
     let ratelimitDefault = 100;
     let stringifiedValueCache = "";
@@ -102,16 +101,16 @@
                 cache.viewChanges = cache.viewChanges + 1;
                 cache.viewUpdated = new Date();
                 cache.dataUpdated = cache.viewUpdated;
-                cache.formatted = transform_data.formatDate(cache.viewUpdated);
+                cache.formatted = lib.formatDate(cache.viewUpdated);
                 stringifiedValueCache = JSON.stringify({ value: cache.value, plugins: newPlugins });
 
-                const { rows, expanded } = transform_data.transform_data(cache);
+                const { rows, expanded } = lib.convertDataToRows(cache);
                 if (expanded && Array.isArray(expanded)) expanded_from_tags = expanded;
                 topLevelObjectArray = rows; //this should trigger a redraw
             }
             //open requested object
             if (!openIndexSetOnce) {
-                let openIndexRef = transform_data.getOpenIndex(topLevelObjectArray, open);
+                let openIndexRef = lib.getOpenIndex(topLevelObjectArray, open);
                 if (openIndexRef) {
                     rowExpand(openIndexRef);
                     if (showManuallySelected.includes(openIndexRef)) openIndexSetOnce = true;

@@ -1,4 +1,4 @@
-import lib from "./lib.js";
+import domParser from "./domParser.js";
 const indentSpaces = 2;
 const max_array_length = 10;
 const max_line_length = 38;
@@ -44,12 +44,12 @@ function globalExpandedPush(rowIndex) {
 function apply_formatter_for_type(type_formatters, row_settings, arr) {
     const is_svelte_explorer_expander =
         row_settings && row_settings.val && row_settings.val["is_svelte_explorer_expander"];
-    const new_settings = getUpdatedTypeAndValue(row_settings);
-    //if (is_svelte_explorer_expander) console.log("###apply_formatter_for_type", new_settings.indexRef);
+    const new_settings = getUpdatedTypeAndValue(row_settings, is_svelte_explorer_expander);
     if (is_svelte_explorer_expander) {
         globalExpandedPush(new_settings.indexRef);
-        return;
-    } else if (new_settings.row_render) {
+        type_formatters[new_settings.format_type](new_settings, arr);
+    }
+    if (new_settings.row_render) {
         append_arr_with_plugin_rows(new_settings, arr);
     } else if (new_settings.row_html) {
         append_arr_with_plugin_html(new_settings, arr);
@@ -57,10 +57,10 @@ function apply_formatter_for_type(type_formatters, row_settings, arr) {
         type_formatters[new_settings.format_type](new_settings, arr);
 }
 
-function getUpdatedTypeAndValue(row_settings) {
+function getUpdatedTypeAndValue(row_settings, bool_for_testing) {
     let val = row_settings.val;
     let row_render, row_html;
-    const type = getTypeName(val);
+    const type = getTypeName(val, bool_for_testing);
     if (type in global_plugins) {
         if (global_plugins[type].transform) val = global_plugins[type].transform(val);
         row_render = global_plugins[type].row_render; //may be undefined
@@ -86,19 +86,21 @@ function append_arr_with_plugin_html(settings, arr) {
     const { row_html } = settings;
     let new_settings = row_html(settings, globals);
 
-    if (!Array.isArray(new_settings)) new_settings = [new_settings];
-    new_settings.forEach((row) => {
-        if (row.insert_children) {
-            for (let i = 0; i < row.val.children.length; i++) {
-                const child_row = getRowForChild(row, i, row.val.children[i], i);
-                //appendRowsByType(row, arr);
-                //console.log("##children", child_row, last(arr)); //JSON.parse(JSON.stringify(arr)));
-                appendRowsByType(child_row, arr);
+    if (new_settings) {
+        if (!Array.isArray(new_settings)) new_settings = [new_settings];
+        new_settings.forEach((row) => {
+            if (row.insert_children) {
+                for (let i = 0; i < row.val.children.length; i++) {
+                    const child_row = getRowForChild(row, i, row.val.children[i], i);
+                    //appendRowsByType(row, arr);
+                    //console.log("##children", child_row, last(arr)); //JSON.parse(JSON.stringify(arr)));
+                    appendRowsByType(child_row, arr);
+                }
+            } else {
+                arr.push(row);
             }
-        } else {
-            arr.push(row);
-        }
-    });
+        });
+    }
 }
 
 function last(arr) {
@@ -111,11 +113,13 @@ function getSimpleTypesObj(simpleTypes) {
     return simpleTypesObj;
 }
 
-function getTypeName(value) {
-    return global_plugins && Object.keys(global_plugins).length ? getTypeFromPlugins(value) : getNullOrOtherType(value);
+function getTypeName(value, bool_for_testing) {
+    return global_plugins && Object.keys(global_plugins).length
+        ? getTypeFromPlugins(value, bool_for_testing)
+        : getNullOrOtherType(value);
 }
 
-function getTypeFromPlugins(value) {
+function getTypeFromPlugins(value, bool_for_testing) {
     let parsed_plugin_type = false;
     Object.entries(global_plugins).find((plugin_array) => {
         if (plugin_array[1] && plugin_array[1].type_parser && plugin_array[1].type_parser(value)) {
@@ -125,6 +129,7 @@ function getTypeFromPlugins(value) {
             return false;
         }
     });
+    //if (bool_for_testing) console.log("getTypeFromPlugins", parsed_plugin_type);
     return parsed_plugin_type || getNullOrOtherType(value);
 }
 
@@ -278,7 +283,7 @@ function appendRowForSymbol(row_settings, arr) {
 }
 
 function appendRowsForDomNode(row_settings, arr) {
-    const converted = lib.domParser(row_settings.val, global_plugins);
+    const converted = domParser(row_settings.val, global_plugins);
     appendRowsForSvelteExplorerTag({ ...row_settings, val: converted }, arr);
 }
 
@@ -290,15 +295,19 @@ function appendRowsForSvelteExplorerTag(row_settings, arr) {
         row_settings.val["svelte-explorer-tag"] === "MAIN";
     //if (just_for_testing_main_node) console.log("####appendRowsForSvelteExplorerTag", row_settings);
     const { key, val, level, ...rest } = row_settings;
-    const text = row_settings.val.textContent;
-    const children = row_settings.val.children;
+    const text = row_settings.val;
+    const is_svelte_explorer_expander = row_settings.val.is_svelte_explorer_expander;
+    //if (is_svelte_explorer_expander) console.log("1 is_svelte_explorer_expander", row_settings.val.value); //children[0].value);
+    const children = is_svelte_explorer_expander ? [row_settings.val.value] : row_settings.val.children;
     const tag = row_settings.val["svelte-explorer-tag"].toLowerCase();
     const is_svelte_tag = ["#", "/", ":"].includes(tag[0]);
     const start_bracket = "<" + tag;
     const end_bracket = is_svelte_tag ? ">" : "</" + tag + ">";
     const brackets = is_svelte_tag ? start_bracket + end_bracket : start_bracket + ">" + end_bracket;
     const has_text = text.length ? 1 : 0;
-    if (children.length || has_text) {
+    if (row_settings.val.is_svelte_explorer_expander) {
+        appendRowsByType({ ...row_settings, val: row_settings.val.value }, arr);
+    } else if (children.length || has_text) {
         //if (just_for_testing_main_node) console.log("####appendRowsForSvelteExplorerTag a", last(arr)); //JSON.parse(JSON.stringify(arr)));
         arr.push(getRowForBracketOpen(row_settings, children.length, brackets, "HTML", end_bracket.length));
         //if (just_for_testing_main_node) console.log("####appendRowsForSvelteExplorerTag a", last(arr)); // JSON.parse(JSON.stringify(arr)));
@@ -313,6 +322,7 @@ function appendRowsForSvelteExplorerTag(row_settings, arr) {
             arr.push(getRowForBracketClose(row_settings, brackets, end_bracket.length));
         }
     } else {
+        //if (is_svelte_explorer_expander) console.log("3 is_svelte_explorer_expander", is_svelte_explorer_expander);
         const indent = level * indentSpaces;
         arr.push({ ...rest, key, val: brackets, indent });
         //if (just_for_testing_main_node) console.log("####appendRowsForSvelteExplorerTag b", arr);
