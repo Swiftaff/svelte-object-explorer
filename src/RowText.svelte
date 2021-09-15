@@ -6,7 +6,7 @@
 {#if row}
     {#if row.html}
         {#if isExpanded}{#if row.expandable}{@html row.expandable}{:else}{@html row.html}{/if}{:else}{@html row.html}{/if}
-    {:else}
+    {:else if typeof row.val !== "undefined"}
         <span
             >{#if isExpanded}{" ".repeat(row.indent)}{#if "key" in row && row.key !== ""}<span class="key"
                         >{row.key}</span
