@@ -1,58 +1,37 @@
 function domParser(optional_node, optional_plugins) {
-    //console.log("domParser");
     // parses the dom from body downwards into a simplified ast, e.g.
-    // { class: "classname", "svelte-explorer-tag": "H1", children: [el, el, el] }
-    //console.log("NODE", node);
+    // el = { class: "classname", "svelte-explorer-tag": "H1", children: [el, el, el] }
     let html = optional_node || document.body;
     let plugins = optional_plugins || {};
-    //console.log("html", html);
     let arr = getTag(html);
-    //console.error("arr", arr);
     return arr;
 
     function getTag(el) {
-        //console.log("getTag", el.tagName);
         if (isHtmlNodeOrSvelteExplorerTag(el)) {
             const isExpander = getExpanderFromPlugins(el, plugins);
-            //if (isExpander) console.log("isExpander", el.getAttribute("value"));
             const isSETag = isSvelteExplorerTag(el);
             const textContent = el.nodeName === "#text" ? el.nodeValue : "";
             const svelteExplorerTag = isSETag ? el.dataset["svelteExplorerTag"] : el.nodeName;
             const svelteExplorerTagType = isSETag ? el.dataset["svelteExplorerTagType"] : "";
             const svelteExplorerTagShape = isSETag ? el.dataset["svelteExplorerTagShape"] : "whole";
-            let children = getChildren(el);
-            if (isExpander) {
-                children = [];
-                /* [
-                    {
-                        class: "",
-                        value: el["svelte-explorer-value"],
-                        "svelte-explorer-tag": "testy",
-                        is_svelte_explorer_tag: false,
-                        "svelte-explorer-tag-type": "pin",
-                        "svelte-explorer-tag-shape": "whole",
-                        children: [],
-                        is_svelte_explorer_expander: false,
-                        textContent, //TODO check if just not needed if it is always ""?
-                    },
-                ]; */
-            }
+            const children = isExpander ? [] : getChildren(el);
             return textContent
                 ? textContent
                 : {
-                      value: isExpander ? el["svelte-explorer-value"] : null,
                       class: el.className,
-                      "svelte-explorer-tag": svelteExplorerTag,
+                      children,
+                      //textContent, //TODO check if just not needed if it is always ""?
+
                       is_svelte_explorer_tag: isSETag,
+                      "svelte-explorer-tag": svelteExplorerTag,
                       "svelte-explorer-tag-type": svelteExplorerTagType,
                       "svelte-explorer-tag-shape": svelteExplorerTagShape,
-                      children,
+                      value: isExpander ? el["svelte-explorer-value"] : null,
+
                       is_svelte_explorer_expander: isExpander,
                       textContent, //TODO check if just not needed if it is always ""?
                   };
-        } else {
-            return null;
-        }
+        } else return null;
     }
 
     function getExpanderFromPlugins(el, plugins) {
@@ -61,25 +40,22 @@ function domParser(optional_node, optional_plugins) {
             if (plugin_array[1] && plugin_array[1].row_expander && plugin_array[1].row_expander(el)) {
                 parsed_plugin_expander = plugin_array[0];
                 return true; // find breaks loop on true
-            } else {
-                return false;
-            }
+            } else return false;
         });
         return parsed_plugin_expander;
     }
 
     function isHtmlNodeOrSvelteExplorerTag(el) {
-        return (
-            el &&
-            el.nodeName &&
-            el.nodeName !== "SCRIPT" &&
+        const has_a_nodeName = el && el.nodeName;
+        const is_not_a_script_node = has_a_nodeName && el.nodeName !== "SCRIPT";
+        const is_not_part_of_explorer_panel =
+            has_a_nodeName &&
             el.nodeName !== "SVELTE-OBJECT-EXPLORER" &&
-            (!el.className || (el.className && !el.className.includes("svelte-object-explorer-wrapper ")))
-        );
+            (!el.className || (el.className && !el.className.includes("svelte-object-explorer-wrapper ")));
+        return is_not_a_script_node && is_not_part_of_explorer_panel;
     }
 
     function isSvelteExplorerTag(el) {
-        //console.log(1, el.nodeName);
         return el.dataset && el.dataset["svelteExplorerTag"];
     }
 
