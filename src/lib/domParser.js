@@ -29,7 +29,6 @@ function domParser(optional_node, optional_plugins) {
                       value: isExpander ? el["svelte-explorer-value"] : null,
 
                       is_svelte_explorer_expander: isExpander,
-                      textContent, //TODO check if just not needed if it is always ""?
                   };
         } else return null;
     }
