@@ -74,9 +74,27 @@ Include **svelte-object-explorer** in the script section of any svelte file, but
 
 `open` is an optional string, the name of one of the objects you supplied in myStore, to auto-expand it on load `(Default = null)`
 
-`ratelimit` is an optional integer, for the rate at which the view should update (to avoid it getting bogged down by very fast data updates. `Default = 100 [milliseconds])`
+`ratelimit` is an optional integer, for the rate at which the view should update (to avoid it getting bogged down by very fast data updates. `(Default = 100 [milliseconds])`
 
-`initialtogglestate` is an optional boolean, for whether the tab is open (true) or closed (false) on startup. `Default = false`
+`initialtogglestate` is an optional boolean, for whether the tab is open (true) or closed (false) on startup. `(Default = false)`
+
+`row_expander` a function to identify a dom element, e.g. by it's nodeName. This defines a dom element which can then be used to expand the panel at the parent of this element wherever you manually add it in your code, providing a simple way to expand a piece of your code in the panel. It can be any valid html tag, even a custom made-up tag
+e.g. (element) => element.nodeName === "HTML-NAME-OF-ELEMENT"
+`(Default = "SVELTE-EXPLORER-EXPAND" since default tag is <svelte-explorer-expand />)`
+TODO - check this is true
+
+Also see [extensions](EXTENSIONS.md) for how to further extend Svelte Object Explorer - to override or extend the default list of data types or rendering within the panel. `(Default = {})`
+
+-   TODO make this a root option
+-   TODO make all options available as a single options object
+-   TODO change options to lowercase
+-   TODO change from plugins to extensions
+
+## new in v2.2
+
+-   resizable window width - and saves to localStorage to re-use between sessions
+-   row_expander
+-   extensions
 
 ## New in v2.1
 
