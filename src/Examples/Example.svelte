@@ -34,31 +34,6 @@
         value = {
             html: thisPage,
             string1: "testy",
-            pluginTest1a: {
-                name: "custom_object1",
-                specific_key1: "test1",
-                value_key_a: "abc",
-            },
-            pluginTest1b: {
-                name: "custom_object1",
-                specific_key1: "test1",
-                value_key_a: "abc",
-                value_key_b: "123",
-            },
-            pluginTest2: "string: starts with string",
-            pluginTest3: {
-                name: "custom_object2",
-                specific_key2: "test2",
-                value_key_b: "ABC",
-                value_key_c: 2,
-            },
-            pluginTest4: {
-                name: "custom_object2",
-                specific_key2: "test2",
-                value_key_b: "ABC",
-                value_key_c: 2,
-                value_key_d: Symbol("test"),
-            },
             longstring:
                 "Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet.",
             array,
@@ -73,6 +48,7 @@
             },
             number1: 123,
             number2: 123.456789,
+            //number3: 9007199254740992n * 2,
             boolean1: true,
             boolean2: false,
             null: null,
@@ -105,6 +81,31 @@
             SvelteVariable: counter,
             customStore: count,
             customStoreValue: $count,
+            pluginTest1a: {
+                name: "custom_object1",
+                specific_key1: "test1",
+                value_key_a: "abc",
+            },
+            pluginTest1b: {
+                name: "custom_object1",
+                specific_key1: "test1",
+                value_key_a: "abc",
+                value_key_b: "123",
+            },
+            pluginTest2: "string: starts with string",
+            pluginTest3: {
+                name: "custom_object2",
+                specific_key2: "test2",
+                value_key_b: "ABC",
+                value_key_c: 2,
+            },
+            pluginTest4: {
+                name: "custom_object2",
+                specific_key2: "test2",
+                value_key_b: "ABC",
+                value_key_c: 2,
+                value_key_d: Symbol("test"),
+            },
         };
     }
 

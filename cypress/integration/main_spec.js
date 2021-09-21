@@ -10,6 +10,10 @@ const u = "undefined";
 const S = "symbol";
 const F = "arrow fn";
 const f = "function";
+const c1a = "customType1a";
+const c1b = "customType1b";
+const c2 = "customType2";
+const c3 = "customType3";
 const example_urls = ["/CustomElementES", "/CustomElementIIFE", "/SvelteComponent"];
 
 module.exports = (index) => {
@@ -43,15 +47,15 @@ module.exports = (index) => {
     });
 
     describe(url + ": " + "Toggle panel objects", function () {
-        it("Count of data rows should be 30 (22 rows + multilines)", function () {
+        it("Count of data rows should be 36 (27 rows + multilines)", function () {
             cy.viewport(1000, 600);
             cy.visit(url);
-            cy.get("div.row").should("have.length", 30);
-            cy.get("span.len").first().contains("(22)");
+            cy.get("div.row").should("have.length", 36);
+            cy.get("span.len").first().contains("(27)");
         });
 
         it("List of child types should match test data", function () {
-            const types = [o, h, s, s, a, a, A, o, n, n, b, b, N, u, S, S, F, F, f, o, n, o, n];
+            const types = [o, h, s, s, a, a, A, o, n, n, b, b, N, u, S, S, F, F, f, o, n, o, n, c1a, c1b, c2, c3];
             for (let i = 0; i < types.length; i++) {
                 cy.get("span.type").eq(i).contains(types[i]);
             }
