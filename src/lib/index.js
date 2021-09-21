@@ -50,4 +50,12 @@ function formatDate(d) {
     );
 }
 
-export default { domParser, codeFormat, convertDataToRows, getOpenIndex, formatDate };
+function replacer(_, value) {
+    if (typeof value === "undefined") {
+        return "testing";
+    } else {
+        return value;
+    }
+}
+
+export default { domParser, codeFormat, convertDataToRows, getOpenIndex, formatDate, replacer };

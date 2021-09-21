@@ -1,7 +1,7 @@
 const test = require("ava");
 const options = { array_length_max: 3 };
 
-import { recursive_get_chunked_array } from "../src/code_format.js";
+import { recursive_get_chunked_array } from "../src/lib/codeFormat.js";
 
 test("recursive_get_chunked_array 0 for 3s", async (t) => {
     const input = [];

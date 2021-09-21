@@ -20,7 +20,6 @@ function domParser(optional_node, optional_plugins) {
                 : {
                       class: el.className,
                       children,
-                      //textContent, //TODO check if just not needed if it is always ""?
 
                       is_svelte_explorer_tag: isSETag,
                       "svelte-explorer-tag": svelteExplorerTag,

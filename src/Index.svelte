@@ -87,7 +87,7 @@
             }
             let newPlugins = plugins;
             let newValue = { value: value || lib.domParser(document.body, newPlugins), plugins: newPlugins };
-            const stringifiedValue = JSON.stringify(newValue);
+            const stringifiedValue = JSON.stringify(newValue); //, lib.replacer);
             if (stringifiedValue !== stringifiedValueCache) {
                 cache.dataUpdated = new Date();
                 cache.dataChanges = cache.dataChanges + 1;
@@ -102,7 +102,7 @@
                 cache.viewUpdated = new Date();
                 cache.dataUpdated = cache.viewUpdated;
                 cache.formatted = lib.formatDate(cache.viewUpdated);
-                stringifiedValueCache = JSON.stringify({ value: cache.value, plugins: newPlugins });
+                stringifiedValueCache = JSON.stringify({ value: cache.value, plugins: newPlugins }); //, lib.replacer);
 
                 const { rows, expanded } = lib.convertDataToRows(cache);
                 if (expanded && Array.isArray(expanded)) expanded_from_tags = expanded;
