@@ -1,4 +1,4 @@
-# Svelte Object Explorer - EXTENSIONS
+# Svelte Object Explorer - PLUGINS
 
 You can override or extend some features of Svelte Object Explorer with an optional object of one or more parser objects, each with one or more override keys. This is then checked (and then applied if the parser matches) for every row of the output panel, allowing you to control output per value or value type.
 
@@ -6,9 +6,9 @@ You can override or extend some features of Svelte Object Explorer with an optio
 
 -   `type_parser` a function to define this type based on the value being parsed.
 
-    If the function returns `True` based on the value matching some criteria, Svelte Object Explorer will assume the value is of this type and will then apply all of the optional functions that you supply below for `name_of_type`, `transform`, `row_render` and `row_html`.
+    If the function returns `true` based on the value matching some criteria, Svelte Object Explorer will assume the value is of this type and will then apply all of the optional functions that you supply below for `name_of_type`, `transform`, `row_render` and `row_html`.
 
-    If it returns `False` then Svelte Object Explorer will just skip it, and revert to handling the value based on the existing default types.
+    If it returns `false` then Svelte Object Explorer will just skip it, and revert to handling the value based on the existing default types.
 
     If there are multiple matching parsers - only the first will be applied
 
@@ -21,7 +21,7 @@ You can override or extend some features of Svelte Object Explorer with an optio
 
 ## Examples
 
-The extensions object should contain one or more sub-objects, one for each parser, each with one or more of the other optional keys, e.g.
+The pluings object should contain one or more sub-objects, one for each parser, each with one or more of the other optional keys, e.g.
 
 ### Example 1: a new Custom Type
 
@@ -165,14 +165,14 @@ One or more of the parsers can then be used in Svelte Object Explorer...
   let staticObject1 = { test1: "test1" }
   let value = { html, staticObject1 }
 
-  //example extensions
+  //example plugins
   const example1 = {... see above ...};
   const example2 = {... see above ...};
-  const extensions = { example1, example2 }
+  const plugins = { example1, example2 }
 
 </script>
 
-<SvelteObjectExplorer {value} {extensions} />
+<SvelteObjectExplorer {value} {plugins} />
 // ...
 // the rest of your app
 ```

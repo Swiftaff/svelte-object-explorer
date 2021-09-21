@@ -83,18 +83,17 @@ e.g. (element) => element.nodeName === "HTML-NAME-OF-ELEMENT"
 `(Default = "SVELTE-EXPLORER-EXPAND" since default tag is <svelte-explorer-expand />)`
 TODO - check this is true
 
-Also see [extensions](EXTENSIONS.md) for how to further extend Svelte Object Explorer - to override or extend the default list of data types or rendering within the panel. `(Default = {})`
+Also see [plugins](PLUGINS.md) for how to further extend Svelte Object Explorer - to override or extend the default list of data types or rendering within the panel. `(Default = {})`
 
 -   TODO make this a root option
 -   TODO make all options available as a single options object
--   TODO change options to lowercase
--   TODO change from plugins to extensions
+-   TODO - ordering matters, change plugins to array
 
 ## new in v2.2
 
 -   resizable window width - and saves to localStorage to re-use between sessions
--   row_expander
--   extensions
+-   row_expander - to expand deeply nested dom elements
+-   plugins - to extend on the default settings
 
 ## New in v2.1
 
