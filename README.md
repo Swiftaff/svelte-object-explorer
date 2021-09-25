@@ -78,21 +78,45 @@ Include **svelte-object-explorer** in the script section of any svelte file, but
 
 `initialtogglestate` is an optional boolean, for whether the tab is open (true) or closed (false) on startup. `(Default = false)`
 
-`row_expander` a function to identify a dom element, e.g. by it's nodeName. This defines a dom element which can then be used to expand the panel at the parent of this element wherever you manually add it in your code, providing a simple way to expand a piece of your code in the panel. It can be any valid html tag, even a custom made-up tag
-e.g. (element) => element.nodeName === "HTML-NAME-OF-ELEMENT"
-`(Default = "SVELTE-EXPLORER-EXPAND" since default tag is <svelte-explorer-expand />)`
-TODO - check this is true
-
 Also see [plugins](PLUGINS.md) for how to further extend Svelte Object Explorer - to override or extend the default list of data types or rendering within the panel. `(Default = {})`
 
--   TODO make this a root option
 -   TODO make all options available as a single options object
 -   TODO - ordering matters, change plugins to array
+-   TODO fix end close tags
+
+## SvelteValue - to auto-expand deeply nested dom elements
+
+Assuming you have already added SvelteObjectExplorer to this, or a parent Component, AND you are using it to view the dom, then you can use the **SvelteValue** component to auto-expand the dom at deeper nodes - to save you from having to manually click down through the dom to find them.
+
+Also, optionally displaying a value to help with troubleshooting.
+
+```
+// DeeplyNestedComponent.svelte
+<script>
+  import SvelteValue from 'svelte-object-explorer/src/Value.svelte'
+  const optionalValue = "any type of value";
+</script>
+
+<div>
+  <div>
+    <div>
+      <SvelteValue />
+      Will expand to show this text
+    </div>
+    <div>
+      <SvelteValue value={optionalValue} />
+      Will expand to show this text, and the value supplied above
+    </div>
+  </div>
+</div>
+// ...
+// the rest of your component
+```
 
 ## new in v2.2
 
 -   resizable window width - and saves to localStorage to re-use between sessions
--   row_expander - to expand deeply nested dom elements
+-   SvelteValue - to expand deeply nested dom elements
 -   plugins - to extend on the default settings
 
 ## New in v2.1

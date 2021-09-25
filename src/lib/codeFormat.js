@@ -46,8 +46,10 @@ function apply_formatter_for_type(type_formatters, row_settings, arr) {
         row_settings && row_settings.val && row_settings.val["is_svelte_explorer_expander"];
     const new_settings = getUpdatedTypeAndValue(row_settings, is_svelte_explorer_expander);
     if (is_svelte_explorer_expander) {
-        globalExpandedPush(new_settings.indexRef);
-        type_formatters[new_settings.format_type](new_settings, arr);
+        const parent = row_settings.indexRef.split(".").slice(0, -1).join(".");
+        const expand_this_row = new_settings.val.value ? row_settings.indexRef : parent;
+
+        globalExpandedPush(expand_this_row);
     }
     if (new_settings.row_render) append_arr_with_plugin_rows(new_settings, arr);
     else if (new_settings.row_html) append_arr_with_plugin_html(new_settings, arr);
@@ -154,7 +156,7 @@ function object_has_only_these_properties(value, arr) {
 }
 
 function isNode(o) {
-    return typeof Node === "object"
+    return typeof o === "object"
         ? o instanceof Node
         : o && typeof o === "object" && typeof o.nodeType === "number" && typeof o.nodeName === "string";
 }
@@ -273,7 +275,12 @@ function appendRowsForSvelteExplorerTag(row_settings, arr) {
     const { key, val, level, ...rest } = row_settings;
     const text = row_settings.val;
     const is_svelte_explorer_expander = row_settings.val.is_svelte_explorer_expander;
-    const children = is_svelte_explorer_expander ? [row_settings.val.value] : row_settings.val.children;
+
+    const children = is_svelte_explorer_expander
+        ? row_settings.val.value
+            ? [row_settings.val.value]
+            : []
+        : row_settings.val.children;
     const tag = row_settings.val["svelte-explorer-tag"].toLowerCase();
     const is_svelte_tag = ["#", "/", ":"].includes(tag[0]);
     const start_bracket = "<" + tag;
@@ -281,15 +288,18 @@ function appendRowsForSvelteExplorerTag(row_settings, arr) {
     const brackets = is_svelte_tag ? start_bracket + end_bracket : start_bracket + ">" + end_bracket;
     const has_text = text.length ? 1 : 0;
 
-    if (is_svelte_explorer_expander) appendRowsByType({ ...row_settings, val: row_settings.val.value }, arr);
-    else if (children.length || has_text) {
-        arr.push(getRowForBracketOpen(row_settings, children.length, brackets, "HTML", end_bracket.length));
-        if (has_text) appendRowsByType(getRowForChild(row_settings, "", text, 0), arr);
-        else {
-            children.forEach((a, i) => appendRowsByType(getRowForChild(row_settings, i, a, i), arr));
-            arr.push(getRowForBracketClose(row_settings, brackets, end_bracket.length));
-        }
-    } else arr.push({ ...rest, key, val: brackets, indent: level * indentSpaces });
+    //if (is_svelte_explorer_expander) appendRowsByType({ ...row_settings, val: row_settings.val.value }, arr);
+    //else
+    if (is_svelte_explorer_expander) console.log("is_svelte_explorer_expander", end_bracket);
+    //if (children.length || has_text) {
+    arr.push(getRowForBracketOpen(row_settings, children.length, brackets, "HTML", end_bracket.length));
+    //if (has_text) appendRowsByType(getRowForChild(row_settings, "", text, 0), arr);
+    //else {
+    //TODO check this for missing end brackets issue
+    children.forEach((a, i) => appendRowsByType(getRowForChild(row_settings, i, a, i), arr));
+    arr.push(getRowForBracketClose(row_settings, brackets, end_bracket.length));
+    //}
+    //} else arr.push({ ...rest, key, val: brackets, indent: level * indentSpaces });
 }
 
 export function recursive_get_chunked_array(supplied = [], supplied_options = {}) {

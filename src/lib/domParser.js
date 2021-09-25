@@ -9,7 +9,7 @@ function domParser(options = {}) {
 
     function getTag(el) {
         if (isHtmlNodeOrSvelteExplorerTag(el)) {
-            const isExpander = getExpanderFromPlugins(el, plugins);
+            const isExpander = getExpander(el, expand, plugins);
             const isSETag = isSvelteExplorerTag(el);
             const textContent = el.nodeName === "#text" ? el.nodeValue : "";
             const svelteExplorerTag = isSETag ? el.dataset["svelteExplorerTag"] : el.nodeName;
@@ -33,8 +33,10 @@ function domParser(options = {}) {
         } else return null;
     }
 
-    function getExpanderFromPlugins(el, plugins) {
-        let parsed_plugin_expander = false;
+    function getExpander(el, expand, plugins) {
+        // Changing this to allow for default expander as well as plugin expanders
+        let parsed_plugin_expander = el && expand && typeof expand === "function" && expand(el);
+
         Object.entries(plugins).find((plugin_array) => {
             if (plugin_array[1] && plugin_array[1].row_expander && plugin_array[1].row_expander(el)) {
                 parsed_plugin_expander = plugin_array[0];

@@ -104,9 +104,9 @@ const example_page_svelte_component = {
     plugins,
 };
 
-const example_page_custom_element_es = {
-    input: "./src/Examples/CustomElement/main.js",
-    output: { format: "iife", name: "app", file: "public/CustomElementES/bundle.js" },
+const test_expander_svelte_component = {
+    input: "./src/Examples/SvelteComponent/Expander/main.js",
+    output: { format: "iife", name: "app", file: "public/SvelteComponent/Expander/bundle.js" },
     plugins,
 };
 
@@ -116,7 +116,5 @@ export default [
     dist_custom_element_iife_copy2,
     dist_custom_element_es,
 
-    example_page_iife,
-    example_page_svelte_component,
-    example_page_custom_element_es,
+    test_expander_svelte_component,
 ];
