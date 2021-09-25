@@ -1,8 +1,9 @@
-function domParser(optional_node, optional_plugins) {
-    // parses the dom from body downwards into a simplified ast, e.g.
+function domParser(options = {}) {
+    // parses the dom from supplied node downwards into a simplified ast, e.g.
     // el = { class: "classname", "svelte-explorer-tag": "H1", children: [el, el, el] }
-    let html = optional_node || document.body;
-    let plugins = optional_plugins || {};
+    let html = (options && options.node) || document.body;
+    let plugins = (options && options.plugins) || {};
+    let expand = (options && options.expand) || ((el) => el.nodeName === "SVELTE-EXPLORER-EXPAND");
     let arr = getTag(html);
     return arr;
 

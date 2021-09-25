@@ -265,7 +265,7 @@ function appendRowForSymbol(row_settings, arr) {
 }
 
 function appendRowsForDomNode(row_settings, arr) {
-    const converted = domParser(row_settings.val, global_plugins);
+    const converted = domParser({ node: row_settings.val, plugins: global_plugins });
     appendRowsForSvelteExplorerTag({ ...row_settings, val: converted }, arr);
 }
 

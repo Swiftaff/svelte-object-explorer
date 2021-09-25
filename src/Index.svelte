@@ -86,7 +86,11 @@
                 if ("plugins" in obj) plugins = obj.plugins;
             }
             let newPlugins = plugins;
-            let newValue = { value: value || lib.domParser(document.body, newPlugins), plugins: newPlugins };
+            let options = { node: document.body, plugins: newPlugins };
+            let newValue = {
+                value: value || lib.domParser(options),
+                plugins: newPlugins,
+            };
             const stringifiedValue = JSON.stringify(newValue); //, lib.replacer);
             if (stringifiedValue !== stringifiedValueCache) {
                 cache.dataUpdated = new Date();
