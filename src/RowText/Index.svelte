@@ -6,4 +6,7 @@
     export let isExpanded = false;
 </script>
 
-{#if row}{#if row.html}<RowHtml {row} {isExpanded} />{:else}<Row {row} {isExpanded} />{/if}{/if}
+{#if row && typeof row === "object"}{#if row.html}<RowHtml {row} {isExpanded} />{:else}<Row
+            {row}
+            {isExpanded}
+        />{/if}{/if}

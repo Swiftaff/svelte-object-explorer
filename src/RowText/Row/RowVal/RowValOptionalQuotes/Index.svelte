@@ -3,10 +3,9 @@
     export let row;
 </script>
 
-<Quote {row} first_or_last_multiline={row.is_first_multiline} /><span class="val">{row.val}</span><Quote
-    {row}
-    first_or_last_multiline={row.is_last_multiline}
-/>
+{#if row && typeof row === "object"}<Quote {row} first_or_last_multiline={row.is_first_multiline} /><span class="val"
+        >{row.val}</span
+    ><Quote {row} first_or_last_multiline={row.is_last_multiline} />{/if}
 
 <style>
     .val {

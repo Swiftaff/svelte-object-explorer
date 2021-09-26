@@ -3,7 +3,7 @@
     export let isExpanded;
 </script>
 
-{#if row.len}<span class={"len" + (isExpanded ? " grey" : "")}>({row.len})</span>{/if}
+{#if row && typeof row === "object" && row.len}<span class={"len" + (isExpanded ? " grey" : "")}>({row.len})</span>{/if}
 
 <style>
     .len {

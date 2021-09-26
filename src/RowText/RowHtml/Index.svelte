@@ -6,6 +6,4 @@
 
 {#if isExpanded}
     <RowHtmlExpanded {row} />
-{:else}
-    {@html row.html}
-{/if}
+{:else if row && typeof row === "object"}{@html row.html}{/if}

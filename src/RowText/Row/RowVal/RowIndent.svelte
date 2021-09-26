@@ -2,4 +2,4 @@
     export let row;
 </script>
 
-{" ".repeat(row.indent)}
+{#if row && typeof row === "object"}{" ".repeat(row.indent)}{/if}

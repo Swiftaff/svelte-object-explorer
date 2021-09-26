@@ -2,7 +2,9 @@
     export let row;
 </script>
 
-{#if row.type && row.type !== "ARRAY+OBJECT" && row.type !== "ARRAY+SUB_ARRAY"}<span class="type">{row.type}</span>{/if}
+{#if row && typeof row === "object" && row.type && row.type !== "ARRAY+OBJECT" && row.type !== "ARRAY+SUB_ARRAY"}<span
+        class="type">{row.type}</span
+    >{/if}
 
 <style>
     .type {

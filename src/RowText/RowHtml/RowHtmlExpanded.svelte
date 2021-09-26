@@ -2,7 +2,7 @@
     export let row;
 </script>
 
-{#if row.expandable}
+{#if row && typeof row === "object" && row.expandable}
     {@html row.expandable}
 {:else}
     {@html row.html}
