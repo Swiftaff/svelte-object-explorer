@@ -1,16 +1,6 @@
 <script>
     import SvelteObjectExplorer from "../../../../Index.svelte";
+    import ExampleDeeplyNested1 from "../../../ExampleDeeplyNested1.svelte";
 </script>
 
-<SvelteObjectExplorer />
-<div>
-    <div>
-        <div>
-            <div>
-                <div>
-                    <div>Deeply Nested Content</div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+<SvelteObjectExplorer /><ExampleDeeplyNested1 />

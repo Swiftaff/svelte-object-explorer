@@ -12,7 +12,10 @@ import { terser } from "rollup-plugin-terser";
 const plugins = [
     rolluppluginiconifysvg({ logging: "some" }),
     svelte({ ...removeWhitespace, emitCss: false }),
-    resolve(),
+    resolve({
+        browser: true,
+        dedupe: ["svelte"],
+    }),
     terser(),
 ];
 
@@ -23,7 +26,10 @@ const dist_custom_element_iife = {
     plugins: [
         rolluppluginiconifysvg({ logging: "some" }),
         svelte(create_custom_element),
-        resolve(),
+        resolve({
+            browser: true,
+            dedupe: ["svelte"],
+        }),
         move_styles_to_root_element("./" + pkg.main),
         terser(),
     ],
@@ -42,7 +48,10 @@ const dist_custom_element_iife_copy1 = {
     plugins: [
         rolluppluginiconifysvg({ logging: "some" }),
         svelte(create_custom_element),
-        resolve(),
+        resolve({
+            browser: true,
+            dedupe: ["svelte"],
+        }),
         move_styles_to_root_element("./public/CustomElementIIFE/iife_copy.js"),
         terser(),
     ],
@@ -61,7 +70,10 @@ const dist_custom_element_iife_copy2 = {
     plugins: [
         rolluppluginiconifysvg({ logging: "some" }),
         svelte(create_custom_element),
-        resolve(),
+        resolve({
+            browser: true,
+            dedupe: ["svelte"],
+        }),
         move_styles_to_root_element("./public/VanillaAndIIFE/iife_copy.js"),
         terser(),
     ],
@@ -82,7 +94,10 @@ const dist_custom_element_es = {
     plugins: [
         rolluppluginiconifysvg({ logging: "some" }),
         svelte(create_custom_element),
-        resolve(),
+        resolve({
+            browser: true,
+            dedupe: ["svelte"],
+        }),
         move_styles_to_root_element("./" + pkg.module),
         terser(),
     ],
@@ -98,15 +113,51 @@ const example_page_iife = {
     plugins,
 };
 
+const expander_example1_custom_element_iife = {
+    input: "./src/Examples/IIFE/Expander/Example1/main.js",
+    output: { format: "iife", name: "app", file: "public/CustomElementIIFE/Expander/Example1/bundle.js" },
+    plugins,
+};
+
+const expander_example2_custom_element_iife = {
+    input: "./src/Examples/IIFE/Expander/Example2/main.js",
+    output: { format: "iife", name: "app", file: "public/CustomElementIIFE/Expander/Example2/bundle.js" },
+    plugins,
+};
+
+const example_page_custom_element_es = {
+    input: "./src/Examples/CustomElement/main.js",
+    output: { format: "iife", name: "app", file: "public/CustomElementES/bundle.js" },
+    plugins,
+};
+
+const expander_example1_custom_element_es = {
+    input: "./src/Examples/CustomElement/Expander/Example1/main.js",
+    output: { format: "iife", name: "app", file: "public/CustomElementES/Expander/Example1/bundle.js" },
+    plugins,
+};
+
+const expander_example2_custom_element_es = {
+    input: "./src/Examples/CustomElement/Expander/Example2/main.js",
+    output: { format: "iife", name: "app", file: "public/CustomElementES/Expander/Example2/bundle.js" },
+    plugins,
+};
+
 const example_page_svelte_component = {
     input: "./src/Examples/SvelteComponent/main.js",
     output: { format: "iife", name: "app", file: "public/SvelteComponent/bundle.js" },
     plugins,
 };
 
-const test_expander_svelte_component = {
-    input: "./src/Examples/SvelteComponent/Expander/main.js",
-    output: { format: "iife", name: "app", file: "public/SvelteComponent/Expander/bundle.js" },
+const expander_example1_svelte_component = {
+    input: "./src/Examples/SvelteComponent/Expander/Example1/main.js",
+    output: { format: "iife", name: "app", file: "public/SvelteComponent/Expander/Example1/bundle.js" },
+    plugins,
+};
+
+const expander_example2_svelte_component = {
+    input: "./src/Examples/SvelteComponent/Expander/Example2/main.js",
+    output: { format: "iife", name: "app", file: "public/SvelteComponent/Expander/Example2/bundle.js" },
     plugins,
 };
 
@@ -114,7 +165,16 @@ export default [
     dist_custom_element_iife,
     dist_custom_element_iife_copy1,
     dist_custom_element_iife_copy2,
-    dist_custom_element_es,
+    example_page_iife,
+    expander_example1_custom_element_iife,
+    expander_example2_custom_element_iife,
 
-    test_expander_svelte_component,
+    dist_custom_element_es,
+    example_page_custom_element_es,
+    expander_example1_custom_element_es,
+    expander_example2_custom_element_es,
+
+    example_page_svelte_component,
+    expander_example1_svelte_component,
+    expander_example2_svelte_component,
 ];

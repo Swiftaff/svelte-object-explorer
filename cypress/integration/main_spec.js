@@ -279,14 +279,16 @@ module.exports = (index) => {
 
     describe(url + ": " + "Using SvelteValue to expand deep dom elements", function () {
         describe("No expansion if SvelteValue is not used", function () {
-            it("should have 5 rows of data to start with", function () {
+            const rows = 4;
+            const content_row = 8;
+            it(`should have ${rows} rows of data to start with`, function () {
                 setViewportAndVisitUrl(url + "/Expander/Example1");
 
-                cy.get("div.row").should("have.length", 5);
+                cy.get("div.row").should("have.length", rows);
             });
 
             it("should show unexpanded top level div", function () {
-                nthSelectorEqualsText(3, "span.val", "<div></div>");
+                nthSelectorEqualsText(rows - 2, "span.val", "<div></div>");
             });
 
             it("can expand all nested divs, to reveal expected content", function () {
@@ -296,20 +298,20 @@ module.exports = (index) => {
                 cy.get("span.dataArrow").eq(4).click();
                 cy.get("span.dataArrow").eq(5).click();
                 cy.get("span.dataArrow").eq(6).click();
-                nthSelectorEqualsText(9, "span.val", "Deeply Nested Content");
+                nthSelectorEqualsText(content_row, "span.val", "Deeply Nested Content");
             });
         });
 
-        describe.only("Auto-expansion if SvelteValue is used", function () {
-            const expander1_row = 9;
-            const expander2_row = 21;
-            const expander3_row = 35;
+        describe("Auto-expansion if SvelteValue is used", function () {
+            const expander1_row = 8;
+            const expander2_row = 20;
+            const expander3_row = 34;
             const expander3_child_arrow = 20;
             const expander4_child_arrow = 27;
 
             //below are true after above have been expanded
-            const expander4_row = 51;
-            const rows = 64;
+            const expander4_row = 50;
+            const rows = 63;
 
             it(`has ${rows} rows of data to start with`, function () {
                 setViewportAndVisitUrl(url + "/Expander/Example2");

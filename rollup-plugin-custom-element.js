@@ -90,7 +90,7 @@ function prepend_content_with_svelte_options_tag(content, filepath) {
 
     function get_component_name(filepath) {
         const base_name = "svelte-object-explorer";
-        const is_base_component = filepath.includes("Index.svelte");
+        const is_base_component = filepath.includes("src/Index.svelte");
         return is_base_component ? base_name : base_name + get_sub_component_name(filepath);
     }
 
