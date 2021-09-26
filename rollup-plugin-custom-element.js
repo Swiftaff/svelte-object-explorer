@@ -96,7 +96,8 @@ function prepend_content_with_svelte_options_tag(content, filepath) {
 
     function get_sub_component_name(filepath) {
         const filename = get_filename(filepath);
-        return replace_capitals_with_dashes_and_lowercase(filename);
+        const filename2 = replace_capitals_with_dashes_and_lowercase(filename);
+        return remove_forward_slashes_from_nested_components(filename2);
     }
 
     function get_filename(filepath) {
@@ -108,5 +109,10 @@ function prepend_content_with_svelte_options_tag(content, filepath) {
     function replace_capitals_with_dashes_and_lowercase(txt) {
         const regex_to_find_capitals = /([A-Z])/g;
         return txt.replace(regex_to_find_capitals, "-$1").toLowerCase();
+    }
+
+    function remove_forward_slashes_from_nested_components(txt) {
+        const regex_to_find_forward_slashes = /\//g;
+        return txt.replace(regex_to_find_forward_slashes, "");
     }
 }

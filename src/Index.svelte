@@ -6,7 +6,7 @@
     import PauseButton from "../src/PauseButton.svelte";
     import CacheDisplay from "../src/CacheDisplay.svelte";
     import ChevronButtons from "../src/ChevronButtons.svelte";
-    import RowText from "../src/RowText.svelte";
+    import RowText from "../src/RowText/Index.svelte";
     import lib from "../src/lib/index.js";
 
     let ratelimitDefault = 100;
