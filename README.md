@@ -82,7 +82,7 @@ Also see [plugins](PLUGINS.md) for how to further extend Svelte Object Explorer 
 
 -   TODO make all options available as a single options object
 -   TODO - ordering matters, change plugins to array
--   TODO fix end close tags
+-   TODO tests for plugins
 
 ## SvelteValue - to auto-expand deeply nested dom elements
 

@@ -16,6 +16,7 @@ const c2 = "customType2";
 const c3 = "customType3";
 const customStoreValue_row = 22;
 const customStoreValue_end_row = 28;
+const VIEWPORT_WIDTH = 1000;
 const example_urls = ["/CustomElementES", "/CustomElementIIFE", "/SvelteComponent"];
 
 module.exports = (index) => {
@@ -68,7 +69,7 @@ module.exports = (index) => {
         const child_rows = 12;
         it(`Clicking first sub-item 'HTML' expand arrow, should expand item, showing ${child_rows} children of correct type`, function () {
             cy.get("button.pause").click();
-            cy.get("span.dataArrow").eq(1).click();
+            nthSelectorClick(1, "span.dataArrow");
             nthSelectorEqualsText(html_row, "span.len", "(12)");
             nthSelectorEqualsText(html_row, "span.type", "HTML");
 
@@ -277,6 +278,162 @@ module.exports = (index) => {
         });
     });
 
+    describe.only(url + ": " + "Adjust panel width", function () {
+        describe("Mousedown/mouseup on edge, will toggle the transition of the toggle button", function () {
+            it("toggle has transition on page load", function () {
+                setViewportAndVisitUrl(url + "/Expander/Example1");
+                cy.get(".toggle").then((el) => {
+                    expect(el[0].style.transitionDuration).to.equal("0.2s");
+                });
+            });
+
+            it("Mousedown on edge removes transition from toggle", function () {
+                cy.get(".width_adjust_hover_zone")
+                    .trigger("mousedown")
+                    .then((el) => {
+                        cy.get(".toggle").then((el) => {
+                            expect(el[0].style.transitionDuration).to.equal("");
+                        });
+                    });
+            });
+
+            it("Mouseup returns transition to toggle", function () {
+                cy.get(".width_adjust_hover_zone")
+                    .click() // doing this instead of mouseup which isn't working
+                    .then((el) => {
+                        cy.get(".toggle").then((el) => {
+                            expect(el[0].style.transitionDuration).to.equal("0.2s");
+                        });
+                    });
+            });
+        });
+
+        describe.only("Dragging left and right, changes width, saves to localStorage", function () {
+            it("Drag edge to the left, will increase panel width", function () {
+                setViewportAndVisitUrl(url + "/Expander/Example1");
+                let first, second, clientX;
+
+                //mousedown on edge, get position
+                cy.get(".width_adjust_hover_zone")
+                    .click()
+                    .trigger("mousedown")
+                    .then((el) => {
+                        first = getStyleLeftValue(el);
+                        clientX = first - 100;
+                    });
+
+                // move mouse to the left
+                cy.window().then((win) => {
+                    win.dispatchEvent(new win.MouseEvent("mousemove", { clientX, clientY: 0 }));
+                    win.dispatchEvent(new win.MouseEvent("mouseup", { clientX, clientY: 0 }));
+                });
+
+                //mouseup, get position again, mouseup compare
+                cy.get(".width_adjust_hover_zone")
+                    .click() // doing this instead of mouseup which isn't working
+                    .then((el3) => {
+                        second = getStyleLeftValue(el3);
+                        expect(first > second).to.equal(true);
+                        let saved_locally = JSON.parse(localStorage.getItem("svelte-object-explorer"));
+                        expect(saved_locally.width.toString()).to.equal((VIEWPORT_WIDTH - clientX).toString());
+                    });
+            });
+
+            it("Drag edge too far to the left, will increase panel width to max", function () {
+                setViewportAndVisitUrl(url + "/Expander/Example1");
+                let first, second, clientX;
+                const leftmost = 26;
+
+                //mousedown on edge, get position
+                cy.get(".width_adjust_hover_zone")
+                    .click()
+                    .trigger("mousedown")
+                    .then((el) => {
+                        first = getStyleLeftValue(el);
+                        clientX = first - 464;
+                    });
+
+                // move mouse to the left
+                cy.window().then((win) => {
+                    win.dispatchEvent(new win.MouseEvent("mousemove", { clientX, clientY: 0 }));
+                    win.dispatchEvent(new win.MouseEvent("mouseup", { clientX, clientY: 0 }));
+                });
+
+                //mouseup, get position again,mouseup compare
+                cy.get(".width_adjust_hover_zone")
+                    .click() // doing this instead of mouseup which isn't working
+                    .then((el3) => {
+                        second = getStyleLeftValue(el3);
+                        expect(second.toString()).to.equal(leftmost.toString());
+                        let saved_locally = JSON.parse(localStorage.getItem("svelte-object-explorer"));
+                        expect(saved_locally.width.toString()).to.equal((VIEWPORT_WIDTH - clientX).toString());
+                    });
+            });
+
+            it("Drag edge to the right, will decrease panel width", function () {
+                setViewportAndVisitUrl(url + "/Expander/Example1");
+                let first, second, clientX;
+
+                //mousedown on edge, get position
+                cy.get(".width_adjust_hover_zone")
+                    .click()
+                    .trigger("mousedown")
+                    .then((el) => {
+                        first = getStyleLeftValue(el);
+                        clientX = 510;
+                    });
+
+                // move mouse to the left
+                cy.window().then((win) => {
+                    win.dispatchEvent(new win.MouseEvent("mousemove", { clientX, clientY: 0 }));
+                    win.dispatchEvent(new win.MouseEvent("mouseup", { clientX, clientY: 0 }));
+                });
+
+                //mouseup, get position again, mouseup compare
+                cy.get(".width_adjust_hover_zone")
+                    .click() // doing this instead of mouseup which isn't working
+                    .then((el3) => {
+                        second = getStyleLeftValue(el3);
+                        expect(first < second).to.equal(true);
+                        let saved_locally = JSON.parse(localStorage.getItem("svelte-object-explorer"));
+                        expect(saved_locally.width.toString()).to.equal((VIEWPORT_WIDTH - clientX).toString());
+                    });
+            });
+
+            it("Drag edge too far to the right, will decrease panel width to min", function () {
+                setViewportAndVisitUrl(url + "/Expander/Example1");
+                let first, second, clientX;
+                const rightmost = 554;
+
+                //mousedown on edge, get position
+                cy.get(".width_adjust_hover_zone")
+                    .click()
+                    .trigger("mousedown")
+                    .then((el) => {
+                        first = getStyleLeftValue(el);
+                        clientX = 559;
+                    });
+
+                // move mouse to the left
+                cy.window().then((win) => {
+                    win.dispatchEvent(new win.MouseEvent("mousemove", { clientX, clientY: 0 }));
+                    win.dispatchEvent(new win.MouseEvent("mouseup", { clientX, clientY: 0 }));
+                });
+
+                //mouseup, get position again,mouseup compare
+                cy.get(".width_adjust_hover_zone")
+                    .click() // doing this instead of mouseup which isn't working
+                    .then((el3) => {
+                        second = getStyleLeftValue(el3);
+                        expect(second.toString()).to.equal(rightmost.toString());
+                        let saved_locally = JSON.parse(localStorage.getItem("svelte-object-explorer"));
+
+                        expect(saved_locally.width.toString()).to.equal((VIEWPORT_WIDTH - clientX).toString());
+                    });
+            });
+        });
+    });
+
     describe(url + ": " + "Using SvelteValue to expand deep dom elements", function () {
         describe("No expansion if SvelteValue is not used", function () {
             const rows = 4;
@@ -292,12 +449,9 @@ module.exports = (index) => {
             });
 
             it("can expand all nested divs, to reveal expected content", function () {
-                cy.get("span.dataArrow").eq(1).click();
-                cy.get("span.dataArrow").eq(2).click();
-                cy.get("span.dataArrow").eq(3).click();
-                cy.get("span.dataArrow").eq(4).click();
-                cy.get("span.dataArrow").eq(5).click();
-                cy.get("span.dataArrow").eq(6).click();
+                for (let index = 1; index < 7; index++) {
+                    nthSelectorClick(index, "span.dataArrow");
+                }
                 nthSelectorEqualsText(content_row, "span.val", "Deeply Nested Content");
             });
         });
@@ -315,8 +469,8 @@ module.exports = (index) => {
 
             it(`has ${rows} rows of data to start with`, function () {
                 setViewportAndVisitUrl(url + "/Expander/Example2");
-                cy.get("span.dataArrow").eq(expander3_child_arrow).click();
-                cy.get("span.dataArrow").eq(expander4_child_arrow).click();
+                nthSelectorClick(expander3_child_arrow, "span.dataArrow");
+                nthSelectorClick(expander4_child_arrow, "span.dataArrow");
                 cy.get("div.row").should("have.length", rows);
             });
 
@@ -432,7 +586,23 @@ function nthSelectorEqualsText(n, selector, compare_text) {
         });
 }
 
+function nthSelectorClick(n, selector) {
+    cy.get(selector).eq(n).click();
+}
+
 function setViewportAndVisitUrl(url) {
-    cy.viewport(1000, 600);
+    cy.viewport(VIEWPORT_WIDTH, 600);
     cy.visit(url);
+}
+
+function getStyleLeftValue(el) {
+    let value_with_px = el[0].style.left;
+    return parseInt(value_with_px.substring(0, value_with_px.length - 2));
+}
+
+function mouseMoveX(x) {
+    cy.window().then((win) => {
+        win.dispatchEvent(new win.MouseEvent("mousemove", { clientX: x, clientY: 0 }));
+        win.dispatchEvent(new win.MouseEvent("mouseup", { clientX: x, clientY: 0 }));
+    });
 }
