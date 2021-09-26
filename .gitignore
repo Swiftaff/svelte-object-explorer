@@ -5,5 +5,7 @@ cypress/screenshots
 cypress/videos
 **/icons.js
 **/public/*/*.js
+**/public/*/*/*.js
+**/public/*/*/*/*.js
 **/public/*/*.css
 **/public/*/*.map
