@@ -14,14 +14,15 @@ const c1a = "customType1a";
 const c1b = "customType1b";
 const c2 = "customType2";
 const c3 = "customType3";
+const customStoreValue_row = 22;
+const customStoreValue_end_row = 28;
 const example_urls = ["/CustomElementES", "/CustomElementIIFE", "/SvelteComponent"];
 
 module.exports = (index) => {
     const url = example_urls[index];
     describe(url + ": " + "Toggle Main panel", function () {
         it("Panel is visible", function () {
-            cy.viewport(1000, 600);
-            cy.visit(url);
+            setViewportAndVisitUrl(url);
             cy.get("div.tree");
         });
 
@@ -47,92 +48,95 @@ module.exports = (index) => {
     });
 
     describe(url + ": " + "Toggle panel objects", function () {
-        it("Count of data rows should be 36 (27 rows + multilines)", function () {
-            cy.viewport(1000, 600);
-            cy.visit(url);
-            cy.get("div.row").should("have.length", 36);
-            cy.get("span.len").first().contains("(27)");
+        const rows = 27;
+        const multiline_rows = 9;
+        const all = rows + multiline_rows;
+        it(`Count of data rows should be ${all} (${rows} rows + ${multiline_rows} multilines)`, function () {
+            setViewportAndVisitUrl(url);
+            cy.get("div.row").should("have.length", all);
+            nthSelectorEqualsText(0, "span.len", "(" + rows + ")");
         });
 
         it("List of child types should match test data", function () {
             const types = [o, h, s, s, a, a, A, o, n, n, b, b, N, u, S, S, F, F, f, o, n, o, n, c1a, c1b, c2, c3];
             for (let i = 0; i < types.length; i++) {
-                cy.get("span.type").eq(i).contains(types[i]);
+                nthSelectorEqualsText(i, "span.type", types[i]);
             }
         });
 
-        it("Clicking first sub-item 'HTML' expand arrow, should expand item, showing 12 children of correct type", function () {
+        const html_row = 1;
+        const child_rows = 12;
+        it(`Clicking first sub-item 'HTML' expand arrow, should expand item, showing ${child_rows} children of correct type`, function () {
             cy.get("button.pause").click();
             cy.get("span.dataArrow").eq(1).click();
-            cy.get("span.len").eq(1).contains("(12)");
-            cy.get("span.type").eq(1).contains("HTML");
-            const types = [o, h, h, h, h, h, h, h, h, h, h, h, h, h, s];
-            for (let i = 0; i < types.length; i++) {
-                cy.get("span.type").eq(i).contains(types[i]);
+            nthSelectorEqualsText(html_row, "span.len", "(12)");
+            nthSelectorEqualsText(html_row, "span.type", "HTML");
+
+            for (let i = html_row + 1; i < child_rows; i++) {
+                nthSelectorEqualsText(i, "span.type", h);
             }
         });
     });
 
     describe(url + ": " + "Prop options", function () {
         describe(url + ": " + "Open", function () {
+            const longstring_row = 3;
+            const longstring_row_2nd_position = 15;
             it("Open = null, No panels are open", function () {
-                cy.viewport(1000, 600);
-                cy.visit(url);
+                setViewportAndVisitUrl(url);
                 cy.wait(1000);
                 //item 'longstring' with no panels open above it, should be in original position
-                nthSelectorEqualsText(3, "div.row span.key", "longstring");
+                nthSelectorEqualsText(longstring_row, "div.row span.key", "longstring");
             });
 
             it("Open = 'string1', is not an object or array so no panels are open", function () {
-                cy.viewport(1000, 600);
-                cy.visit(url + "?open=string1");
+                setViewportAndVisitUrl(url + "?open=string1");
+
                 cy.wait(1000);
                 //item 'longstring' with no panels open above it, should be in original position
-                nthSelectorEqualsText(3, "div.row span.key", "longstring");
+                nthSelectorEqualsText(longstring_row, "div.row span.key", "longstring");
             });
 
             it("Open = 'bananaman', is not a valid reference so no panels are open", function () {
-                cy.viewport(1000, 600);
-                cy.visit(url + "?open=bananaman");
+                setViewportAndVisitUrl(url + "?open=bananaman");
+
                 cy.wait(1000);
                 //item 'longstring' with no panels open above it, should be in original position
-                nthSelectorEqualsText(3, "div.row span.key", "longstring");
+                nthSelectorEqualsText(longstring_row, "div.row span.key", "longstring");
             });
 
             it("Open = 'html', is an object, so it is open, so longstring is further down", function () {
-                cy.viewport(1000, 600);
-                cy.visit(url + "?open=html");
+                setViewportAndVisitUrl(url + "?open=html");
+
                 cy.wait(1000);
                 //item 'longstring' after expanded 'html' should be further down
-                nthSelectorEqualsText(15, "div.row span.key", "longstring");
+                nthSelectorEqualsText(longstring_row_2nd_position, "div.row span.key", "longstring");
             });
         });
 
         describe(url + ": " + "Fade", function () {
             describe(url + ": " + "Fade = true", function () {
                 it("Panel is visible with 0.3 opacity when NOT mouseover", function () {
-                    cy.viewport(1000, 600);
-                    cy.visit(url + "?fade=true");
+                    setViewportAndVisitUrl(url + "?fade=true");
+
                     cy.get("div.tree").should("have.css", "opacity", "0.3");
                 });
 
                 it("Panel is visible with 1 opacity when mouseover (simulates a hover)", function () {
-                    cy.viewport(1000, 600);
-                    cy.visit(url + "?fade=true");
+                    setViewportAndVisitUrl(url + "?fade=true");
+
                     cy.get("#svelteObjectExplorer").trigger("mouseover").wait(1000).should("have.css", "opacity", "1");
                 });
             });
 
             describe(url + ": " + "Fade = false", function () {
                 it("Panel is visible with 1 opacity when NOT mouseover", function () {
-                    cy.viewport(1000, 600);
-                    cy.visit(url);
+                    setViewportAndVisitUrl(url);
                     cy.get("div.tree").should("have.css", "opacity", "1");
                 });
 
                 it("Panel is visible with 1 opacity when mouseover (simulates a hover)", function () {
-                    cy.viewport(1000, 600);
-                    cy.visit(url);
+                    setViewportAndVisitUrl(url);
                     cy.get("#svelteObjectExplorer").trigger("mouseover").wait(1000).should("have.css", "opacity", "1");
                 });
             });
@@ -140,69 +144,70 @@ module.exports = (index) => {
 
         describe(url + ": " + "tabposition", function () {
             it("The 'Show' Panel is in the top, because of prop 'tabposition=top'", function () {
-                cy.viewport(1000, 600);
-                cy.visit(url + "?tabposition=top");
+                setViewportAndVisitUrl(url + "?tabposition=top");
+
                 cy.get("div.toggle.toggleShow.toggletop");
             });
             it("The 'Show' Panel is in the middle, because of prop 'tabposition=middle'", function () {
-                cy.viewport(1000, 600);
-                cy.visit(url + "?tabposition=middle");
+                setViewportAndVisitUrl(url + "?tabposition=middle");
+
                 cy.get("div.toggle.toggleShow.togglemiddle");
             });
             it("The 'Show' Panel is in the bottom, because of prop 'tabposition=bottom'", function () {
-                cy.viewport(1000, 600);
-                cy.visit(url + "?tabposition=bottom");
+                setViewportAndVisitUrl(url + "?tabposition=bottom");
+
                 cy.get("div.toggle.toggleShow.togglebottom");
             });
         });
 
         describe(url + ": " + "rateLimit", function () {
-            describe(
-                url + ": " + "rateLimit = default 100. Autocounter should increase cache automatically each second",
-                function () {
-                    callAutomaticCounterTests(url, 100, 0, 1100, "not.");
-                }
-            );
-            describe(url + ": " + "rateLimit = 500. Autocounter should still increase cache each second", function () {
-                callAutomaticCounterTests(url, 500, 250, 1100, "");
+            let rate = 100;
+            describe(`${url}: rateLimit = default ${rate}. Autocounter should increase cache automatically each second`, function () {
+                callAutomaticCounterTests(url, rate, 50, 1100, "not.");
             });
-            describe(url + ": " + "rateLimit = 2000. Autocounter should increase cache each 2 seconds", function () {
-                callAutomaticCounterTests(url, 2000, 500, 3000, "");
+            rate = 500;
+            describe(`${url}: rateLimit = default ${rate}. Autocounter should still increase cache each second`, function () {
+                callAutomaticCounterTests(url, rate, 250, 1100, "");
+            });
+            rate = 2000;
+            describe(`${url}: rateLimit = default ${rate}. Autocounter should increase cache automatically each 2 seconds`, function () {
+                callAutomaticCounterTests(url, rate, 500, 3000, "");
             });
         });
     });
 
     describe(url + ": " + "Panel data updates when App data updates", function () {
-        it("Manual: Clicking counter buttons should change the manual counter", function () {
-            cy.viewport(1000, 600);
-            cy.visit(url);
-            cy.wait(1000);
+        describe("Manual: Clicking counter buttons should change the manual counter", function () {
+            it("customStoreValue is initially set to 0", function () {
+                setViewportAndVisitUrl(url);
+                cy.wait(1000);
+                nthSelectorEqualsText(customStoreValue_row, "div.row span.key", "customStoreValue");
+                nthSelectorEqualsText(customStoreValue_end_row, "div.row span.val", "0"); // 22 + 6 multi-lines from longstring
+            });
 
-            //customStoreValue is initially set to 0
-            nthSelectorEqualsText(22, "div.row span.key", "customStoreValue");
-            nthSelectorEqualsText(28, "div.row span.val", "0"); // 22 + 6 multi-lines from longstring
+            it("click increase button twice, should equal 2", function () {
+                cy.get("#incr").click();
+                cy.get("#incr").click();
+                cy.wait(1000);
+                nthSelectorEqualsText(customStoreValue_end_row, "div.row span.val", "2");
+            });
 
-            //click increase button twice, should equal 2
-            cy.get("#incr").click();
-            cy.get("#incr").click();
-            cy.wait(1000);
-            nthSelectorEqualsText(28, "div.row span.val", "2");
+            it("click decrease button once, should equal 1", function () {
+                cy.get("#decr").click();
+                cy.wait(1000);
+                nthSelectorEqualsText(customStoreValue_end_row, "div.row span.val", "1");
+            });
 
-            //click decrease button once, should equal 1
-            cy.get("#decr").click();
-            cy.wait(1000);
-            nthSelectorEqualsText(28, "div.row span.val", "1");
-
-            //click reset button once, should equal 0 again
-            cy.get("#decr").click();
-            cy.wait(1000);
-            nthSelectorEqualsText(28, "div.row span.val", "0");
+            it("click reset button once, should equal 0 again", function () {
+                cy.get("#reset").click();
+                cy.wait(1000);
+                nthSelectorEqualsText(customStoreValue_end_row, "div.row span.val", "0");
+            });
         });
 
         describe(url + ": " + "Automatic: Data updates when paused and un-paused, compared to view", function () {
             it("data and view are the same on page load", function () {
-                cy.viewport(1000, 600);
-                cy.visit(url);
+                setViewportAndVisitUrl(url);
                 cy.wait(2000);
                 cy.get(".reset").click();
                 cy.get("span.cache_view")
@@ -213,8 +218,7 @@ module.exports = (index) => {
                     });
             });
             it("after 2 seconds of pausing, data has increased, but view should not", function () {
-                cy.viewport(1000, 600);
-                cy.visit(url);
+                setViewportAndVisitUrl(url);
                 cy.wait(1000);
                 //pause
                 cy.get(".reset").click();
@@ -241,8 +245,7 @@ module.exports = (index) => {
                     });
             });
             it("both data and view will update after unpause", function () {
-                cy.viewport(1000, 600);
-                cy.visit(url);
+                setViewportAndVisitUrl(url);
                 cy.wait(1000);
                 //pause
                 cy.get(".reset").click();
@@ -273,6 +276,112 @@ module.exports = (index) => {
             });
         });
     });
+
+    describe(url + ": " + "Using SvelteValue to expand deep dom elements", function () {
+        describe("No expansion if SvelteValue is not used", function () {
+            it("should have 5 rows of data to start with", function () {
+                setViewportAndVisitUrl(url + "/Expander/Example1");
+
+                cy.get("div.row").should("have.length", 5);
+            });
+
+            it("should show unexpanded top level div", function () {
+                nthSelectorEqualsText(3, "span.val", "<div></div>");
+            });
+
+            it("can expand all nested divs, to reveal expected content", function () {
+                cy.get("span.dataArrow").eq(1).click();
+                cy.get("span.dataArrow").eq(2).click();
+                cy.get("span.dataArrow").eq(3).click();
+                cy.get("span.dataArrow").eq(4).click();
+                cy.get("span.dataArrow").eq(5).click();
+                cy.get("span.dataArrow").eq(6).click();
+                nthSelectorEqualsText(9, "span.val", "Deeply Nested Content");
+            });
+        });
+
+        describe.only("Auto-expansion if SvelteValue is used", function () {
+            const expander1_row = 9;
+            const expander2_row = 21;
+            const expander3_row = 35;
+            const expander3_child_arrow = 20;
+            const expander4_child_arrow = 27;
+
+            //below are true after above have been expanded
+            const expander4_row = 51;
+            const rows = 64;
+
+            it(`has ${rows} rows of data to start with`, function () {
+                setViewportAndVisitUrl(url + "/Expander/Example2");
+                cy.get("span.dataArrow").eq(expander3_child_arrow).click();
+                cy.get("span.dataArrow").eq(expander4_child_arrow).click();
+                cy.get("div.row").should("have.length", rows);
+            });
+
+            describe("SvelteValue - no attributes", function () {
+                it("displays unexpanded", function () {
+                    nthSelectorEqualsText(
+                        expander1_row,
+                        "span.val",
+                        "<svelte-explorer-expand></svelte-explorer-expand>"
+                    );
+                });
+
+                it("displays adjacent content", function () {
+                    nthSelectorEqualsText(expander1_row + 1, "span.val", "Deeply Nested Content 1");
+                });
+            });
+
+            describe("SvelteValue - value='testy'", function () {
+                it("displays expanded first row", function () {
+                    nthSelectorEqualsText(expander2_row, "span.val", "<svelte-explorer-expand>");
+                });
+                it("displays value", function () {
+                    nthSelectorEqualsText(expander2_row + 1, "span.val", "testy");
+                });
+                it("displays expanded last row", function () {
+                    nthSelectorEqualsText(expander2_row + 2, "span.val", "</svelte-explorer-expand>");
+                });
+                it("displays adjacent content", function () {
+                    nthSelectorEqualsText(expander2_row + 3, "span.val", "Deeply Nested Content 2");
+                });
+            });
+
+            describe("SvelteValue - name='test' value={{ testy: 'testy' }}", function () {
+                it("displays expanded first row", function () {
+                    nthSelectorEqualsText(expander3_row, "span.val", "<svelte-explorer-expand>");
+                });
+                it("displays value", function () {
+                    nthSelectorEqualsText(expander3_row + 1, "span.val", "{");
+                    nthSelectorEqualsText(expander3_row + 2, "span.val", "testy");
+                    nthSelectorEqualsText(expander3_row + 3, "span.val", "}");
+                });
+                it("displays expanded last row", function () {
+                    nthSelectorEqualsText(expander3_row + 4, "span.val", "</svelte-explorer-expand>");
+                });
+                it("displays adjacent content", function () {
+                    nthSelectorEqualsText(expander3_row + 5, "span.val", "Deeply Nested Content 3");
+                });
+            });
+
+            describe("SvelteValue - value={{ testy: 'testy' }} name='test' other-attr='test'", function () {
+                it("displays expanded first row", function () {
+                    nthSelectorEqualsText(expander4_row, "span.val", "<svelte-explorer-expand>");
+                });
+                it("displays value", function () {
+                    nthSelectorEqualsText(expander4_row + 1, "span.val", "{");
+                    nthSelectorEqualsText(expander4_row + 2, "span.val", "testy");
+                    nthSelectorEqualsText(expander4_row + 3, "span.val", "}");
+                });
+                it("displays expanded last row", function () {
+                    nthSelectorEqualsText(expander4_row + 4, "span.val", "</svelte-explorer-expand>");
+                });
+                it("displays adjacent content", function () {
+                    nthSelectorEqualsText(expander4_row + 5, "span.val", "Deeply Nested Content 4");
+                });
+            });
+        });
+    });
 };
 
 function callAutomaticCounterTests(url, rate, before, after, not) {
@@ -292,8 +401,7 @@ function callAutomaticCounterTests(url, rate, before, after, not) {
 }
 
 function testAutomaticCounter(url, selector, wait, should_be_greater, not_visible = "") {
-    cy.viewport(1000, 600);
-    cy.visit(url);
+    setViewportAndVisitUrl(url);
     cy.wait(2000);
     cy.get(".reset").click();
     cy.get(selector)
@@ -320,4 +428,9 @@ function nthSelectorEqualsText(n, selector, compare_text) {
         .then((text) => {
             expect(text).to.equal(compare_text);
         });
+}
+
+function setViewportAndVisitUrl(url) {
+    cy.viewport(1000, 600);
+    cy.visit(url);
 }

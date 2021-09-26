@@ -141,7 +141,7 @@ function getArrayOrLongArray(value) {
 
 function getObjectOrSpecialObject(value) {
     const longArraySubArrayProperties = ["start", "end", "sub_array"];
-    const svelteExplorerTagProperties = ["class", "svelte-explorer-tag", "children"]; //, "textContent"];
+    const svelteExplorerTagProperties = ["class", "svelte-explorer-tag", "children"];
     return object_has_only_these_properties(value, longArraySubArrayProperties)
         ? "ARRAY+OBJECT"
         : object_has_only_these_properties(value, svelteExplorerTagProperties)
