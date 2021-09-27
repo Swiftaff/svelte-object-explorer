@@ -541,7 +541,7 @@ module.exports = (index) => {
 
     describe.only(url + ": " + "Plugins", function () {
         describe("No plugins - has no effect on existing values", function () {
-            it("visit first test page", function () {
+            it("visit test page", function () {
                 setViewportAndVisitUrl(url + "/Plugins/Example1/?test=1");
             });
 
@@ -549,12 +549,25 @@ module.exports = (index) => {
         });
 
         describe("readme Example1: a new Custom Type", function () {
-            it("visit first test page", function () {
+            it("visit test page", function () {
                 setViewportAndVisitUrl(url + "/Plugins/Example1/?test=2");
             });
             it_unaffectedValuesAreUnchanged();
             it("Basic row_html override", function () {
                 nthSelectorEqualsText(0, ".test2", "containsABC: valuecontainingabc");
+            });
+        });
+
+        describe("readme Example2: overriding the existing 'String' Type", function () {
+            it("visit test page", function () {
+                setViewportAndVisitUrl(url + "/Plugins/Example1/?test=3");
+            });
+            //it_unaffectedValuesAreUnchanged();
+            it("Overrides all strings by adding '!'", function () {
+                const string_val = 1;
+                const val = 5;
+                nthSelectorEqualsText(string_val, "span.val", "testy!");
+                nthSelectorEqualsText(val, "span.val", "valuecontainingabc!");
             });
         });
     });
