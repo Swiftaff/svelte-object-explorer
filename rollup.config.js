@@ -161,6 +161,12 @@ const expander_example2_svelte_component = {
     plugins,
 };
 
+const plugins_example1_svelte_component = {
+    input: "./src/Examples/SvelteComponent/Plugins/Example1/main.js",
+    output: { format: "iife", name: "app", file: "public/SvelteComponent/Plugins/Example1/bundle.js" },
+    plugins,
+};
+
 export default [
     dist_custom_element_iife,
     dist_custom_element_iife_copy1,

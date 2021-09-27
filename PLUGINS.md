@@ -33,7 +33,7 @@ with type name "MyCustomType"
 const example1 =
 {
   name_of_type: "MyCustomType",
-  type_parser: (value) => value.contains("abc"),
+  type_parser: (value) => typeof value==="string" && value.includes("abc"),
   row_html: (row_settings, globals) =>  {
     return {
       ...row_settings,
@@ -45,16 +45,15 @@ const example1 =
 
 ### Example 2: overriding the existing 'String' Type
 
-If the value is a String add a "!"
+If the value is a String, always add a "!"
 
 ```
 const example2 =
 {
-  name_of_type: "String",
-  // same name as existing type
-
-  type_parser: (v) => typeof v === "String",
-  transform: (v) => v + "!",
+  "string":{ // same name as existing type
+    type_parser: (v) => typeof v === "string",
+    transform: (v) => v + "!",
+  }
 },
 ```
 
@@ -75,12 +74,13 @@ simplify it and display it as just "test1 (test10)"
 
 ```
 const example3 = {
-  name_of_type: "MySimplifiedObject",
-  type_parser: (v) =>
-    (typeof v === "Object" &&
-    key1 in v &&
-    key10 in v),
-  transform: (v) => `${v.key1} (${v.key10})`,
+  "MySimplifiedObject":{
+    type_parser: (v) =>
+      (typeof v === "Object" &&
+      key1 in v &&
+      key10 in v),
+    transform: (v) => `${v.key1} (${v.key10})`,
+  }
 },
 ```
 
@@ -95,11 +95,11 @@ with type name "MyCustomType"
 const example4 =
 {
   name_of_type: "MyCustomType",
-  type_parser: (value) => value.contains("abc"),
+  type_parser: (value) => value.includes("abc"),
   row_render: (row_settings, globals) =>  {
     return {
       ...row_settings,
-      value: "<div>containsABC:${row_settings.val}</div>"
+      value: `<div>containsABC: ${row_settings.val}</div>`
     }
   }
 }
@@ -147,7 +147,7 @@ Since it is missing any other keys it will have no effect!
 ```
 const example5 =
 {
-  type_parser: (v) => v.contains("abc"),
+  type_parser: (v) => v.includes("abc"),
 }
 ```
 

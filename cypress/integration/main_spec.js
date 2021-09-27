@@ -278,7 +278,7 @@ module.exports = (index) => {
         });
     });
 
-    describe.only(url + ": " + "Adjust panel width", function () {
+    describe(url + ": " + "Adjust panel width", function () {
         describe("Mousedown/mouseup on edge, will toggle the transition of the toggle button", function () {
             it("toggle has transition on page load", function () {
                 setViewportAndVisitUrl(url + "/Expander/Example1");
@@ -308,7 +308,7 @@ module.exports = (index) => {
             });
         });
 
-        describe.only("Dragging left and right, changes width, saves to localStorage", function () {
+        describe("Dragging left and right, changes width, saves to localStorage", function () {
             it("Drag edge to the left, will increase panel width", function () {
                 setViewportAndVisitUrl(url + "/Expander/Example1");
                 let first, second, clientX;
@@ -538,6 +538,26 @@ module.exports = (index) => {
             });
         });
     });
+
+    describe.only(url + ": " + "Plugins", function () {
+        describe("No plugins - has no effect on existing values", function () {
+            it("visit first test page", function () {
+                setViewportAndVisitUrl(url + "/Plugins/Example1/?test=1");
+            });
+
+            it_unaffectedValuesAreUnchanged();
+        });
+
+        describe("readme Example1: a new Custom Type", function () {
+            it("visit first test page", function () {
+                setViewportAndVisitUrl(url + "/Plugins/Example1/?test=2");
+            });
+            it_unaffectedValuesAreUnchanged();
+            it("Basic row_html override", function () {
+                nthSelectorEqualsText(0, ".test2", "containsABC: valuecontainingabc");
+            });
+        });
+    });
 };
 
 function callAutomaticCounterTests(url, rate, before, after, not) {
@@ -575,6 +595,30 @@ function testAutomaticCounter(url, selector, wait, should_be_greater, not_visibl
                     else cy.get("span.cache_ratelimit");
                 });
         });
+}
+
+function it_unaffectedValuesAreUnchanged() {
+    it("basic values are unaffected", function () {
+        const array_arrow = 1;
+        const object_arrow = 2;
+
+        const array_len = 1;
+        const object_len = 2;
+
+        const string_val = 1;
+        const array_first_val = 3;
+        const object_first_val = 8;
+
+        nthSelectorClick(array_arrow, "span.dataArrow");
+        nthSelectorClick(object_arrow, "span.dataArrow");
+
+        nthSelectorEqualsText(array_len, "span.len", "(3)");
+        nthSelectorEqualsText(object_len, "span.len", "(2)");
+
+        nthSelectorEqualsText(string_val, "span.val", "testy");
+        nthSelectorEqualsText(array_first_val, "span.val", "one");
+        nthSelectorEqualsText(object_first_val, "span.val", "test1");
+    });
 }
 
 function nthSelectorEqualsText(n, selector, compare_text) {
