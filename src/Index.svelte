@@ -22,7 +22,7 @@
     export let fade = false;
     export let ratelimit = ratelimitDefault;
     export let initialtogglestate = true;
-    export let plugins = {};
+    export let settings = {};
 
     let isPaused = false;
     let hovering = false;
@@ -83,13 +83,13 @@
                 if ("fade" in obj) fade = obj.fade;
                 if ("tabposition" in obj) tabposition = obj.tabposition;
                 if ("ratelimit" in obj) ratelimit = obj.ratelimit;
-                if ("plugins" in obj) plugins = obj.plugins;
+                if ("settings" in obj) settings = obj.settings;
             }
-            let newPlugins = plugins;
-            let options = { node: document.body, plugins: newPlugins };
+            let newSettings = settings;
+            let options = { node: document.body, settings: newSettings };
             let newValue = {
                 value: value || lib.domParser(options),
-                plugins: newPlugins,
+                settings: newSettings,
             };
             const stringifiedValue = JSON.stringify(newValue); //, lib.replacer);
             if (stringifiedValue !== stringifiedValueCache) {
@@ -101,12 +101,12 @@
             let expanded_from_tags = [];
             if (time_since_last_check > ratelimit && !isPaused) {
                 cache.value = newValue.value;
-                cache.plugins = newValue.plugins;
+                cache.settings = newValue.settings;
                 cache.viewChanges = cache.viewChanges + 1;
                 cache.viewUpdated = new Date();
                 cache.dataUpdated = cache.viewUpdated;
                 cache.formatted = lib.formatDate(cache.viewUpdated);
-                stringifiedValueCache = JSON.stringify({ value: cache.value, plugins: newPlugins }); //, lib.replacer);
+                stringifiedValueCache = JSON.stringify({ value: cache.value, settings: newSettings }); //, lib.replacer);
 
                 const { rows, expanded } = lib.convertDataToRows(cache);
                 if (expanded && Array.isArray(expanded)) expanded_from_tags = expanded;

@@ -2,14 +2,14 @@ function domParser(options = {}) {
     // parses the dom from supplied node downwards into a simplified ast, e.g.
     // el = { class: "classname", "svelte-explorer-tag": "H1", children: [el, el, el] }
     let html = (options && options.node) || document.body;
-    let plugins = (options && options.plugins) || {};
+    let settings = (options && options.settings) || {};
     let expand = (options && options.expand) || ((el) => el.nodeName === "SVELTE-EXPLORER-EXPAND");
     let arr = getTag(html);
     return arr;
 
     function getTag(el) {
         if (isHtmlNodeOrSvelteExplorerTag(el)) {
-            const isExpander = getExpander(el, expand, plugins);
+            const isExpander = getExpander(el, expand);
             const isSETag = isSvelteExplorerTag(el);
             const textContent = el.nodeName === "#text" ? el.nodeValue : "";
             const svelteExplorerTag = isSETag ? el.dataset["svelteExplorerTag"] : el.nodeName;
@@ -33,17 +33,8 @@ function domParser(options = {}) {
         } else return null;
     }
 
-    function getExpander(el, expand, plugins) {
-        // Changing this to allow for default expander as well as plugin expanders
-        let parsed_plugin_expander = el && expand && typeof expand === "function" && expand(el);
-
-        Object.entries(plugins).find((plugin_array) => {
-            if (plugin_array[1] && plugin_array[1].row_expander && plugin_array[1].row_expander(el)) {
-                parsed_plugin_expander = plugin_array[0];
-                return true; // find breaks loop on true
-            } else return false;
-        });
-        return parsed_plugin_expander;
+    function getExpander(el, expand) {
+        return el && expand && typeof expand === "function" && expand(el);
     }
 
     function isHtmlNodeOrSvelteExplorerTag(el) {

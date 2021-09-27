@@ -539,8 +539,8 @@ module.exports = (index) => {
         });
     });
 
-    describe.only(url + ": " + "Plugins", function () {
-        describe("No plugins - has no effect on existing values", function () {
+    describe.only(url + ": " + "Settings - 'rows' override", function () {
+        describe("No rows - has no effect on existing values", function () {
             it("visit test page", function () {
                 setViewportAndVisitUrl(url + "/Plugins/Example1/?test=1");
             });
@@ -562,12 +562,27 @@ module.exports = (index) => {
             it("visit test page", function () {
                 setViewportAndVisitUrl(url + "/Plugins/Example1/?test=3");
             });
-            //it_unaffectedValuesAreUnchanged();
+            it_unaffectedValuesAreUnchanged("string");
             it("Overrides all strings by adding '!'", function () {
                 const string_val = 1;
-                const val = 5;
+                const val = 12;
                 nthSelectorEqualsText(string_val, "span.val", "testy!");
                 nthSelectorEqualsText(val, "span.val", "valuecontainingabc!");
+            });
+        });
+
+        describe("readme Example3: simplifying an object", function () {
+            it("visit test page", function () {
+                setViewportAndVisitUrl(url + "/Plugins/Example1/?test=4");
+            });
+            it_unaffectedValuesAreUnchanged();
+            it("Displays conctatenated value 'test1 (test10)'", function () {
+                const val = 12;
+                nthSelectorEqualsText(val, "span.val", "test1 (test10)");
+            });
+            it("Displays updated 'string' type instead of original 'object'", function () {
+                const type = 10;
+                nthSelectorEqualsText(type, "span.type", "string");
             });
         });
     });
@@ -610,7 +625,7 @@ function testAutomaticCounter(url, selector, wait, should_be_greater, not_visibl
         });
 }
 
-function it_unaffectedValuesAreUnchanged() {
+function it_unaffectedValuesAreUnchanged(exceptions = "") {
     it("basic values are unaffected", function () {
         const array_arrow = 1;
         const object_arrow = 2;
@@ -628,9 +643,11 @@ function it_unaffectedValuesAreUnchanged() {
         nthSelectorEqualsText(array_len, "span.len", "(3)");
         nthSelectorEqualsText(object_len, "span.len", "(2)");
 
-        nthSelectorEqualsText(string_val, "span.val", "testy");
-        nthSelectorEqualsText(array_first_val, "span.val", "one");
-        nthSelectorEqualsText(object_first_val, "span.val", "test1");
+        if (!exceptions.includes("string")) {
+            nthSelectorEqualsText(string_val, "span.val", "testy");
+            nthSelectorEqualsText(array_first_val, "span.val", "one");
+            nthSelectorEqualsText(object_first_val, "span.val", "test1");
+        }
     });
 }
 

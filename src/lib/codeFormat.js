@@ -3,11 +3,15 @@ const indentSpaces = 2;
 const max_array_length = 10;
 const max_line_length = 38;
 let global_plugins = {};
+let global_settings = {};
 let global_expanded = [];
 
-export default function convertObjectToArrayOfOutputPanelRows({ key, val }, supplied_plugins) {
+export default function codeFormat({ key, val }, supplied_plugins, supplied_settings) {
+    // convertObjectToArrayOfOutputPanelRows
     let rows = [];
     global_plugins = supplied_plugins;
+    global_settings = supplied_settings;
+    console.log("settings", global_settings);
     // [{indexRef, parentIndexRef, output, type, bracket(optional), expandable(optional), len(optional)}]
     let row_settings = { indexRef: "0.0", parentIndexRef: "0", key, val, level: 0 };
     appendRowsByType(row_settings, rows);
@@ -44,11 +48,10 @@ function globalExpandedPush(rowIndex) {
 function apply_formatter_for_type(type_formatters, row_settings, arr) {
     const is_svelte_explorer_expander =
         row_settings && row_settings.val && row_settings.val["is_svelte_explorer_expander"];
-    const new_settings = getUpdatedTypeAndValue(row_settings, is_svelte_explorer_expander);
+    const new_settings = getUpdatedTypeAndValue(row_settings);
     if (is_svelte_explorer_expander) {
         const parent = row_settings.indexRef.split(".").slice(0, -1).join(".");
         const expand_this_row = new_settings.val.value ? row_settings.indexRef : parent;
-
         globalExpandedPush(expand_this_row);
     }
     if (new_settings.row_render) append_arr_with_plugin_rows(new_settings, arr);
@@ -56,18 +59,32 @@ function apply_formatter_for_type(type_formatters, row_settings, arr) {
     else if (new_settings.format_type in type_formatters) type_formatters[new_settings.format_type](new_settings, arr);
 }
 
-function getUpdatedTypeAndValue(row_settings, bool_for_testing) {
+// WIP updating with settings
+function getUpdatedTypeAndValue(row_settings) {
     let val = row_settings.val;
-    let row_render, row_html;
-    const type = getTypeName(val, bool_for_testing);
-    if (type in global_plugins) {
-        if (global_plugins[type].transform) val = global_plugins[type].transform(val);
-        row_render = global_plugins[type].row_render; //may be undefined
-        row_html = global_plugins[type].row_html; //may be undefined
+    let row_render;
+    let row_html;
+    let type = getNullOrOtherType(val);
+    const first_matching_row_override = findMatchingRowOverride(val);
+    if (first_matching_row_override) {
+        if (first_matching_row_override.transform) val = first_matching_row_override.transform(val);
+        type = first_matching_row_override.type_name ? first_matching_row_override.type_name : getNullOrOtherType(val);
+        row_render = first_matching_row_override.row_render;
+        row_html = first_matching_row_override.row_html;
     }
-
     const format_type = getNullOrOtherType(val);
     return { ...row_settings, val, type, format_type, row_render, row_html };
+}
+
+function findMatchingRowOverride(val) {
+    let first_match = false;
+    const exists_row_overrides = global_settings && global_settings.rows && global_settings.rows.length;
+    if (exists_row_overrides) {
+        const rowValMatchesParser = (r) => typeof r === "object" && r.value_parser && r.value_parser(val);
+        const matching_row_overrides = global_settings.rows.filter(rowValMatchesParser);
+        if (matching_row_overrides.length) first_match = matching_row_overrides[0];
+    }
+    return first_match;
 }
 
 function append_arr_with_plugin_rows(settings, arr) {
@@ -101,24 +118,6 @@ function getSimpleTypesObj(simpleTypes) {
     const simpleTypesObj = {};
     simpleTypes.forEach((t) => (simpleTypesObj[t] = appendRowForSimpleTypes));
     return simpleTypesObj;
-}
-
-function getTypeName(value, bool_for_testing) {
-    return global_plugins && Object.keys(global_plugins).length
-        ? getTypeFromPlugins(value, bool_for_testing)
-        : getNullOrOtherType(value);
-}
-
-function getTypeFromPlugins(value, bool_for_testing) {
-    // similar to domParser.js > getExpanderFromPlugins
-    let parsed_plugin_type = false;
-    Object.entries(global_plugins).find((plugin_array) => {
-        if (plugin_array[1] && plugin_array[1].type_parser && plugin_array[1].type_parser(value)) {
-            parsed_plugin_type = plugin_array[0];
-            return true; // find breaks loop on true
-        } else return false;
-    });
-    return parsed_plugin_type || getNullOrOtherType(value);
 }
 
 // default types below
@@ -267,11 +266,12 @@ function appendRowForSymbol(row_settings, arr) {
 }
 
 function appendRowsForDomNode(row_settings, arr) {
-    const converted = domParser({ node: row_settings.val, plugins: global_plugins });
+    const converted = domParser({ node: row_settings.val, settings: global_settings });
     appendRowsForSvelteExplorerTag({ ...row_settings, val: converted }, arr);
 }
 
 function appendRowsForSvelteExplorerTag(row_settings, arr) {
+    console.log("appendRowsForSvelteExplorerTag");
     const { key, val, level, ...rest } = row_settings;
     const text = row_settings.val;
     const is_svelte_explorer_expander = row_settings.val.is_svelte_explorer_expander;

@@ -9,7 +9,7 @@ function convertDataToRows(cache) {
         class: "",
         valType: "",
     };
-    const { rows, expanded } = codeFormat(rootObject, cache.plugins);
+    const { rows, expanded } = codeFormat(rootObject, cache.plugins, cache.settings);
     rootObject.childRows = rows;
     outputRows.push(rootObject);
     outputRows.sort(sort_byKey);

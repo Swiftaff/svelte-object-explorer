@@ -4,7 +4,7 @@ You can override or extend some features of Svelte Object Explorer with an optio
 
 ## mandatory parser
 
--   `type_parser` a function to define this type based on the value being parsed.
+-   `value_parser` a function to define this type based on the value being parsed.
 
     If the function returns `true` based on the value matching some criteria, Svelte Object Explorer will assume the value is of this type and will then apply all of the optional functions that you supply below for `name_of_type`, `transform`, `row_render` and `row_html`.
 
@@ -32,14 +32,13 @@ with type name "MyCustomType"
 ```
 const example1 =
 {
-  name_of_type: "MyCustomType",
-  type_parser: (value) => typeof value==="string" && value.includes("abc"),
-  row_html: (row_settings, globals) =>  {
+  value_parser: (value) => typeof value === "string" && value.includes("abc"),
+  row_html: (row_settings, globals) => {
     return {
       ...row_settings,
-      html: "<div>containsABC:${row_settings.val}</div>"
-    }
-  }
+      html: `<div class="test2">containsABC: ${row_settings.val}</div>`,
+    };
+  },
 }
 ```
 
@@ -50,10 +49,8 @@ If the value is a String, always add a "!"
 ```
 const example2 =
 {
-  "string":{ // same name as existing type
-    type_parser: (v) => typeof v === "string",
-    transform: (v) => v + "!",
-  }
+  value_parser: (v) => typeof v === "string",
+  transform: (v) => v + "!",
 },
 ```
 
@@ -74,13 +71,8 @@ simplify it and display it as just "test1 (test10)"
 
 ```
 const example3 = {
-  "MySimplifiedObject":{
-    type_parser: (v) =>
-      (typeof v === "Object" &&
-      key1 in v &&
-      key10 in v),
-    transform: (v) => `${v.key1} (${v.key10})`,
-  }
+  value_parser: (v) => (typeof v === "object" && "key1" in v && "key10" in v),
+  transform: (v) => `${v.key1} (${v.key10})`,
 },
 ```
 
@@ -89,14 +81,13 @@ const example3 = {
 If you want to get into the ugly details, feel free to use row_settings, e.g.
 if value = "valuecontainingabc"
 increase the indent, and a div containing 'containsABC: valuecontainingabc'
-with type name "MyCustomType"
+//with type name "MyCustomType"
 
 ```
 const example4 =
 {
-  name_of_type: "MyCustomType",
-  type_parser: (value) => value.includes("abc"),
-  row_render: (row_settings, globals) =>  {
+  value_parser: (value) => value.includes("abc"),
+  row_settings: (row_settings, globals) =>  {
     return {
       ...row_settings,
       value: `<div>containsABC: ${row_settings.val}</div>`
@@ -147,7 +138,7 @@ Since it is missing any other keys it will have no effect!
 ```
 const example5 =
 {
-  type_parser: (v) => v.includes("abc"),
+  value_parser: (v) => v.includes("abc"),
 }
 ```
 
