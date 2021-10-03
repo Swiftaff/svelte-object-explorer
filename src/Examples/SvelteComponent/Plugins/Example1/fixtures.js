@@ -15,7 +15,7 @@ const test2 = {
         rows: [
             {
                 match: (value) => typeof value === "string" && value.includes("abc"),
-                row_html: (row_settings, globals) => {
+                html: (row_settings, globals) => {
                     return {
                         ...row_settings,
                         html: `<div class="test2" style="color:red">containsABC: ${row_settings.val}</div>`,
@@ -96,7 +96,7 @@ const test6 = {
         rows: [
             {
                 match: (value) => typeof value === "string" && value.includes("abc"),
-                row_render: (current_row_settings, globals) => {
+                row_details: (current_row_settings, globals) => {
                     console.log("globals", current_row_settings);
                     return {
                         ...current_row_settings,
@@ -138,4 +138,4 @@ const test7 = {
     },
 };
 
-export default { test1, test2, test3, test4, test5, test6 };
+export default { test1, test2, test3, test4, test5, test6, test7 };

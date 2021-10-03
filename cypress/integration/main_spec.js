@@ -555,7 +555,7 @@ module.exports = (index) => {
             it_unaffectedValuesAreUnchanged();
             const selector = ".test2";
             const first = 0;
-            it("Basic row_html override", function () {
+            it("Basic html override", function () {
                 nthSelectorEqualsText(first, selector, "containsABC: valuecontainingabc");
             });
             it("Has red text", function () {

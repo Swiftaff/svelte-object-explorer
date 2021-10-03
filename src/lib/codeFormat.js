@@ -54,28 +54,28 @@ function apply_formatter_for_type(type_formatters, row_settings, arr) {
         const expand_this_row = new_settings.val.value ? row_settings.indexRef : parent;
         globalExpandedPush(expand_this_row);
     }
-    if (new_settings.row_render) append_arr_with_plugin_rows(new_settings, arr);
-    else if (new_settings.row_html) append_arr_with_plugin_html(new_settings, arr);
+    if (new_settings.row_details) append_arr_with_plugin_rows(new_settings, arr);
+    else if (new_settings.html) append_arr_with_plugin_html(new_settings, arr);
     else if (new_settings.format_type in type_formatters) type_formatters[new_settings.format_type](new_settings, arr);
 }
 
 // WIP updating with settings
 function getUpdatedTypeAndValue(row_settings) {
     let val = row_settings.val;
-    let row_render;
-    let row_html;
+    let row_details;
+    let html;
     let type = getNullOrOtherType(val);
     const matching_row_overrides = findMatchingRowOverrides(val);
     if (matching_row_overrides.length) {
         matching_row_overrides.forEach((override) => {
             if (override.value) val = override.value(val);
             type = override.type || getNullOrOtherType(val);
-            if (override.row_render) row_render = override.row_render;
-            if (override.row_html) row_html = override.row_html;
+            if (override.row_details) row_details = override.row_details;
+            if (override.html) html = override.html;
         });
     }
     const format_type = getNullOrOtherType(val);
-    return { ...row_settings, val, type, format_type, row_render, row_html };
+    return { ...row_settings, val, type, format_type, row_details, html };
 }
 
 function findMatchingRowOverrides(val) {
@@ -90,8 +90,8 @@ function findMatchingRowOverrides(val) {
 
 function append_arr_with_plugin_rows(settings, arr) {
     const globals = { indentSpaces };
-    const { row_render } = settings;
-    let new_settings = row_render(settings, globals);
+    const { row_details } = settings;
+    let new_settings = row_details(settings, globals);
 
     if (!Array.isArray(new_settings)) new_settings = [new_settings];
     new_settings.forEach((row) => arr.push(row));
@@ -99,8 +99,8 @@ function append_arr_with_plugin_rows(settings, arr) {
 
 function append_arr_with_plugin_html(settings, arr) {
     const globals = { indentSpaces };
-    const { row_html } = settings;
-    let new_settings = row_html(settings, globals);
+    const { html } = settings;
+    let new_settings = html(settings, globals);
 
     if (new_settings) {
         if (!Array.isArray(new_settings)) new_settings = [new_settings];
