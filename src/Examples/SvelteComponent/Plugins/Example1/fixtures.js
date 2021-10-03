@@ -138,4 +138,9 @@ const test7 = {
     },
 };
 
-export default { test1, test2, test3, test4, test5, test6, test7 };
+const test8 = {
+    value,
+    settings: { rows: [{ match: (v) => true }] },
+};
+
+export default { test1, test2, test3, test4, test5, test6, test7, test8 };
