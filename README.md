@@ -2,11 +2,9 @@
 
 [![github-package.json-version](https://img.shields.io/github/package-json/v/Swiftaff/svelte-object-explorer?style=social&logo=github)](https://github.com/user/repo) [![CircleCI](https://circleci.com/gh/Swiftaff/svelte-object-explorer.svg?style=svg)](https://circleci.com/gh/Swiftaff/svelte-object-explorer) [![The MIT License](https://img.shields.io/badge/license-MIT-orange.svg?style=flat-square)](http://opensource.org/licenses/MIT)
 
-## Demo
-
-https://svelte.dev/repl/2bb193c358c84ac0a5a76b546c860664?version=3.12.1
-
 ## Features
+
+[Demo](https://svelte.dev/repl/2bb193c358c84ac0a5a76b546c860664?version=3.12.1)
 
 Provides a simple to use, quick a dirty (well, just plain ugly) panel showing whatever data you wish to temporarily view whilst you are developing your app.
 
@@ -78,11 +76,7 @@ Include **svelte-object-explorer** in the script section of any svelte file, but
 
 `initialtogglestate` is an optional boolean, for whether the tab is open (true) or closed (false) on startup. `(Default = false)`
 
-Also see [plugins](PLUGINS.md) for how to further extend Svelte Object Explorer - to override or extend the default list of data types or rendering within the panel. `(Default = {})`
-
--   TODO make all options available as a single options object
--   TODO - ordering matters, change plugins to array
--   TODO tests for plugins
+`rows` is an optional array of [row overrides](ROWS.md) so you can customise the display of data in the panel of Svelte Object Explorer panel `(Default = [])`
 
 ## SvelteValue - to auto-expand deeply nested dom elements
 
@@ -101,11 +95,11 @@ Also, optionally displaying a value to help with troubleshooting.
   <div>
     <div>
       <SvelteValue />
-      Will expand to show this text
+      Will just expand this element to show this text
     </div>
     <div>
       <SvelteValue value={optionalValue} />
-      Will expand to show this text, and the value supplied above
+      Will expand this element to show this text, and also display the value supplied above
     </div>
   </div>
 </div>
@@ -117,7 +111,7 @@ Also, optionally displaying a value to help with troubleshooting.
 
 -   resizable window width - and saves to localStorage to re-use between sessions
 -   SvelteValue - to expand deeply nested dom elements
--   plugins - to extend on the default settings
+-   rows - to customise the default display of the panel
 
 ## New in v2.1
 
@@ -154,6 +148,14 @@ Also, optionally displaying a value to help with troubleshooting.
         //...assign other options if needed
         window.svelteobjectexplorer = { value, open, fade, tabposition, ratelimit }
         ```
+
+## TODO
+
+-   create a general settings object for all options above
+-   stylesheets override
+-   domParser override
+-   indent (move from globals)
+-   fix top level object at level 0 to display all types (workaround: supply an object)
 
 > It's not clever, it's not pretty...
 
