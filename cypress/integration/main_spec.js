@@ -539,7 +539,7 @@ module.exports = (index) => {
         });
     });
 
-    describe.only(url + ": " + "Settings - 'rows' override", function () {
+    describe(url + ": " + "Settings - 'rows' override", function () {
         describe("No rows - has no effect on existing values", function () {
             it("visit test page", function () {
                 setViewportAndVisitUrl(url + "/Plugins/Example1/?test=1");
@@ -548,22 +548,37 @@ module.exports = (index) => {
             it_unaffectedValuesAreUnchanged();
         });
 
-        describe("readme Example1: a new Custom Type", function () {
+        describe.only("readme Example1: custom HTML row", function () {
             it("visit test page", function () {
                 setViewportAndVisitUrl(url + "/Plugins/Example1/?test=2");
             });
             it_unaffectedValuesAreUnchanged();
+            const selector = ".test2";
+            const first = 0;
             it("Basic row_html override", function () {
-                nthSelectorEqualsText(0, ".test2", "containsABC: valuecontainingabc");
+                nthSelectorEqualsText(first, selector, "containsABC: valuecontainingabc");
+            });
+            it("Has red text", function () {
+                cy.get(selector)
+                    .should("have.attr", "style")
+                    .then(function (style) {
+                        expect(style).to.eq("color:red");
+                    });
             });
         });
 
-        describe("readme Example2: overriding the existing 'String' Type", function () {
+        describe("readme Example2: overriding the value of an existing 'String' Type", function () {
             it("visit test page", function () {
                 setViewportAndVisitUrl(url + "/Plugins/Example1/?test=3");
             });
             it_unaffectedValuesAreUnchanged("string");
-            it("Overrides all strings by adding '!'", function () {
+            it("Overrides all strings by adding '!'xx", function () {
+                const string_val = 1;
+                const val = 12;
+                nthSelectorEqualsText(string_val, "span.val", "testy!");
+                nthSelectorEqualsText(val, "span.val", "valuecontainingabc!");
+            });
+            it("Overrides all strings by adding '!'xx", function () {
                 const string_val = 1;
                 const val = 12;
                 nthSelectorEqualsText(string_val, "span.val", "testy!");
@@ -583,6 +598,37 @@ module.exports = (index) => {
             it("Displays updated 'string' type instead of original 'object'", function () {
                 const type = 10;
                 nthSelectorEqualsText(type, "span.type", "string");
+            });
+        });
+
+        describe("readme Example4: tweaking row_settings, without changing html", function () {
+            it("visit test page", function () {
+                setViewportAndVisitUrl(url + "/Plugins/Example1/?test=5");
+            });
+            it_unaffectedValuesAreUnchanged();
+            it("Updates key to 'mykey'", function () {
+                const key = 10;
+                nthSelectorEqualsText(key, "span.key", "mykey");
+            });
+            it("Displays conctatenated value 'containsABC: valuecontainingabc'", function () {
+                const val = 12;
+                nthSelectorEqualsText(val, "span.val", "containsABC: valuecontainingabc");
+            });
+            it("Updates type to 'my_type'", function () {
+                const type = 10;
+                nthSelectorEqualsText(type, "span.type", "my_type");
+            });
+            it("Updates indent spaces to 10", function () {
+                const selector = "div.row span";
+                const span = 62;
+                const num_spaces = 23;
+                cy.get(selector)
+                    .eq(span)
+                    .invoke("text")
+                    .then((text) => {
+                        const spaces = text.split(" ").length - 1;
+                        expect(spaces).to.equal(num_spaces);
+                    });
             });
         });
     });

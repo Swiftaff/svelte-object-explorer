@@ -18,7 +18,7 @@ const test2 = {
                 row_html: (row_settings, globals) => {
                     return {
                         ...row_settings,
-                        html: `<div class="test2">containsABC: ${row_settings.val}</div>`,
+                        html: `<div class="test2" style="color:red">containsABC: ${row_settings.val}</div>`,
                     };
                 },
             },
@@ -64,4 +64,27 @@ const test4 = {
     },
 };
 
-export default { test1, test2, test3, test4 };
+const test5 = {
+    value: { ...value, test_string: "valuecontainingabc" },
+    settings: {
+        rows: [
+            {
+                value_parser: (value) => typeof value === "string" && value.includes("abc"),
+                row_render: (current_row_settings, globals) => {
+                    console.log("globals", current_row_settings);
+                    return {
+                        ...current_row_settings,
+                        // update as many of the default settings as required
+                        // based on current row settings or not...
+                        indent: (current_row_settings.level + 5) * globals.indentSpaces,
+                        key: "mykey",
+                        val: `containsABC: ${current_row_settings.val}`,
+                        type: "my_type",
+                    };
+                },
+            },
+        ],
+    },
+};
+
+export default { test1, test2, test3, test4, test5 };
