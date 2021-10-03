@@ -69,7 +69,7 @@ function getUpdatedTypeAndValue(row_settings) {
     if (matching_row_overrides.length) {
         matching_row_overrides.forEach((override) => {
             if (override.value) val = override.value(val);
-            type = override.type_name || getNullOrOtherType(val);
+            type = override.type || getNullOrOtherType(val);
             if (override.row_render) row_render = override.row_render;
             if (override.row_html) row_html = override.row_html;
         });

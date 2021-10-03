@@ -1,6 +1,6 @@
 const customType1a = {
     type_parser: (v) => v && v.specific_key1 && v.value_key_a, // defined as an object with these 2 keys
-    transform: (v) => `${v.specific_key1} [${v.value_key_a}]`, // displays as string with 2 keys joined
+    value: (v) => `${v.specific_key1} [${v.value_key_a}]`, // displays as string with 2 keys joined
     row_render: (row_settings, globals) => {
         const { level } = row_settings;
         return {
@@ -13,7 +13,7 @@ const customType1a = {
 
 const customType1b = {
     type_parser: (v) => v && v.specific_key1 && v.value_key_a && v.value_key_b, // defined as an object with these 3 keys
-    transform: (v) => `${v.specific_key1} [${v.value_key_a}${v.value_key_b}]`, // displays as string with 3 keys joined
+    value: (v) => `${v.specific_key1} [${v.value_key_a}${v.value_key_b}]`, // displays as string with 3 keys joined
     row_render: (row_settings, globals) => {
         //renders multiple rows
         const { level } = row_settings;
@@ -40,12 +40,12 @@ const customType1b = {
 
 const customType2 = {
     type_parser: (v) => v && typeof v === "string" && v.includes("string:"), // defined as string containing "string:"
-    //transform: undefined // displays as string, no transformation needed
+    //value: undefined // displays as string, no transformation needed
 };
 
 const customType3 = {
     type_parser: (v) => v && v.specific_key2 && v.value_key_b && v.value_key_c, // defined as an object with these 3 keys
-    transform: (v) => {
+    value: (v) => {
         const { specific_key2, ...rest } = v;
         return rest; // displays as an object, and for some reason we want to display only 2 of it's keys
     },

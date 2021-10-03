@@ -65,6 +65,32 @@ const test4 = {
 };
 
 const test5 = {
+    value: {
+        ...value,
+        test_object: {
+            key1: "test1",
+            key2: "test2",
+            key3: "test3",
+            key4: "test4",
+            key5: "test5",
+            key6: "test6",
+            key7: "test7",
+            key8: "test8",
+            key9: "test9",
+            key10: "test10",
+        },
+    },
+    settings: {
+        rows: [
+            {
+                match: (v) => typeof v === "object" && "key1" in v && "key10" in v,
+                type: "my_type",
+            },
+        ],
+    },
+};
+
+const test6 = {
     value: { ...value, test_string: "valuecontainingabc" },
     settings: {
         rows: [
@@ -87,7 +113,7 @@ const test5 = {
     },
 };
 
-const test6 = {
+const test7 = {
     value: {
         ...value,
         test_string1: "valuecontainingabc",

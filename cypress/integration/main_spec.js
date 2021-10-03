@@ -595,9 +595,20 @@ module.exports = (index) => {
             });
         });
 
-        describe("readme Example4: tweaking row_settings, without changing html", function () {
+        describe("readme Example4: changing the type", function () {
             it("visit test page", function () {
                 setViewportAndVisitUrl(url + "/Plugins/Example1/?test=5");
+            });
+            it_unaffectedValuesAreUnchanged();
+            it("Displays updated 'my_type' type instead of original 'object'", function () {
+                const type = 10;
+                nthSelectorEqualsText(type, "span.type", "my_type");
+            });
+        });
+
+        describe("readme Example5: tweaking row_settings, without changing html", function () {
+            it("visit test page", function () {
+                setViewportAndVisitUrl(url + "/Plugins/Example1/?test=6");
             });
             it_unaffectedValuesAreUnchanged();
             it("Updates key to 'mykey'", function () {
@@ -628,9 +639,9 @@ module.exports = (index) => {
             });
         });
 
-        describe.only("readme Example2a: multiple overrides - of the value of an existing 'String' Type", function () {
+        describe("readme Example2a: multiple overrides - of the value of an existing 'String' Type", function () {
             it("visit test page", function () {
-                setViewportAndVisitUrl(url + "/Plugins/Example1/?test=6");
+                setViewportAndVisitUrl(url + "/Plugins/Example1/?test=7");
             });
             it_unaffectedValuesAreUnchanged();
             const first = 12;
