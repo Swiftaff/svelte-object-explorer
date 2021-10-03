@@ -548,7 +548,7 @@ module.exports = (index) => {
             it_unaffectedValuesAreUnchanged();
         });
 
-        describe.only("readme Example1: custom HTML row", function () {
+        describe("readme Example1: custom HTML row", function () {
             it("visit test page", function () {
                 setViewportAndVisitUrl(url + "/Plugins/Example1/?test=2");
             });
@@ -572,13 +572,7 @@ module.exports = (index) => {
                 setViewportAndVisitUrl(url + "/Plugins/Example1/?test=3");
             });
             it_unaffectedValuesAreUnchanged("string");
-            it("Overrides all strings by adding '!'xx", function () {
-                const string_val = 1;
-                const val = 12;
-                nthSelectorEqualsText(string_val, "span.val", "testy!");
-                nthSelectorEqualsText(val, "span.val", "valuecontainingabc!");
-            });
-            it("Overrides all strings by adding '!'xx", function () {
+            it("Overrides all strings by adding '!'", function () {
                 const string_val = 1;
                 const val = 12;
                 nthSelectorEqualsText(string_val, "span.val", "testy!");
@@ -618,17 +612,38 @@ module.exports = (index) => {
                 const type = 10;
                 nthSelectorEqualsText(type, "span.type", "my_type");
             });
-            it("Updates indent spaces to 10", function () {
+            const num_spaces = 12;
+            it(`Updates indent spaces to ${num_spaces}`, function () {
                 const selector = "div.row span";
                 const span = 62;
-                const num_spaces = 23;
+
                 cy.get(selector)
                     .eq(span)
                     .invoke("text")
                     .then((text) => {
-                        const spaces = text.split(" ").length - 1;
-                        expect(spaces).to.equal(num_spaces);
+                        const spaces = text.split("mykey");
+                        console.log(spaces);
+                        expect(spaces[0].length).to.equal(num_spaces);
                     });
+            });
+        });
+
+        describe.only("readme Example2a: multiple overrides - of the value of an existing 'String' Type", function () {
+            it("visit test page", function () {
+                setViewportAndVisitUrl(url + "/Plugins/Example1/?test=6");
+            });
+            it_unaffectedValuesAreUnchanged();
+            const first = 12;
+            const second = 13;
+            const third = 14;
+            it("1st Override applies to first matching string by adding '-1'", function () {
+                nthSelectorEqualsText(first, "span.val", "valuecontainingabc-1");
+            });
+            it("1st and 3rd Overrides apply to SECOND matching string by adding '-13' - to demonstrate it works in order", function () {
+                nthSelectorEqualsText(second, "span.val", "valuecontainingabc1-13");
+            });
+            it("1st, 2nd and 3rd Overrides apply to THIRD matching string by adding '-123'- to demonstrate it works in order", function () {
+                nthSelectorEqualsText(third, "span.val", "valuecontainingabc12-123");
             });
         });
     });

@@ -65,26 +65,27 @@ function getUpdatedTypeAndValue(row_settings) {
     let row_render;
     let row_html;
     let type = getNullOrOtherType(val);
-    const first_matching_row_override = findMatchingRowOverride(val);
-    if (first_matching_row_override) {
-        if (first_matching_row_override.transform) val = first_matching_row_override.transform(val);
-        type = first_matching_row_override.type_name ? first_matching_row_override.type_name : getNullOrOtherType(val);
-        row_render = first_matching_row_override.row_render;
-        row_html = first_matching_row_override.row_html;
+    const matching_row_overrides = findMatchingRowOverrides(val);
+    if (matching_row_overrides.length) {
+        matching_row_overrides.forEach((override) => {
+            if (override.value) val = override.value(val);
+            type = override.type_name || getNullOrOtherType(val);
+            if (override.row_render) row_render = override.row_render;
+            if (override.row_html) row_html = override.row_html;
+        });
     }
     const format_type = getNullOrOtherType(val);
     return { ...row_settings, val, type, format_type, row_render, row_html };
 }
 
-function findMatchingRowOverride(val) {
-    let first_match = false;
+function findMatchingRowOverrides(val) {
+    let matching = [];
     const exists_row_overrides = global_settings && global_settings.rows && global_settings.rows.length;
     if (exists_row_overrides) {
-        const rowValMatchesParser = (r) => typeof r === "object" && r.value_parser && r.value_parser(val);
-        const matching_row_overrides = global_settings.rows.filter(rowValMatchesParser);
-        if (matching_row_overrides.length) first_match = matching_row_overrides[0];
+        const rowValMatchesParser = (r) => typeof r === "object" && r.match && r.match(val);
+        matching = global_settings.rows.filter(rowValMatchesParser);
     }
-    return first_match;
+    return matching;
 }
 
 function append_arr_with_plugin_rows(settings, arr) {

@@ -14,7 +14,7 @@ const test2 = {
     settings: {
         rows: [
             {
-                value_parser: (value) => typeof value === "string" && value.includes("abc"),
+                match: (value) => typeof value === "string" && value.includes("abc"),
                 row_html: (row_settings, globals) => {
                     return {
                         ...row_settings,
@@ -31,8 +31,8 @@ const test3 = {
     settings: {
         rows: [
             {
-                value_parser: (v) => typeof v === "string",
-                transform: (v) => v + "!",
+                match: (v) => typeof v === "string",
+                value: (v) => v + "!",
             },
         ],
     },
@@ -57,8 +57,8 @@ const test4 = {
     settings: {
         rows: [
             {
-                value_parser: (v) => typeof v === "object" && "key1" in v && "key10" in v,
-                transform: (v) => `${v.key1} (${v.key10})`,
+                match: (v) => typeof v === "object" && "key1" in v && "key10" in v,
+                value: (v) => `${v.key1} (${v.key10})`,
             },
         ],
     },
@@ -69,7 +69,7 @@ const test5 = {
     settings: {
         rows: [
             {
-                value_parser: (value) => typeof value === "string" && value.includes("abc"),
+                match: (value) => typeof value === "string" && value.includes("abc"),
                 row_render: (current_row_settings, globals) => {
                     console.log("globals", current_row_settings);
                     return {
@@ -87,4 +87,29 @@ const test5 = {
     },
 };
 
-export default { test1, test2, test3, test4, test5 };
+const test6 = {
+    value: {
+        ...value,
+        test_string1: "valuecontainingabc",
+        test_string2: "valuecontainingabc1",
+        test_string3: "valuecontainingabc12",
+    },
+    settings: {
+        rows: [
+            {
+                match: (v) => typeof v === "string" && v.includes("valuecontainingabc"),
+                value: (v) => v + "-1",
+            },
+            {
+                match: (v) => typeof v === "string" && v.includes("valuecontainingabc12"),
+                value: (v) => v + "2",
+            },
+            {
+                match: (v) => typeof v === "string" && v.includes("valuecontainingabc1"),
+                value: (v) => v + "3",
+            },
+        ],
+    },
+};
+
+export default { test1, test2, test3, test4, test5, test6 };
