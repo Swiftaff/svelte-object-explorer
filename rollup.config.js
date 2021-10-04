@@ -125,6 +125,12 @@ const expander_example2_custom_element_iife = {
     plugins,
 };
 
+const rows_example_custom_element_iife = {
+    input: "./src/Examples/IIFE/Rows/main.js",
+    output: { format: "iife", name: "app", file: "public/CustomElementIIFE/Rows/bundle.js" },
+    plugins,
+};
+
 const example_page_custom_element_es = {
     input: "./src/Examples/CustomElement/main.js",
     output: { format: "iife", name: "app", file: "public/CustomElementES/bundle.js" },
@@ -140,6 +146,12 @@ const expander_example1_custom_element_es = {
 const expander_example2_custom_element_es = {
     input: "./src/Examples/CustomElement/Expander/Example2/main.js",
     output: { format: "iife", name: "app", file: "public/CustomElementES/Expander/Example2/bundle.js" },
+    plugins,
+};
+
+const rows_example_custom_element_es = {
+    input: "./src/Examples/CustomElement/Rows/main.js",
+    output: { format: "iife", name: "app", file: "public/CustomElementES/Rows/bundle.js" },
     plugins,
 };
 
@@ -162,8 +174,8 @@ const expander_example2_svelte_component = {
 };
 
 const rows_example1_svelte_component = {
-    input: "./src/Examples/SvelteComponent/Plugins/Example1/main.js",
-    output: { format: "iife", name: "app", file: "public/SvelteComponent/Plugins/Example1/bundle.js" },
+    input: "./src/Examples/SvelteComponent/Rows/main.js",
+    output: { format: "iife", name: "app", file: "public/SvelteComponent/Rows/bundle.js" },
     plugins,
 };
 
@@ -174,12 +186,16 @@ export default [
     example_page_iife,
     expander_example1_custom_element_iife,
     expander_example2_custom_element_iife,
+    rows_example_custom_element_iife,
 
     dist_custom_element_es,
     example_page_custom_element_es,
     expander_example1_custom_element_es,
     expander_example2_custom_element_es,
+    rows_example_custom_element_es,
 
     example_page_svelte_component,
+    expander_example1_svelte_component,
+    expander_example2_svelte_component,
     rows_example1_svelte_component,
 ];

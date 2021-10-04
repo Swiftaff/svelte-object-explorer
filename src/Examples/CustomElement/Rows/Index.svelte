@@ -1,6 +1,7 @@
 <script>
-    import SvelteObjectExplorer from "../../../../Index.svelte";
-    import fixtures from "./fixtures.js";
+    import SvelteObjectExplorerWebComponentESModule from "../../../../dist/index.mjs";
+
+    import fixtures from "../../ExampleMultipleRows.js";
 
     let value;
     let settings;
@@ -13,4 +14,4 @@
     }
 </script>
 
-<SvelteObjectExplorer {value} {settings} />
+<svelte-object-explorer {value} {settings} />

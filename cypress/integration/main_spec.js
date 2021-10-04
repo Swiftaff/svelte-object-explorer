@@ -542,7 +542,7 @@ module.exports = (index) => {
     describe(url + ": " + "Settings - 'rows' override", function () {
         describe("No rows - has no effect on existing values", function () {
             it("visit test page", function () {
-                setViewportAndVisitUrl(url + "/Plugins/Example1/?test=1");
+                setViewportAndVisitUrl(url + "/Rows/?test=1");
             });
 
             it_unaffectedValuesAreUnchanged();
@@ -550,7 +550,7 @@ module.exports = (index) => {
 
         describe("readme Example1: custom HTML row", function () {
             it("visit test page", function () {
-                setViewportAndVisitUrl(url + "/Plugins/Example1/?test=2");
+                setViewportAndVisitUrl(url + "/Rows/?test=2");
             });
             it_unaffectedValuesAreUnchanged();
             const selector = ".test2";
@@ -569,7 +569,7 @@ module.exports = (index) => {
 
         describe("readme Example2: overriding the value of an existing 'String' Type", function () {
             it("visit test page", function () {
-                setViewportAndVisitUrl(url + "/Plugins/Example1/?test=3");
+                setViewportAndVisitUrl(url + "/Rows/?test=3");
             });
             it_unaffectedValuesAreUnchanged("string");
             it("Overrides all strings by adding '!'", function () {
@@ -582,7 +582,7 @@ module.exports = (index) => {
 
         describe("readme Example3: simplifying an object", function () {
             it("visit test page", function () {
-                setViewportAndVisitUrl(url + "/Plugins/Example1/?test=4");
+                setViewportAndVisitUrl(url + "/Rows/?test=4");
             });
             it_unaffectedValuesAreUnchanged();
             it("Displays conctatenated value 'test1 (test10)'", function () {
@@ -597,7 +597,7 @@ module.exports = (index) => {
 
         describe("readme Example4: changing the type", function () {
             it("visit test page", function () {
-                setViewportAndVisitUrl(url + "/Plugins/Example1/?test=5");
+                setViewportAndVisitUrl(url + "/Rows/?test=5");
             });
             it_unaffectedValuesAreUnchanged();
             it("Displays updated 'my_type' type instead of original 'object'", function () {
@@ -608,7 +608,7 @@ module.exports = (index) => {
 
         describe("readme Example5: tweaking row_settings, without changing html", function () {
             it("visit test page", function () {
-                setViewportAndVisitUrl(url + "/Plugins/Example1/?test=6");
+                setViewportAndVisitUrl(url + "/Rows/?test=6");
             });
             it_unaffectedValuesAreUnchanged();
             it("Updates key to 'mykey'", function () {
@@ -641,7 +641,7 @@ module.exports = (index) => {
 
         describe("readme Example2a: multiple overrides - of the value of an existing 'String' Type", function () {
             it("visit test page", function () {
-                setViewportAndVisitUrl(url + "/Plugins/Example1/?test=7");
+                setViewportAndVisitUrl(url + "/Rows/?test=7");
             });
             it_unaffectedValuesAreUnchanged();
             const first = 12;
@@ -660,7 +660,7 @@ module.exports = (index) => {
 
         describe("readme Example6: matches, but no overrides - has no effect on existing values", function () {
             it("visit test page", function () {
-                setViewportAndVisitUrl(url + "/Plugins/Example1/?test=8");
+                setViewportAndVisitUrl(url + "/Rows/?test=8");
             });
             it_unaffectedValuesAreUnchanged();
         });
