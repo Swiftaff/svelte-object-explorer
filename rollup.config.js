@@ -161,7 +161,7 @@ const expander_example2_svelte_component = {
     plugins,
 };
 
-const plugins_example1_svelte_component = {
+const rows_example1_svelte_component = {
     input: "./src/Examples/SvelteComponent/Plugins/Example1/main.js",
     output: { format: "iife", name: "app", file: "public/SvelteComponent/Plugins/Example1/bundle.js" },
     plugins,
@@ -181,6 +181,5 @@ export default [
     expander_example2_custom_element_es,
 
     example_page_svelte_component,
-    expander_example1_svelte_component,
-    expander_example2_svelte_component,
+    rows_example1_svelte_component,
 ];

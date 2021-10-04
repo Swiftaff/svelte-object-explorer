@@ -9,12 +9,12 @@ function convertDataToRows(cache) {
         class: "",
         valType: "",
     };
-    const { rows, expanded } = codeFormat(rootObject, cache.plugins, cache.settings);
-    rootObject.childRows = rows;
+    const { formatted_rows, expanded } = codeFormat(rootObject, cache.rows, cache.settings);
+    rootObject.childRows = formatted_rows;
     outputRows.push(rootObject);
     outputRows.sort(sort_byKey);
     outputRows = outputRows.map((item, index) => ({ ...item, index }));
-    return { rows: outputRows, expanded };
+    return { formatted_rows: outputRows, expanded };
 }
 
 function sort_byKey(a, b) {

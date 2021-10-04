@@ -22,6 +22,7 @@
     export let fade = false;
     export let ratelimit = ratelimitDefault;
     export let initialtogglestate = true;
+    export let rows;
     export let settings = {};
 
     let isPaused = false;
@@ -83,6 +84,7 @@
                 if ("fade" in obj) fade = obj.fade;
                 if ("tabposition" in obj) tabposition = obj.tabposition;
                 if ("ratelimit" in obj) ratelimit = obj.ratelimit;
+                if ("rows" in obj) rows = obj.rows;
                 if ("settings" in obj) settings = obj.settings;
             }
             let newSettings = settings;
@@ -90,6 +92,7 @@
             let newValue = {
                 value: value || lib.domParser(options),
                 settings: newSettings,
+                rows,
             };
             const stringifiedValue = JSON.stringify(newValue); //, lib.replacer);
             if (stringifiedValue !== stringifiedValueCache) {
@@ -106,11 +109,12 @@
                 cache.viewUpdated = new Date();
                 cache.dataUpdated = cache.viewUpdated;
                 cache.formatted = lib.formatDate(cache.viewUpdated);
-                stringifiedValueCache = JSON.stringify({ value: cache.value, settings: newSettings }); //, lib.replacer);
+                cache.rows = rows;
+                stringifiedValueCache = JSON.stringify({ value: cache.value, settings: newSettings, rows }); //, lib.replacer);
 
-                const { rows, expanded } = lib.convertDataToRows(cache);
+                const { formatted_rows, expanded } = lib.convertDataToRows(cache);
                 if (expanded && Array.isArray(expanded)) expanded_from_tags = expanded;
-                topLevelObjectArray = rows; //this should trigger a redraw
+                topLevelObjectArray = formatted_rows; //this should trigger a redraw
             }
             //open requested object
             if (!openIndexSetOnce) {

@@ -658,7 +658,7 @@ module.exports = (index) => {
             });
         });
 
-        describe.only("readme Example6: matches, but no overrides - has no effect on existing values", function () {
+        describe("readme Example6: matches, but no overrides - has no effect on existing values", function () {
             it("visit test page", function () {
                 setViewportAndVisitUrl(url + "/Plugins/Example1/?test=8");
             });

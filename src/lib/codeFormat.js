@@ -2,20 +2,18 @@ import domParser from "./domParser.js";
 const indentSpaces = 2;
 const max_array_length = 10;
 const max_line_length = 38;
-let global_plugins = {};
 let global_settings = {};
 let global_expanded = [];
 
-export default function codeFormat({ key, val }, supplied_plugins, supplied_settings) {
+export default function codeFormat({ key, val }, supplied_rows, supplied_settings) {
     // convertObjectToArrayOfOutputPanelRows
-    let rows = [];
-    global_plugins = supplied_plugins;
-    global_settings = supplied_settings;
+    let formatted_rows = [];
+    global_settings = supplied_rows ? { ...supplied_settings, rows: supplied_rows } : supplied_settings;
     console.log("settings", global_settings);
     // [{indexRef, parentIndexRef, output, type, bracket(optional), expandable(optional), len(optional)}]
     let row_settings = { indexRef: "0.0", parentIndexRef: "0", key, val, level: 0 };
-    appendRowsByType(row_settings, rows);
-    return { rows, expanded: global_expanded };
+    appendRowsByType(row_settings, formatted_rows);
+    return { formatted_rows, expanded: global_expanded };
 }
 
 function appendRowsByType(row_settings, arr) {
