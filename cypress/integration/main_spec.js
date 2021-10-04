@@ -178,10 +178,10 @@ module.exports = (index) => {
     });
 
     describe(url + ": " + "Panel data updates when App data updates", function () {
-        describe("Manual: Clicking counter buttons should change the manual counter", function () {
+        describe.only("Manual: Clicking counter buttons should change the manual counter", function () {
             it("customStoreValue is initially set to 0", function () {
                 setViewportAndVisitUrl(url);
-                cy.wait(1000);
+                cy.wait(1500);
                 nthSelectorEqualsText(customStoreValue_row, "div.row span.key", "customStoreValue");
                 nthSelectorEqualsText(customStoreValue_end_row, "div.row span.val", "0"); // 22 + 6 multi-lines from longstring
             });
@@ -189,19 +189,19 @@ module.exports = (index) => {
             it("click increase button twice, should equal 2", function () {
                 cy.get("#incr").click();
                 cy.get("#incr").click();
-                cy.wait(1000);
+                cy.wait(1500);
                 nthSelectorEqualsText(customStoreValue_end_row, "div.row span.val", "2");
             });
 
             it("click decrease button once, should equal 1", function () {
                 cy.get("#decr").click();
-                cy.wait(1000);
+                cy.wait(1500);
                 nthSelectorEqualsText(customStoreValue_end_row, "div.row span.val", "1");
             });
 
             it("click reset button once, should equal 0 again", function () {
                 cy.get("#reset").click();
-                cy.wait(1000);
+                cy.wait(1500);
                 nthSelectorEqualsText(customStoreValue_end_row, "div.row span.val", "0");
             });
         });
