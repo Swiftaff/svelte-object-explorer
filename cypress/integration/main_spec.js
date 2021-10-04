@@ -85,7 +85,7 @@ module.exports = (index) => {
             const longstring_row_2nd_position = 15;
             it("Open = null, No panels are open", function () {
                 setViewportAndVisitUrl(url);
-                cy.wait(1000);
+                cy.wait(1500);
                 //item 'longstring' with no panels open above it, should be in original position
                 nthSelectorEqualsText(longstring_row, "div.row span.key", "longstring");
             });
@@ -93,7 +93,7 @@ module.exports = (index) => {
             it("Open = 'string1', is not an object or array so no panels are open", function () {
                 setViewportAndVisitUrl(url + "?open=string1");
 
-                cy.wait(1000);
+                cy.wait(1500);
                 //item 'longstring' with no panels open above it, should be in original position
                 nthSelectorEqualsText(longstring_row, "div.row span.key", "longstring");
             });
@@ -101,7 +101,7 @@ module.exports = (index) => {
             it("Open = 'bananaman', is not a valid reference so no panels are open", function () {
                 setViewportAndVisitUrl(url + "?open=bananaman");
 
-                cy.wait(1000);
+                cy.wait(1500);
                 //item 'longstring' with no panels open above it, should be in original position
                 nthSelectorEqualsText(longstring_row, "div.row span.key", "longstring");
             });
@@ -109,7 +109,7 @@ module.exports = (index) => {
             it("Open = 'html', is an object, so it is open, so longstring is further down", function () {
                 setViewportAndVisitUrl(url + "?open=html");
 
-                cy.wait(1000);
+                cy.wait(1500);
                 //item 'longstring' after expanded 'html' should be further down
                 nthSelectorEqualsText(longstring_row_2nd_position, "div.row span.key", "longstring");
             });

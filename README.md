@@ -149,14 +149,6 @@ Also, optionally displaying a value to help with troubleshooting.
         window.svelteobjectexplorer = { value, open, fade, tabposition, ratelimit }
         ```
 
-## TODO
-
--   create a general settings object for all options above
--   stylesheets override
--   domParser override
--   indent (move from globals)
--   fix top level object at level 0 to display all types (workaround: supply an object)
-
 > It's not clever, it's not pretty...
 
 > ...it's strong and it's sudden, and it can be cruel sometimes but it might just save your life. That's the power of... `svelte-object-explorer` _(with apologies to Huey Lewis)_
