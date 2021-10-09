@@ -16,15 +16,16 @@
     let local_storage_key = "svelte-object-explorer";
     let panel;
 
+    export let settings;
     export let value;
     export let tabposition = "top";
     export let open = null;
     export let fade = false;
     export let ratelimit = ratelimitDefault;
     export let initialtogglestate = true;
-    export let rows;
-    export let settings = {};
+    export let rows; // don't set to [] or it will override settings.rows
 
+    let saved_settings = {};
     let isPaused = false;
     let hovering = false;
     let openIndexSetOnce = false;
@@ -56,21 +57,20 @@
     function get_or_init_settings() {
         let got_local_storage = localStorage.getItem(local_storage_key);
         if (got_local_storage) {
-            let settings = JSON.parse(got_local_storage);
-            if (settings) {
-                if ("width" in settings) width = settings.width;
+            saved_settings = JSON.parse(got_local_storage);
+            if (saved_settings) {
+                if ("width" in saved_settings) width = saved_settings.width;
             }
         } else save_settings();
     }
 
     function save_settings() {
-        let settings = { width };
-        localStorage.setItem(local_storage_key, JSON.stringify(settings));
+        saved_settings = { width };
+        localStorage.setItem(local_storage_key, JSON.stringify(saved_settings));
     }
 
     function timer() {
         setInterval(() => {
-            //console.log(value);
             refreshDataAndCache();
         }, ratelimit);
     }

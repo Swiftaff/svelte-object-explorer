@@ -178,7 +178,7 @@ module.exports = (index) => {
     });
 
     describe(url + ": " + "Panel data updates when App data updates", function () {
-        describe.only("Manual: Clicking counter buttons should change the manual counter", function () {
+        describe("Manual: Clicking counter buttons should change the manual counter", function () {
             it("customStoreValue is initially set to 0", function () {
                 setViewportAndVisitUrl(url);
                 cy.wait(1500);
@@ -633,7 +633,6 @@ module.exports = (index) => {
                     .invoke("text")
                     .then((text) => {
                         const spaces = text.split("mykey");
-                        console.log(spaces);
                         expect(spaces[0].length).to.equal(num_spaces);
                     });
             });

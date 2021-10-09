@@ -7,6 +7,7 @@
     let tabposition;
     let ratelimit;
     let rows;
+    let settings;
     function sendprops(obj) {
         if ("value" in obj) value = obj.value;
         if ("open" in obj) open = obj.open;
@@ -14,8 +15,9 @@
         if ("tabposition" in obj) tabposition = obj.tabposition;
         if ("ratelimit" in obj) ratelimit = obj.ratelimit;
         if ("rows" in obj) rows = obj.rows;
+        if ("settings" in obj) settings = obj.settings;
     }
 </script>
 
-<SvelteObjectExplorer {value} {open} {fade} {tabposition} {ratelimit} {rows} />
+<SvelteObjectExplorer {value} {open} {fade} {tabposition} {ratelimit} {rows} {settings} />
 <Example {sendprops} />

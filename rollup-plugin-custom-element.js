@@ -90,14 +90,14 @@ function prepend_content_with_svelte_options_tag(content, filepath) {
 
     function get_component_name(filepath) {
         const base_name = "svelte-object-explorer";
-        const is_base_component = filepath.includes("src/Index.svelte");
+        const is_base_component = filepath.includes("src/Index.svelte") || filepath.includes("src\\Index.svelte");
         return is_base_component ? base_name : base_name + get_sub_component_name(filepath);
     }
 
     function get_sub_component_name(filepath) {
         const filename = get_filename(filepath);
         const filename2 = replace_capitals_with_dashes_and_lowercase(filename);
-        return remove_forward_slashes_from_nested_components(filename2);
+        return remove_slashes_from_nested_components(filename2);
     }
 
     function get_filename(filepath) {
@@ -111,8 +111,8 @@ function prepend_content_with_svelte_options_tag(content, filepath) {
         return txt.replace(regex_to_find_capitals, "-$1").toLowerCase();
     }
 
-    function remove_forward_slashes_from_nested_components(txt) {
-        const regex_to_find_forward_slashes = /\//g;
-        return txt.replace(regex_to_find_forward_slashes, "");
+    function remove_slashes_from_nested_components(txt) {
+        const regex_to_find_slashes = /\\|\//g;
+        return txt.replace(regex_to_find_slashes, "");
     }
 }
