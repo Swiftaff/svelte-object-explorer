@@ -6,7 +6,8 @@
     let tabposition;
     let ratelimit;
     let rows;
+    let settings;
 </script>
 
 <!--SvelteObjectExplorerWebComponentIIFE is added separately via index.html -->
-<Example bind:value bind:open bind:fade bind:tabposition bind:ratelimit bind:rows />
+<Example bind:value bind:open bind:fade bind:tabposition bind:ratelimit bind:rows bind:settings />

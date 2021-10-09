@@ -107,7 +107,7 @@ Also, optionally displaying a value to help with troubleshooting.
 // the rest of your component
 ```
 
-## new in v2.2
+## New in v2.2
 
 -   resizable window width - and saves to localStorage to re-use between sessions
 -   SvelteValue - to expand deeply nested dom elements

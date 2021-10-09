@@ -9,7 +9,7 @@ export default function codeFormat({ key, val }, supplied_rows, supplied_setting
     // convertObjectToArrayOfOutputPanelRows
     let formatted_rows = [];
     global_settings = supplied_rows ? { ...supplied_settings, rows: supplied_rows } : supplied_settings;
-    console.log("settings", global_settings);
+    //console.log("settings", global_settings, supplied_rows, supplied_settings);
     // [{indexRef, parentIndexRef, output, type, bracket(optional), expandable(optional), len(optional)}]
     let row_settings = { indexRef: "0.0", parentIndexRef: "0", key, val, level: 0 };
     appendRowsByType(row_settings, formatted_rows);
@@ -270,7 +270,6 @@ function appendRowsForDomNode(row_settings, arr) {
 }
 
 function appendRowsForSvelteExplorerTag(row_settings, arr) {
-    console.log("appendRowsForSvelteExplorerTag");
     const { key, val, level, ...rest } = row_settings;
     const text = row_settings.val;
     const is_svelte_explorer_expander = row_settings.val.is_svelte_explorer_expander;
@@ -287,18 +286,9 @@ function appendRowsForSvelteExplorerTag(row_settings, arr) {
     const brackets = is_svelte_tag ? start_bracket + end_bracket : start_bracket + ">" + end_bracket;
     const has_text = text.length ? 1 : 0;
 
-    //if (is_svelte_explorer_expander) appendRowsByType({ ...row_settings, val: row_settings.val.value }, arr);
-    //else
-    if (is_svelte_explorer_expander) console.log("is_svelte_explorer_expander", end_bracket);
-    //if (children.length || has_text) {
     arr.push(getRowForBracketOpen(row_settings, children.length, brackets, "HTML", end_bracket.length));
-    //if (has_text) appendRowsByType(getRowForChild(row_settings, "", text, 0), arr);
-    //else {
-    //TODO check this for missing end brackets issue
     children.forEach((a, i) => appendRowsByType(getRowForChild(row_settings, i, a, i), arr));
     arr.push(getRowForBracketClose(row_settings, brackets, end_bracket.length));
-    //}
-    //} else arr.push({ ...rest, key, val: brackets, indent: level * indentSpaces });
 }
 
 export function recursive_get_chunked_array(supplied = [], supplied_options = {}) {
