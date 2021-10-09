@@ -5,8 +5,7 @@
     import ResetButton from "../src/ResetButton.svelte";
     import PauseButton from "../src/PauseButton.svelte";
     import CacheDisplay from "../src/CacheDisplay.svelte";
-    import ChevronButtons from "../src/ChevronButtons.svelte";
-    import RowText from "../src/RowText/Index.svelte";
+    import Row from "../src/Row.svelte";
     import lib from "../src/lib/index.js";
 
     let ratelimitDefault = 100;
@@ -146,17 +145,6 @@
         showManuallySelected.push(rowIndex);
     }
 
-    function click(index, val, type) {
-        console.log("click", index, val, type, openIndex);
-        if ((Object.entries(val).length && type === "object") || (val.length && type === "array")) {
-            if (openIndex === index) {
-                openIndex = null;
-            } else {
-                openIndex = index;
-            }
-        }
-    }
-
     function unpause() {
         isPaused = false;
     }
@@ -167,6 +155,10 @@
     function reset() {
         cache.viewChanges = 1;
         cache.dataChanges = 1;
+    }
+
+    function changeHoverRow(id) {
+        hoverRow = id;
     }
 </script>
 
@@ -183,7 +175,9 @@
                 "px;" +
                 (toggle ? "" : "right: -" + width + "px;" + (is_adjusting_width ? "" : " transition: 0.2s;"))}
             on:mouseover={() => (hovering = true)}
+            on:focus={() => (hovering = true)}
             on:mouseleave={() => (hovering = false)}
+            on:blur={() => (hovering = false)}
         >
             <ResetButton {reset} />
             <PauseButton {isPaused} {pause} {unpause} />
@@ -194,23 +188,11 @@
                         class="treeVal"
                         style={"max-width: " + (width - 20) + "px;"}
                         on:mouseout={() => (hoverRow = null)}
+                        on:blur={() => (hoverRow = null)}
                     >
                         <td class="treeVal" style={"max-width: " + (width - 20) + "px;"}>
                             <pre>
-                                  {#each topLevelObject.childRows as row}
-                                    {#if (
-                                      rowsToShow.includes(row.parentIndexRef) &&
-                                      (!row.bracket || (row.bracket && (row.expandable || rowsToShow.includes(row.indexRef))))
-                                    )}
-                                      <div
-                                      class={hoverRow === row.indexRef || row.parentIndexRef.startsWith(hoverRow) ? 'row hoverRow' : 'row'}
-                                      on:mouseover={() => (hoverRow = row.indexRef)}
-                                      on:mousedown={() => console.log(row.indexRef, row.val, row.level, topLevelObject.childRows, rowsToShow)}>
-                                      <RowText {row} isExpanded={rowsToShow.includes(row.indexRef)} />
-                                      <ChevronButtons {row} {rowsToShow} {rowContract} {rowExpand} />
-                                    </div>
-                                  {/if}
-                                  {/each}
+                                  {#each topLevelObject.childRows as row}<Row {row} {rowsToShow} {hoverRow} {topLevelObject} {changeHoverRow} {rowContract} {rowExpand} />{/each}
                               </pre>
                         </td>
                     </tr>
