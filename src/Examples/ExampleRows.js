@@ -60,7 +60,6 @@ const customType4 = {
     html: (row_settings, globals) => {
         const margin = row_settings.level * globals.indentSpaces * 10 + "px";
         const text = row_settings.val.specific_key2;
-        console.log("row_settings.val", row_settings.val);
         const html = `<div style="background-color: red; margin-left:${margin}">${text}</div>`;
         return { ...row_settings, html };
     },

@@ -97,7 +97,6 @@ const test6 = {
             {
                 match: (value) => typeof value === "string" && value.includes("abc"),
                 row_details: (current_row_settings, globals) => {
-                    console.log("globals", current_row_settings);
                     return {
                         ...current_row_settings,
                         // update as many of the default settings as required
