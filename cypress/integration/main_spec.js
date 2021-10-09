@@ -172,7 +172,7 @@ module.exports = (index) => {
             });
             rate = 2000;
             describe(`${url}: rateLimit = default ${rate}. Autocounter should increase cache automatically each 2 seconds`, function () {
-                callAutomaticCounterTests(url, rate, 500, 3000, "");
+                callAutomaticCounterTests(url, rate, 500, 3500, "");
             });
         });
     });
