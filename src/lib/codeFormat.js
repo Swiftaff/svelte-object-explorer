@@ -49,7 +49,8 @@ function apply_formatter_for_type(type_formatters, row_settings, arr) {
     const new_settings = getUpdatedTypeAndValue(row_settings);
     if (is_svelte_explorer_expander) {
         const parent = row_settings.indexRef.split(".").slice(0, -1).join(".");
-        const expand_this_row = new_settings.val.value ? row_settings.indexRef : parent;
+        const expand_this_row =
+            new_settings && new_settings.val && new_settings.val.value ? row_settings.indexRef : parent;
         globalExpandedPush(expand_this_row);
     }
     if (new_settings.row_details) append_arr_with_plugin_rows(new_settings, arr);
