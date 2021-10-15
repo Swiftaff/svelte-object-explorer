@@ -4,6 +4,4 @@
     export let isExpanded;
 </script>
 
-{#if isExpanded}
-    <RowHtmlExpanded {row} />
-{:else if row && typeof row === "object"}{@html row.html}{/if}
+{#if isExpanded}<RowHtmlExpanded {row} />{:else if row && typeof row === "object"}{@html row.html}{/if}
