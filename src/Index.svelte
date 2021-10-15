@@ -15,7 +15,7 @@
     let local_storage_key = "svelte-object-explorer";
     let panel;
 
-    export let settings;
+    export let settings = {};
     export let value;
     export let tabposition = "top";
     export let open = null;
@@ -78,6 +78,7 @@
         if (toggle) {
             if (window && window.svelteobjectexplorer) {
                 const obj = window.svelteobjectexplorer;
+                if ("settings" in obj) settings = obj.settings;
                 if ("value" in obj) value = obj.value;
                 if ("open" in obj) open = obj.open;
                 if ("fade" in obj) fade = obj.fade;
@@ -86,6 +87,7 @@
                 if ("rows" in obj) rows = obj.rows;
                 if ("settings" in obj) settings = obj.settings;
             }
+            if (settings.ratelimit) ratelimit = settings.ratelimit;
             let newSettings = settings;
             let options = { node: document.body, settings: newSettings };
             let newValue = {
