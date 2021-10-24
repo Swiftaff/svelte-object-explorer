@@ -3,9 +3,7 @@ function domParser(options = {}) {
     // el = { class: "classname", "svelte-explorer-tag": "H1", children: [el, el, el] }
     let html = (options && options.node) || document.body;
     let settings = (options && options.settings) || {};
-    let expand =
-        (settings && options.settings && options.settings.expand) ||
-        ((el) => el && el.nodeName === "SVELTE-EXPLORER-EXPAND");
+    let expand = settings.expand || ((el) => el && el.nodeName === "SVELTE-EXPLORER-EXPAND");
     let arr = getTag(html);
     return arr;
 
