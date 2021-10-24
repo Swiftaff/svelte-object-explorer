@@ -85,25 +85,27 @@
                 if ("tabposition" in obj) tabposition = obj.tabposition;
                 if ("ratelimit" in obj) ratelimit = obj.ratelimit;
                 if ("rows" in obj) rows = obj.rows;
-                if ("settings" in obj) settings = obj.settings;
             }
             if (settings.ratelimit) ratelimit = settings.ratelimit;
             let newSettings = settings;
             let options = { node: document.body, settings: newSettings };
-            let newValue = {
-                value: value || lib.domParser(options),
-                settings: newSettings,
-                rows,
-            };
-            const stringifiedValue = JSON.stringify(newValue); //, lib.replacer);
-            if (stringifiedValue !== stringifiedValueCache) {
-                cache.dataUpdated = new Date();
-                cache.dataChanges = cache.dataChanges + 1;
-                stringifiedValueCache = stringifiedValue;
-            }
-            const time_since_last_check = cache.dataUpdated - cache.viewUpdated;
             let expanded_from_tags = [];
-            if (time_since_last_check > ratelimit && !isPaused) {
+
+            const this_check = new Date();
+            const time_since_last_check = this_check - cache.viewUpdated;
+            if (!isPaused && time_since_last_check > ratelimit) {
+                let newValue = {
+                    value: value || lib.domParser(options),
+                    settings: newSettings,
+                    rows,
+                };
+                const stringifiedValue = JSON.stringify(newValue); //, lib.replacer);
+                if (stringifiedValue !== stringifiedValueCache) {
+                    cache.dataUpdated = new Date();
+                    cache.dataChanges = cache.dataChanges + 1;
+                    stringifiedValueCache = stringifiedValue;
+                }
+
                 cache.value = newValue.value;
                 cache.settings = newValue.settings;
                 cache.viewChanges = cache.viewChanges + 1;
