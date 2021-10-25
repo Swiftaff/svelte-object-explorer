@@ -38,7 +38,7 @@
         dataChanges: 0,
         viewChanges: 0,
         dataUpdated: new Date(),
-        viewUpdated: new Date(),
+        dataLastChecked: new Date(),
         formatted: "",
         value: null,
     };
@@ -76,62 +76,85 @@
 
     function refreshDataAndCache() {
         if (toggle) {
-            if (window && window.svelteobjectexplorer) {
-                const obj = window.svelteobjectexplorer;
-                if ("settings" in obj) settings = obj.settings;
-                if ("value" in obj) value = obj.value;
-                if ("open" in obj) open = obj.open;
-                if ("fade" in obj) fade = obj.fade;
-                if ("tabposition" in obj) tabposition = obj.tabposition;
-                if ("ratelimit" in obj) ratelimit = obj.ratelimit;
-                if ("rows" in obj) rows = obj.rows;
-            }
-            if (settings.ratelimit) ratelimit = settings.ratelimit;
-            let newSettings = settings;
-            let options = { node: document.body, settings: newSettings };
-            let expanded_from_tags = [];
-
-            const this_check = new Date();
-            const time_since_last_check = this_check - cache.viewUpdated;
-            if (!isPaused && time_since_last_check > ratelimit) {
-                let newValue = {
-                    value: value || lib.domParser(options),
-                    settings: newSettings,
-                    rows,
-                };
-                const stringifiedValue = JSON.stringify(newValue); //, lib.replacer);
-                if (stringifiedValue !== stringifiedValueCache) {
-                    cache.dataUpdated = new Date();
+            get_props_from_window_object();
+            ratelimit_update_from_settings();
+            const current_time = new Date();
+            if (isTimeToCheckData(current_time)) {
+                cache.dataLastChecked = current_time;
+                const newValue = get_newValue();
+                if (isDataChanged(newValue)) {
+                    cache.dataUpdated = current_time;
                     cache.dataChanges = cache.dataChanges + 1;
-                    stringifiedValueCache = stringifiedValue;
-                }
-
-                cache.value = newValue.value;
-                cache.settings = newValue.settings;
-                cache.viewChanges = cache.viewChanges + 1;
-                cache.viewUpdated = new Date();
-                cache.dataUpdated = cache.viewUpdated;
-                cache.formatted = lib.formatDate(cache.viewUpdated);
-                cache.rows = rows;
-                stringifiedValueCache = JSON.stringify({ value: cache.value, settings: newSettings, rows }); //, lib.replacer);
-
-                const { formatted_rows, expanded } = lib.convertDataToRows(cache);
-                if (expanded && Array.isArray(expanded)) expanded_from_tags = expanded;
-                topLevelObjectArray = formatted_rows; //this should trigger a redraw
-            }
-            //open requested object
-            if (!openIndexSetOnce) {
-                let openIndexRef = lib.getOpenIndex(topLevelObjectArray, open);
-                if (openIndexRef) {
-                    rowExpand(openIndexRef);
-                    if (showManuallySelected.includes(openIndexRef)) openIndexSetOnce = true;
-                }
-                if (expanded_from_tags.length) {
-                    expanded_from_tags.forEach(rowExpand);
-                    openIndexSetOnce = true;
+                    let expanded_from_tags = [];
+                    if (!isPaused) {
+                        update_cache(newValue, current_time);
+                        const { formatted_rows, expanded } = lib.convertDataToRows(cache);
+                        if (expanded && Array.isArray(expanded)) expanded_from_tags = expanded;
+                        trigger_redraw(formatted_rows);
+                    }
+                    stringifiedValueCache = JSON.stringify({ value: cache.value, settings, rows }); //, lib.replacer);
+                    open_requested_object_once(expanded_from_tags);
                 }
             }
         }
+    }
+
+    function isDataChanged(newValue) {
+        const stringifiedValue = JSON.stringify(newValue); //, lib.replacer);
+        return stringifiedValue !== stringifiedValueCache;
+    }
+
+    function get_newValue() {
+        const options = { node: document.body, settings };
+        return { value: value || lib.domParser(options), settings, rows };
+    }
+
+    function isTimeToCheckData(current_time) {
+        const time_since_last_check = current_time - cache.dataLastChecked;
+        return time_since_last_check > ratelimit;
+    }
+
+    function update_cache(newValue, current_time) {
+        cache.value = newValue.value;
+        cache.settings = newValue.settings;
+        cache.viewChanges = cache.viewChanges + 1;
+        cache.formatted = lib.formatDate(current_time);
+        cache.rows = rows;
+    }
+
+    function trigger_redraw(formatted_rows) {
+        topLevelObjectArray = formatted_rows;
+    }
+
+    function open_requested_object_once(expanded_from_tags) {
+        if (!openIndexSetOnce) {
+            let openIndexRef = lib.getOpenIndex(topLevelObjectArray, open);
+            if (openIndexRef) {
+                rowExpand(openIndexRef);
+                if (showManuallySelected.includes(openIndexRef)) openIndexSetOnce = true;
+            }
+            if (expanded_from_tags.length) {
+                expanded_from_tags.forEach(rowExpand);
+                openIndexSetOnce = true;
+            }
+        }
+    }
+
+    function get_props_from_window_object() {
+        if (window && window.svelteobjectexplorer) {
+            const obj = window.svelteobjectexplorer;
+            if ("settings" in obj) settings = obj.settings;
+            if ("value" in obj) value = obj.value;
+            if ("open" in obj) open = obj.open;
+            if ("fade" in obj) fade = obj.fade;
+            if ("tabposition" in obj) tabposition = obj.tabposition;
+            if ("ratelimit" in obj) ratelimit = obj.ratelimit;
+            if ("rows" in obj) rows = obj.rows;
+        }
+    }
+
+    function ratelimit_update_from_settings() {
+        if (settings && settings.ratelimit && typeof settings.ratelimit === "number") ratelimit = settings.ratelimit;
     }
 
     // UI functions
