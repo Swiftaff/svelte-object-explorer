@@ -7,7 +7,11 @@ import {
     removeWhitespace,
     create_custom_element,
 } from "./rollup-plugin-custom-element.js";
+
 import { terser } from "rollup-plugin-terser";
+//const terser = () => {
+//    name: "terser test override";
+//};
 
 const plugins = [
     rolluppluginiconifysvg({ logging: "some" }),
