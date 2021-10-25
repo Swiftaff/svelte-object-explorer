@@ -13,3 +13,4 @@
 -   keyword search filter
 -   tidy up styling of header elements and table positioning
 -   move svelteexplorertags out of domParser.js > getTag and into plugin <--
+-   make top panel sticky
