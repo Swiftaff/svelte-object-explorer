@@ -1,6 +1,9 @@
 <script>
     import { count } from "./ExampleCustomStore.js";
     import example_rows from "./ExampleRows.js";
+
+    export let sendprops = () => {};
+
     let thisPage;
     let counter = 1;
     let array = [
@@ -8,29 +11,21 @@
         { first: "John", surname: "Lennon" },
         { first: "The Chuckle", surname: "Brothers" },
     ];
-
-    function incr() {
-        setInterval(() => {
-            counter++;
-            const props = { value, open, fade, tabposition, ratelimit, rows };
-            sendprops(props);
-            window.svelteobjectexplorer = props;
-            //console.log("window.svelteobjectexplorer", window.svelteobjectexplorer);
-        }, 1000);
-    }
-
-    incr();
-
-    let value;
+    let value = {};
     let params = new URL(document.location).searchParams;
     let open = params.get("open");
     let fade = params.get("fade");
     let tabposition = params.get("tabposition");
     let ratelimit = params.get("rateLimit");
     let rows = example_rows;
-    export let sendprops = () => {};
+    let promise;
+    let loop;
+    let animate = false;
+    let startstop_text = "start";
+    let string = "< SvelteObjectExplorer {myStore} />";
+    update_value();
 
-    $: if (counter || $count) {
+    function update_value() {
         value = {
             html: thisPage,
             string1: "testy",
@@ -107,9 +102,9 @@
                 value_key_d: Symbol("test"),
             },
         };
+        const props = { value, open, fade, tabposition, ratelimit, rows };
+        sendprops(props);
     }
-
-    let string = "< SvelteObjectExplorer {myStore} />";
 
     async function getAsyncTimer() {
         const res = await timeout(3000);
@@ -123,15 +118,45 @@
     function timeout(ms) {
         return new Promise((resolve) => setTimeout(() => resolve("success"), ms));
     }
-    let promise = getAsyncTimer();
+
     function handleAsyncTimerClick() {
         promise = getAsyncTimer();
+    }
+
+    function startstop_toggle() {
+        animate = !animate;
+        startstop_text = animate ? "stop" : "start";
+        if (animate) {
+            promise = getAsyncTimer();
+            loop = setInterval(() => {
+                counter++;
+                update_value();
+                const props = { value, open, fade, tabposition, ratelimit, rows };
+                sendprops(props);
+                window.svelteobjectexplorer = props;
+            }, 1000);
+        } else clearInterval(loop);
+    }
+
+    function count_decr() {
+        count.decrement();
+        update_value();
+    }
+
+    function count_incr() {
+        count.increment();
+        update_value();
+    }
+
+    function count_reset() {
+        count.reset();
+        update_value();
     }
 </script>
 
 <div bind:this={thisPage}>
     <h1>Svelte Object Explorer</h1>
-
+    <button class="startstop" on:mouseup={startstop_toggle}>{startstop_text}</button>
     <p>
         {@html string}
     </p>
@@ -192,7 +217,7 @@
 
     <h2>Manual counter from custom store: {$count}</h2>
 
-    <button id="decr" on:click={count.decrement}>-</button>
-    <button id="incr" on:click={count.increment}>+</button>
-    <button id="reset" on:click={count.reset}>reset</button>
+    <button id="decr" on:click={count_decr}>-</button>
+    <button id="incr" on:click={count_incr}>+</button>
+    <button id="reset" on:click={count_reset}>reset</button>
 </div>
