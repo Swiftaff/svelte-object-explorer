@@ -83,30 +83,53 @@ module.exports = (index) => {
         });
     });
 
-    describe(url + ": " + "Prop options", function () {
+    describe(url + ": " + "Prop & Settings options", function () {
         describe(url + ": " + "Open", function () {
             const longstring_row = 3;
             const longstring_row_2nd_position = 16;
-            it("Open = null, No panels are open", function () {
+            it("Open = null, No panels are open (prop)", function () {
                 setViewportAndVisitUrl(url);
                 //item 'longstring' with no panels open above it, should be in original position
                 nthSelectorEqualsText(longstring_row, "div.row span.key", "longstring");
             });
 
-            it("Open = 'string1', is not an object or array so no panels are open", function () {
+            it("Open = null, No panels are open (setting)", function () {
+                setViewportAndVisitUrl(url + "?settingsTest=open1");
+                nthSelectorEqualsText(longstring_row, "div.row span.key", "longstring");
+            });
+
+            it("Open = 'string1', is not an object or array so no panels are open (prop)", function () {
                 setViewportAndVisitUrl(url + "?open=string1");
                 //item 'longstring' with no panels open above it, should be in original position
                 nthSelectorEqualsText(longstring_row, "div.row span.key", "longstring");
             });
 
-            it("Open = 'bananaman', is not a valid reference so no panels are open", function () {
+            it("Open = 'string1', is not an object or array so no panels are open (setting)", function () {
+                setViewportAndVisitUrl(url + "?settingsTest=open2");
+                //item 'longstring' with no panels open above it, should be in original position
+                nthSelectorEqualsText(longstring_row, "div.row span.key", "longstring");
+            });
+
+            it("Open = 'bananaman', is not a valid reference so no panels are open (prop)", function () {
                 setViewportAndVisitUrl(url + "?open=bananaman");
                 //item 'longstring' with no panels open above it, should be in original position
                 nthSelectorEqualsText(longstring_row, "div.row span.key", "longstring");
             });
 
-            it("Open = 'html', is an object, so it is open, so longstring is further down", function () {
+            it("Open = 'bananaman', is not a valid reference so no panels are open (setting)", function () {
+                setViewportAndVisitUrl(url + "?settingsTest = open3");
+                //item 'longstring' with no panels open above it, should be in original position
+                nthSelectorEqualsText(longstring_row, "div.row span.key", "longstring");
+            });
+
+            it("Open = 'html', is an object, so it is open, so longstring is further down (prop)", function () {
                 setViewportAndVisitUrl(url + "?open=html");
+                //item 'longstring' after expanded 'html' should be further down
+                nthSelectorEqualsText(longstring_row_2nd_position, "div.row span.key", "longstring");
+            });
+
+            it("Open = 'html', is an object, so it is open, so longstring is further down (setting)", function () {
+                setViewportAndVisitUrl(url + "?settingsTest=open4");
                 //item 'longstring' after expanded 'html' should be further down
                 nthSelectorEqualsText(longstring_row_2nd_position, "div.row span.key", "longstring");
             });
@@ -155,7 +178,7 @@ module.exports = (index) => {
             });
         });
 
-        describe.only(url + ": " + "rateLimit (as prop and setting)", function () {
+        describe(url + ": " + "rateLimit (as prop and setting)", function () {
             let rate = 100;
             describe(`${url}: rateLimit = default ${rate}. Autocounter should increase cache automatically each second`, function () {
                 callAutomaticCounterTests(url, rate, 50, 1100, "not.");

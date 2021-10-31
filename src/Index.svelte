@@ -77,7 +77,7 @@
     function refreshDataAndCache() {
         if (toggle) {
             get_props_from_window_object();
-            ratelimit_update_from_settings();
+            override_props_with_settings();
             const current_time = new Date();
             if (isTimeToCheckData(current_time)) {
                 cache.dataLastChecked = current_time;
@@ -153,8 +153,11 @@
         }
     }
 
-    function ratelimit_update_from_settings() {
-        if (settings && settings.ratelimit && typeof settings.ratelimit === "number") ratelimit = settings.ratelimit;
+    function override_props_with_settings() {
+        if (settings) {
+            if (settings.ratelimit && typeof settings.ratelimit === "number") ratelimit = settings.ratelimit;
+            if (settings.open && typeof settings.open === "string") open = settings.open;
+        }
     }
 
     // UI functions
