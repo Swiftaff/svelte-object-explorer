@@ -12,6 +12,11 @@ const open4 = { open: "html" };
 const fade1 = { fade: true };
 const fade2 = emptySettings;
 
+const tab1 = emptySettings;
+const tab2 = { tabposition: "top" };
+const tab3 = { tabposition: "middle" };
+const tab4 = { tabposition: "bottom" };
+
 export default {
     rateLimit100,
     rateLimit500,
@@ -22,4 +27,8 @@ export default {
     open4,
     fade1,
     fade2,
+    tab1,
+    tab2,
+    tab3,
+    tab4,
 };

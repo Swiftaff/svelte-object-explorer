@@ -136,7 +136,6 @@ module.exports = (index) => {
         });
 
         describe(url + ": " + "Fade", function () {
-            describe(url + ": " + "Fade = true", function () {
             describe(url + ": " + "Fade = true (prop)", function () {
                 it("Panel is visible with 0.3 opacity when NOT mouseover", function () {
                     setViewportAndVisitUrl(url + "?fade=true");
@@ -183,19 +182,39 @@ module.exports = (index) => {
         });
 
         describe(url + ": " + "tabposition", function () {
+            it("The 'Show' Panel is in the top by default", function () {
+                setViewportAndVisitUrl(url);
+                cy.get("div.toggle.toggleShow.togglenull");
+            });
             it("The 'Show' Panel is in the top, because of prop 'tabposition=top'", function () {
                 setViewportAndVisitUrl(url + "?tabposition=top");
-
                 cy.get("div.toggle.toggleShow.toggletop");
             });
             it("The 'Show' Panel is in the middle, because of prop 'tabposition=middle'", function () {
                 setViewportAndVisitUrl(url + "?tabposition=middle");
-
                 cy.get("div.toggle.toggleShow.togglemiddle");
             });
             it("The 'Show' Panel is in the bottom, because of prop 'tabposition=bottom'", function () {
                 setViewportAndVisitUrl(url + "?tabposition=bottom");
+                cy.get("div.toggle.toggleShow.togglebottom");
+            });
+        });
 
+        describe(url + ": " + "tabposition (setting)", function () {
+            it("The 'Show' Panel is in the top by default", function () {
+                setViewportAndVisitUrl(url + "?settingsTest=tab1");
+                cy.get("div.toggle.toggleShow.togglenull");
+            });
+            it("The 'Show' Panel is in the top, because of prop 'tabposition=top'", function () {
+                setViewportAndVisitUrl(url + "?settingsTest=tab2");
+                cy.get("div.toggle.toggleShow.toggletop");
+            });
+            it("The 'Show' Panel is in the middle, because of prop 'tabposition=middle'", function () {
+                setViewportAndVisitUrl(url + "?settingsTest=tab3");
+                cy.get("div.toggle.toggleShow.togglemiddle");
+            });
+            it("The 'Show' Panel is in the bottom, because of prop 'tabposition=bottom'", function () {
+                setViewportAndVisitUrl(url + "?settingsTest=tab4");
                 cy.get("div.toggle.toggleShow.togglebottom");
             });
         });
