@@ -23,7 +23,7 @@
     let animate = false;
     let startstop_text = "start";
     let string = "< SvelteObjectExplorer {myStore} />";
-    update_value();
+    $: if (thisPage) update_value();
 
     function update_value() {
         value = {

@@ -17,7 +17,11 @@ const c3 = "customType3";
 const customStoreValue_row = 22;
 const customStoreValue_end_row = 28;
 const VIEWPORT_WIDTH = 1000;
-const example_urls = ["/CustomElementES", "/CustomElementIIFE", "/SvelteComponent"];
+const es = "/CustomElementES";
+const iife = "/CustomElementIIFE";
+const svelte = "/SvelteComponent";
+const example_urls = [es, iife, svelte];
+const excerpts_of_urls_with_no_startstop = ["Expander", "Rows"];
 
 module.exports = (index) => {
     const url = example_urls[index];
@@ -43,7 +47,6 @@ module.exports = (index) => {
 
         it("Clicking show button, shows panel", function () {
             cy.get("div.toggle.toggleHide").click();
-            cy.wait(500);
             cy.get("div.tree");
         });
     });
@@ -53,7 +56,7 @@ module.exports = (index) => {
         const multiline_rows = 9;
         const all = rows + multiline_rows;
         it(`Count of data rows should be ${all} (${rows} rows + ${multiline_rows} multilines)`, function () {
-            setViewportAndVisitUrl(url);
+            //setViewportAndVisitUrl(url);
             cy.get("div.row").should("have.length", all);
             nthSelectorEqualsText(0, "span.len", "(" + rows + ")");
         });
@@ -66,11 +69,12 @@ module.exports = (index) => {
         });
 
         const html_row = 1;
-        const child_rows = 12;
+        const child_rows = 13;
         it(`Clicking first sub-item 'HTML' expand arrow, should expand item, showing ${child_rows} children of correct type`, function () {
+            //setViewportAndVisitUrl(url);
             cy.get("button.pause").click();
             nthSelectorClick(1, "span.dataArrow");
-            nthSelectorEqualsText(html_row, "span.len", "(12)");
+            nthSelectorEqualsText(html_row, "span.len", `(${child_rows})`);
             nthSelectorEqualsText(html_row, "span.type", "HTML");
 
             for (let i = html_row + 1; i < child_rows; i++) {
@@ -82,34 +86,27 @@ module.exports = (index) => {
     describe(url + ": " + "Prop options", function () {
         describe(url + ": " + "Open", function () {
             const longstring_row = 3;
-            const longstring_row_2nd_position = 15;
+            const longstring_row_2nd_position = 16;
             it("Open = null, No panels are open", function () {
                 setViewportAndVisitUrl(url);
-                cy.wait(1500);
                 //item 'longstring' with no panels open above it, should be in original position
                 nthSelectorEqualsText(longstring_row, "div.row span.key", "longstring");
             });
 
             it("Open = 'string1', is not an object or array so no panels are open", function () {
                 setViewportAndVisitUrl(url + "?open=string1");
-
-                cy.wait(1500);
                 //item 'longstring' with no panels open above it, should be in original position
                 nthSelectorEqualsText(longstring_row, "div.row span.key", "longstring");
             });
 
             it("Open = 'bananaman', is not a valid reference so no panels are open", function () {
                 setViewportAndVisitUrl(url + "?open=bananaman");
-
-                cy.wait(1500);
                 //item 'longstring' with no panels open above it, should be in original position
                 nthSelectorEqualsText(longstring_row, "div.row span.key", "longstring");
             });
 
             it("Open = 'html', is an object, so it is open, so longstring is further down", function () {
                 setViewportAndVisitUrl(url + "?open=html");
-
-                cy.wait(1500);
                 //item 'longstring' after expanded 'html' should be further down
                 nthSelectorEqualsText(longstring_row_2nd_position, "div.row span.key", "longstring");
             });
@@ -124,9 +121,7 @@ module.exports = (index) => {
                 });
 
                 it("Panel is visible with 1 opacity when mouseover (simulates a hover)", function () {
-                    setViewportAndVisitUrl(url + "?fade=true");
-
-                    cy.get("#svelteObjectExplorer").trigger("mouseover").wait(1000).should("have.css", "opacity", "1");
+                    cy.get("#svelteObjectExplorer").trigger("mouseover").should("have.css", "opacity", "1");
                 });
             });
 
@@ -137,8 +132,7 @@ module.exports = (index) => {
                 });
 
                 it("Panel is visible with 1 opacity when mouseover (simulates a hover)", function () {
-                    setViewportAndVisitUrl(url);
-                    cy.get("#svelteObjectExplorer").trigger("mouseover").wait(1000).should("have.css", "opacity", "1");
+                    cy.get("#svelteObjectExplorer").trigger("mouseover").should("have.css", "opacity", "1");
                 });
             });
         });
@@ -168,11 +162,11 @@ module.exports = (index) => {
             });
             rate = 500;
             describe(`${url}: rateLimit = default ${rate}. Autocounter should still increase cache each second`, function () {
-                callAutomaticCounterTests(url, rate, 250, 1100, "");
+                callAutomaticCounterTests(url, rate, 250, 1100, "", index);
             });
-            rate = 2000;
-            describe(`${url}: rateLimit = default ${rate}. Autocounter should increase cache automatically each 2 seconds`, function () {
-                callAutomaticCounterTests(url, rate, 500, 3500, "");
+            rate = 1000;
+            describe(`${url}: rateLimit = default ${rate}. Autocounter should increase cache automatically each 1 seconds`, function () {
+                callAutomaticCounterTests(url, rate, 500, 2500, "", index);
             });
         });
     });
@@ -181,27 +175,27 @@ module.exports = (index) => {
         describe("Manual: Clicking counter buttons should change the manual counter", function () {
             it("customStoreValue is initially set to 0", function () {
                 setViewportAndVisitUrl(url);
-                cy.wait(1500);
                 nthSelectorEqualsText(customStoreValue_row, "div.row span.key", "customStoreValue");
                 nthSelectorEqualsText(customStoreValue_end_row, "div.row span.val", "0"); // 22 + 6 multi-lines from longstring
             });
 
             it("click increase button twice, should equal 2", function () {
+                setViewportAndVisitUrl(url);
                 cy.get("#incr").click();
                 cy.get("#incr").click();
-                cy.wait(1500);
+                cy.wait(1000);
                 nthSelectorEqualsText(customStoreValue_end_row, "div.row span.val", "2");
             });
 
             it("click decrease button once, should equal 1", function () {
                 cy.get("#decr").click();
-                cy.wait(1500);
+                cy.wait(1000);
                 nthSelectorEqualsText(customStoreValue_end_row, "div.row span.val", "1");
             });
 
             it("click reset button once, should equal 0 again", function () {
                 cy.get("#reset").click();
-                cy.wait(1500);
+                cy.wait(1000);
                 nthSelectorEqualsText(customStoreValue_end_row, "div.row span.val", "0");
             });
         });
@@ -209,8 +203,6 @@ module.exports = (index) => {
         describe(url + ": " + "Automatic: Data updates when paused and un-paused, compared to view", function () {
             it("data and view are the same on page load", function () {
                 setViewportAndVisitUrl(url);
-                cy.wait(2000);
-                cy.get(".reset").click();
                 cy.get("span.cache_view")
                     .invoke("text")
                     .then((count1) => {
@@ -218,16 +210,13 @@ module.exports = (index) => {
                         nthSelectorEqualsText(0, "span.cache_view", count1);
                     });
             });
-            it("after 2 seconds of pausing, data has increased, but view should not", function () {
+            it("after 1 seconds of pausing, data has increased, but view should not", function () {
                 setViewportAndVisitUrl(url);
-                cy.wait(1000);
-                //pause
-                cy.get(".reset").click();
                 cy.get("button.pause").click();
                 cy.get("span.cache_data")
                     .invoke("text")
                     .then((count1) => {
-                        cy.wait(2000);
+                        cy.wait(1000);
                         cy.get("span.cache_data")
                             .invoke("text")
                             .then((count2) => {
@@ -237,27 +226,22 @@ module.exports = (index) => {
                 cy.get("span.cache_view")
                     .invoke("text")
                     .then((count1) => {
-                        cy.wait(2000);
+                        cy.wait(1000);
                         cy.get("span.cache_view")
                             .invoke("text")
-                            .then((count2) => {
-                                expect(Number.parseInt(count2)).to.be.equal(Number.parseInt(count1));
-                            });
+                            .should("equal", "" + count1);
                     });
             });
             it("both data and view will update after unpause", function () {
                 setViewportAndVisitUrl(url);
-                cy.wait(1000);
-                //pause
-                cy.get(".reset").click();
                 cy.get("button.pause").click();
                 cy.get("span.cache_data")
                     .invoke("text")
                     .then((count1) => {
-                        cy.wait(2000);
+                        cy.wait(500);
                         //this unpause should also affect the view in block below
                         cy.get("button.pause").click();
-                        cy.wait(2000);
+                        cy.wait(500);
                         cy.get("span.cache_data")
                             .invoke("text")
                             .then((count2) => {
@@ -267,7 +251,7 @@ module.exports = (index) => {
                 cy.get("span.cache_view")
                     .invoke("text")
                     .then((count1) => {
-                        cy.wait(4000);
+                        cy.wait(1000);
                         cy.get("span.cache_view")
                             .invoke("text")
                             .then((count2) => {
@@ -282,6 +266,9 @@ module.exports = (index) => {
         describe("Mousedown/mouseup on edge, will toggle the transition of the toggle button", function () {
             it("toggle has transition on page load", function () {
                 setViewportAndVisitUrl(url + "/Expander/Example1");
+                cy.get(".toggle").then((el) => {
+                    expect(el[0].style.transitionDuration).to.equal("0.2s");
+                });
                 cy.get(".toggle").then((el) => {
                     expect(el[0].style.transitionDuration).to.equal("0.2s");
                 });
@@ -320,13 +307,8 @@ module.exports = (index) => {
                     .then((el) => {
                         first = getStyleLeftValue(el);
                         clientX = first - 100;
+                        mouseMoveX(clientX);
                     });
-
-                // move mouse to the left
-                cy.window().then((win) => {
-                    win.dispatchEvent(new win.MouseEvent("mousemove", { clientX, clientY: 0 }));
-                    win.dispatchEvent(new win.MouseEvent("mouseup", { clientX, clientY: 0 }));
-                });
 
                 //mouseup, get position again, mouseup compare
                 cy.get(".width_adjust_hover_zone")
@@ -351,13 +333,8 @@ module.exports = (index) => {
                     .then((el) => {
                         first = getStyleLeftValue(el);
                         clientX = first - 464;
+                        mouseMoveX(clientX);
                     });
-
-                // move mouse to the left
-                cy.window().then((win) => {
-                    win.dispatchEvent(new win.MouseEvent("mousemove", { clientX, clientY: 0 }));
-                    win.dispatchEvent(new win.MouseEvent("mouseup", { clientX, clientY: 0 }));
-                });
 
                 //mouseup, get position again,mouseup compare
                 cy.get(".width_adjust_hover_zone")
@@ -371,7 +348,6 @@ module.exports = (index) => {
             });
 
             it("Drag edge to the right, will decrease panel width", function () {
-                setViewportAndVisitUrl(url + "/Expander/Example1");
                 let first, second, clientX;
 
                 //mousedown on edge, get position
@@ -381,13 +357,8 @@ module.exports = (index) => {
                     .then((el) => {
                         first = getStyleLeftValue(el);
                         clientX = 510;
+                        mouseMoveX(clientX);
                     });
-
-                // move mouse to the left
-                cy.window().then((win) => {
-                    win.dispatchEvent(new win.MouseEvent("mousemove", { clientX, clientY: 0 }));
-                    win.dispatchEvent(new win.MouseEvent("mouseup", { clientX, clientY: 0 }));
-                });
 
                 //mouseup, get position again, mouseup compare
                 cy.get(".width_adjust_hover_zone")
@@ -401,7 +372,6 @@ module.exports = (index) => {
             });
 
             it("Drag edge too far to the right, will decrease panel width to min", function () {
-                setViewportAndVisitUrl(url + "/Expander/Example1");
                 let first, second, clientX;
                 const rightmost = 554;
 
@@ -412,13 +382,8 @@ module.exports = (index) => {
                     .then((el) => {
                         first = getStyleLeftValue(el);
                         clientX = 559;
+                        mouseMoveX(clientX);
                     });
-
-                // move mouse to the left
-                cy.window().then((win) => {
-                    win.dispatchEvent(new win.MouseEvent("mousemove", { clientX, clientY: 0 }));
-                    win.dispatchEvent(new win.MouseEvent("mouseup", { clientX, clientY: 0 }));
-                });
 
                 //mouseup, get position again,mouseup compare
                 cy.get(".width_adjust_hover_zone")
@@ -666,26 +631,24 @@ module.exports = (index) => {
     });
 };
 
-function callAutomaticCounterTests(url, rate, before, after, not) {
+function callAutomaticCounterTests(url, rate, before, after, not, i) {
     const full_url = rate === 100 ? url : url + "?rateLimit=" + rate;
     it(`data before rate:${rate} is same`, function () {
-        testAutomaticCounter(full_url, "span.cache_data", before, false, not);
+        testAutomaticCounter(full_url, "span.cache_data", before, false, not, i);
     });
     it(`view before rate:${rate} is same`, function () {
-        testAutomaticCounter(full_url, "span.cache_view", before, false, not);
+        testAutomaticCounter(full_url, "span.cache_view", before, false, not, i);
     });
     it(`data after rate:${rate} is different`, function () {
-        testAutomaticCounter(full_url, "span.cache_data", after, true, not);
+        testAutomaticCounter(full_url, "span.cache_data", after, true, not, i);
     });
     it(`view after rate:${rate} is different`, function () {
-        testAutomaticCounter(full_url, "span.cache_view", after, true, not);
+        testAutomaticCounter(full_url, "span.cache_view", after, true, not, i);
     });
 }
 
-function testAutomaticCounter(url, selector, wait, should_be_greater, not_visible = "") {
+function testAutomaticCounter(url, selector, wait, should_be_greater, not_visible = "", i) {
     setViewportAndVisitUrl(url);
-    cy.wait(2000);
-    cy.get(".reset").click();
     cy.get(selector)
         .invoke("text")
         .then((count1) => {
@@ -730,12 +693,7 @@ function it_unaffectedValuesAreUnchanged(exceptions = "") {
 }
 
 function nthSelectorEqualsText(n, selector, compare_text) {
-    cy.get(selector)
-        .eq(n)
-        .invoke("text")
-        .then((text) => {
-            expect(text).to.equal(compare_text);
-        });
+    cy.get(selector).eq(n).invoke("text").should("equal", compare_text);
 }
 
 function nthSelectorClick(n, selector) {
@@ -745,6 +703,20 @@ function nthSelectorClick(n, selector) {
 function setViewportAndVisitUrl(url) {
     cy.viewport(VIEWPORT_WIDTH, 600);
     cy.visit(url);
+    extra_steps_for_main_test_url(url);
+}
+
+function extra_steps_for_main_test_url(url) {
+    const is_a_main_test_url =
+        excerpts_of_urls_with_no_startstop.filter((excerpt) => url.includes(excerpt)).length == 0;
+    if (is_a_main_test_url) {
+        cy.get(".startstop").click();
+        wait_for_panel_to_populate_with_real_data_not_just_first_dom_load();
+    }
+}
+
+function wait_for_panel_to_populate_with_real_data_not_just_first_dom_load() {
+    cy.get("span.len").eq(0).invoke("text").should("equal", "(27)");
 }
 
 function getStyleLeftValue(el) {
