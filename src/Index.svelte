@@ -155,8 +155,10 @@
 
     function override_props_with_settings() {
         if (settings) {
-            if (settings.ratelimit && typeof settings.ratelimit === "number") ratelimit = settings.ratelimit;
-            if (settings.open && typeof settings.open === "string") open = settings.open;
+            console.log("settings.fade", settings.fade);
+            if ("ratelimit" in settings && typeof settings.ratelimit === "number") ratelimit = settings.ratelimit;
+            if ("open" in settings && typeof settings.open === "string") open = settings.open;
+            if ("fade" in settings) fade = settings.fade;
         }
     }
 

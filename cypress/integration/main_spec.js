@@ -137,9 +137,9 @@ module.exports = (index) => {
 
         describe(url + ": " + "Fade", function () {
             describe(url + ": " + "Fade = true", function () {
+            describe(url + ": " + "Fade = true (prop)", function () {
                 it("Panel is visible with 0.3 opacity when NOT mouseover", function () {
                     setViewportAndVisitUrl(url + "?fade=true");
-
                     cy.get("div.tree").should("have.css", "opacity", "0.3");
                 });
 
@@ -148,9 +148,31 @@ module.exports = (index) => {
                 });
             });
 
-            describe(url + ": " + "Fade = false", function () {
+            describe(url + ": " + "Fade = true (setting)", function () {
+                it("Panel is visible with 0.3 opacity when NOT mouseover", function () {
+                    setViewportAndVisitUrl(url + "?settingsTest=fade1");
+                    cy.get("div.tree").should("have.css", "opacity", "0.3");
+                });
+
+                it("Panel is visible with 1 opacity when mouseover (simulates a hover)", function () {
+                    cy.get("#svelteObjectExplorer").trigger("mouseover").should("have.css", "opacity", "1");
+                });
+            });
+
+            describe(url + ": " + "Fade = false (prop)", function () {
                 it("Panel is visible with 1 opacity when NOT mouseover", function () {
                     setViewportAndVisitUrl(url);
+                    cy.get("div.tree").should("have.css", "opacity", "1");
+                });
+
+                it("Panel is visible with 1 opacity when mouseover (simulates a hover)", function () {
+                    cy.get("#svelteObjectExplorer").trigger("mouseover").should("have.css", "opacity", "1");
+                });
+            });
+
+            describe(url + ": " + "Fade = false (setting)", function () {
+                it("Panel is visible with 1 opacity when NOT mouseover", function () {
+                    setViewportAndVisitUrl(url + "?settingsTest=fade2");
                     cy.get("div.tree").should("have.css", "opacity", "1");
                 });
 
