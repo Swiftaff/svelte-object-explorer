@@ -155,18 +155,21 @@ module.exports = (index) => {
             });
         });
 
-        describe(url + ": " + "rateLimit", function () {
+        describe.only(url + ": " + "rateLimit (as prop and setting)", function () {
             let rate = 100;
             describe(`${url}: rateLimit = default ${rate}. Autocounter should increase cache automatically each second`, function () {
                 callAutomaticCounterTests(url, rate, 50, 1100, "not.");
+                callAutomaticCounterTests(url, rate, 50, 1100, "not.", true);
             });
             rate = 500;
             describe(`${url}: rateLimit = default ${rate}. Autocounter should still increase cache each second`, function () {
-                callAutomaticCounterTests(url, rate, 250, 1100, "", index);
+                callAutomaticCounterTests(url, rate, 250, 1100, "");
+                callAutomaticCounterTests(url, rate, 250, 1100, "", true);
             });
             rate = 1000;
             describe(`${url}: rateLimit = default ${rate}. Autocounter should increase cache automatically each 1 seconds`, function () {
-                callAutomaticCounterTests(url, rate, 500, 2500, "", index);
+                callAutomaticCounterTests(url, rate, 500, 2500, "");
+                callAutomaticCounterTests(url, rate, 500, 2500, "", true);
             });
         });
     });
@@ -631,19 +634,21 @@ module.exports = (index) => {
     });
 };
 
-function callAutomaticCounterTests(url, rate, before, after, not, i) {
-    const full_url = rate === 100 ? url : url + "?rateLimit=" + rate;
-    it(`data before rate:${rate} is same`, function () {
-        testAutomaticCounter(full_url, "span.cache_data", before, false, not, i);
+function callAutomaticCounterTests(url, rate, before, after, not, is_settings) {
+    const queryString = is_settings ? "?settingsTest=rateLimit" : "?rateLimit=";
+    const full_url = rate === 100 ? url : url + queryString + rate;
+    const test_type = is_settings ? " (from settings:ratelimit prop)" : " (from ratelimit prop)";
+    it(`data before rate:${rate} is same ${test_type}`, function () {
+        testAutomaticCounter(full_url, "span.cache_data", before, false, not);
     });
-    it(`view before rate:${rate} is same`, function () {
-        testAutomaticCounter(full_url, "span.cache_view", before, false, not, i);
+    it(`view before rate:${rate} is same ${test_type}`, function () {
+        testAutomaticCounter(full_url, "span.cache_view", before, false, not);
     });
-    it(`data after rate:${rate} is different`, function () {
-        testAutomaticCounter(full_url, "span.cache_data", after, true, not, i);
+    it(`data after rate:${rate} is different ${test_type}`, function () {
+        testAutomaticCounter(full_url, "span.cache_data", after, true, not);
     });
-    it(`view after rate:${rate} is different`, function () {
-        testAutomaticCounter(full_url, "span.cache_view", after, true, not, i);
+    it(`view after rate:${rate} is different ${test_type}`, function () {
+        testAutomaticCounter(full_url, "span.cache_view", after, true, not);
     });
 }
 

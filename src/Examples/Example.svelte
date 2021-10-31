@@ -1,6 +1,7 @@
 <script>
     import { count } from "./ExampleCustomStore.js";
     import example_rows from "./ExampleRows.js";
+    import settingsFixtures from "./ExampleSettings.js";
 
     export let sendprops = () => {};
 
@@ -17,6 +18,7 @@
     let fade = params.get("fade");
     let tabposition = params.get("tabposition");
     let ratelimit = params.get("rateLimit");
+    let settingsTest = params.get("settingsTest");
     let rows = example_rows;
     let promise;
     let loop;
@@ -102,8 +104,17 @@
                 value_key_d: Symbol("test"),
             },
         };
-        const props = { value, open, fade, tabposition, ratelimit, rows };
+        const settings = getSettings();
+        const props = { value, open, fade, tabposition, ratelimit, rows, settings };
         sendprops(props);
+    }
+
+    function getSettings() {
+        let settings = null;
+        if (settingsTest && settingsFixtures[settingsTest]) {
+            settings = settingsFixtures[settingsTest];
+        }
+        return settings;
     }
 
     async function getAsyncTimer() {
@@ -131,7 +142,8 @@
             loop = setInterval(() => {
                 counter++;
                 update_value();
-                const props = { value, open, fade, tabposition, ratelimit, rows };
+                const settings = getSettings();
+                const props = { value, open, fade, tabposition, ratelimit, rows, settings };
                 sendprops(props);
                 window.svelteobjectexplorer = props;
             }, 1000);
