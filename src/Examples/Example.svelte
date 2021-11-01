@@ -14,7 +14,7 @@
     ];
     let value = {};
     let params = new URL(document.location).searchParams;
-    let open = params.get("open");
+    let open = params.get("openPropsTest");
     let fade = params.get("fade");
     let tabposition = params.get("tabposition");
     let ratelimit = params.get("rateLimit");

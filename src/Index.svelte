@@ -141,8 +141,8 @@
     }
 
     function get_props_from_window_object() {
-        if (window && window.svelteobjectexplorer) {
-            const obj = window.svelteobjectexplorer;
+        const obj = window.svelteobjectexplorer;
+        if (window && obj) {
             if ("settings" in obj) settings = obj.settings;
             if ("value" in obj) value = obj.value;
             if ("open" in obj) open = obj.open;
@@ -156,10 +156,12 @@
     function override_props_with_settings() {
         if (settings) {
             //console.log("settings", settings);
-            if ("ratelimit" in settings && typeof settings.ratelimit === "number") ratelimit = settings.ratelimit;
+            if ("value" in settings) value = settings.value;
             if ("open" in settings) open = settings.open;
             if ("fade" in settings) fade = settings.fade;
             if ("tabposition" in settings) tabposition = settings.tabposition;
+            if ("ratelimit" in settings && typeof settings.ratelimit === "number") ratelimit = settings.ratelimit;
+            if ("rows" in settings) rows = settings.rows;
         }
     }
 

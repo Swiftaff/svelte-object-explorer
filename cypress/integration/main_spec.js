@@ -22,6 +22,7 @@ const iife = "/CustomElementIIFE";
 const svelte = "/SvelteComponent";
 const example_urls = [es, iife, svelte];
 const excerpts_of_urls_with_no_startstop = ["Expander", "Rows"];
+const props_and_settings = ["props", "settings"];
 
 module.exports = (index) => {
     const url = example_urls[index];
@@ -83,139 +84,207 @@ module.exports = (index) => {
         });
     });
 
-    describe(url + ": " + "Prop & Settings options", function () {
-        describe(url + ": " + "Open", function () {
-            const longstring_row = 3;
-            const longstring_row_2nd_position = 16;
-            it("Open = null, No panels are open (prop)", function () {
-                setViewportAndVisitUrl(url);
-                //item 'longstring' with no panels open above it, should be in original position
-                nthSelectorEqualsText(longstring_row, "div.row span.key", "longstring");
-            });
-
-            it("Open = null, No panels are open (setting)", function () {
-                setViewportAndVisitUrl(url + "?settingsTest=open1");
-                nthSelectorEqualsText(longstring_row, "div.row span.key", "longstring");
-            });
-
-            it("Open = 'string1', is not an object or array so no panels are open (prop)", function () {
-                setViewportAndVisitUrl(url + "?open=string1");
-                //item 'longstring' with no panels open above it, should be in original position
-                nthSelectorEqualsText(longstring_row, "div.row span.key", "longstring");
-            });
-
-            it("Open = 'string1', is not an object or array so no panels are open (setting)", function () {
-                setViewportAndVisitUrl(url + "?settingsTest=open2");
-                //item 'longstring' with no panels open above it, should be in original position
-                nthSelectorEqualsText(longstring_row, "div.row span.key", "longstring");
-            });
-
-            it("Open = 'bananaman', is not a valid reference so no panels are open (prop)", function () {
-                setViewportAndVisitUrl(url + "?open=bananaman");
-                //item 'longstring' with no panels open above it, should be in original position
-                nthSelectorEqualsText(longstring_row, "div.row span.key", "longstring");
-            });
-
-            it("Open = 'bananaman', is not a valid reference so no panels are open (setting)", function () {
-                setViewportAndVisitUrl(url + "?settingsTest = open3");
-                //item 'longstring' with no panels open above it, should be in original position
-                nthSelectorEqualsText(longstring_row, "div.row span.key", "longstring");
-            });
-
-            it("Open = 'html', is an object, so it is open, so longstring is further down (prop)", function () {
-                setViewportAndVisitUrl(url + "?open=html");
-                //item 'longstring' after expanded 'html' should be further down
-                nthSelectorEqualsText(longstring_row_2nd_position, "div.row span.key", "longstring");
-            });
-
-            it("Open = 'html', is an object, so it is open, so longstring is further down (setting)", function () {
-                setViewportAndVisitUrl(url + "?settingsTest=open4");
-                //item 'longstring' after expanded 'html' should be further down
-                nthSelectorEqualsText(longstring_row_2nd_position, "div.row span.key", "longstring");
-            });
-        });
-
-        describe(url + ": " + "Fade", function () {
-            describe(url + ": " + "Fade = true (prop)", function () {
-                it("Panel is visible with 0.3 opacity when NOT mouseover", function () {
-                    setViewportAndVisitUrl(url + "?fade=true");
-                    cy.get("div.tree").should("have.css", "opacity", "0.3");
-                });
-
-                it("Panel is visible with 1 opacity when mouseover (simulates a hover)", function () {
-                    cy.get("#svelteObjectExplorer").trigger("mouseover").should("have.css", "opacity", "1");
-                });
-            });
-
-            describe(url + ": " + "Fade = true (setting)", function () {
-                it("Panel is visible with 0.3 opacity when NOT mouseover", function () {
-                    setViewportAndVisitUrl(url + "?settingsTest=fade1");
-                    cy.get("div.tree").should("have.css", "opacity", "0.3");
-                });
-
-                it("Panel is visible with 1 opacity when mouseover (simulates a hover)", function () {
-                    cy.get("#svelteObjectExplorer").trigger("mouseover").should("have.css", "opacity", "1");
-                });
-            });
-
-            describe(url + ": " + "Fade = false (prop)", function () {
-                it("Panel is visible with 1 opacity when NOT mouseover", function () {
+    describe(url + ": " + "Props or Settings", function () {
+        props_and_settings.forEach((test_type) => {
+            describe(`${url}: open (${test_type})`, function () {
+                const longstring_row = 3;
+                const longstring_row_2nd_position = 16;
+                const test_query = test_type === "settings" ? "settingsTest" : "openPropsTest";
+                it(`Open = null, No panels are open`, function () {
                     setViewportAndVisitUrl(url);
-                    cy.get("div.tree").should("have.css", "opacity", "1");
+                    //item 'longstring' with no panels open above it, should be in original position
+                    nthSelectorEqualsText(longstring_row, "div.row span.key", "longstring");
                 });
 
-                it("Panel is visible with 1 opacity when mouseover (simulates a hover)", function () {
-                    cy.get("#svelteObjectExplorer").trigger("mouseover").should("have.css", "opacity", "1");
+                it("Open = 'string1', is not an object or array so no panels are open", function () {
+                    setViewportAndVisitUrl(`${url}?${test_query}=string1`);
+                    //item 'longstring' with no panels open above it, should be in original position
+                    nthSelectorEqualsText(longstring_row, "div.row span.key", "longstring");
+                });
+
+                it("Open = 'bananaman', is not a valid reference so no panels are open", function () {
+                    setViewportAndVisitUrl(`${url}?${test_query}=bananaman`);
+                    //item 'longstring' with no panels open above it, should be in original position
+                    nthSelectorEqualsText(longstring_row, "div.row span.key", "longstring");
+                });
+
+                it("Open = 'html', is an object, so it is open, so longstring is further down", function () {
+                    setViewportAndVisitUrl(`${url}?${test_query}=html`);
+                    //item 'longstring' after expanded 'html' should be further down
+                    nthSelectorEqualsText(longstring_row_2nd_position, "div.row span.key", "longstring");
                 });
             });
 
-            describe(url + ": " + "Fade = false (setting)", function () {
-                it("Panel is visible with 1 opacity when NOT mouseover", function () {
-                    setViewportAndVisitUrl(url + "?settingsTest=fade2");
-                    cy.get("div.tree").should("have.css", "opacity", "1");
+            describe(`${url}: fade (${test_type})`, function () {
+                describe(url + ": " + "Fade = true", function () {
+                    it("Panel is visible with 0.3 opacity when NOT mouseover", function () {
+                        const test_query = test_type === "settings" ? "settingsTest=fade1" : "fade=true";
+                        setViewportAndVisitUrl(`${url}?${test_query}`);
+                        cy.get("div.tree").should("have.css", "opacity", "0.3");
+                    });
+
+                    it("Panel is visible with 1 opacity when mouseover (simulates a hover)", function () {
+                        cy.get("#svelteObjectExplorer").trigger("mouseover").should("have.css", "opacity", "1");
+                    });
                 });
 
-                it("Panel is visible with 1 opacity when mouseover (simulates a hover)", function () {
-                    cy.get("#svelteObjectExplorer").trigger("mouseover").should("have.css", "opacity", "1");
+                describe(url + ": " + "Fade = false", function () {
+                    it("Panel is visible with 1 opacity when NOT mouseover", function () {
+                        setViewportAndVisitUrl(url);
+                        cy.get("div.tree").should("have.css", "opacity", "1");
+                    });
+
+                    it("Panel is visible with 1 opacity when mouseover (simulates a hover)", function () {
+                        cy.get("#svelteObjectExplorer").trigger("mouseover").should("have.css", "opacity", "1");
+                    });
                 });
             });
-        });
 
-        describe(url + ": " + "tabposition", function () {
-            it("The 'Show' Panel is in the top by default", function () {
-                setViewportAndVisitUrl(url);
-                cy.get("div.toggle.toggleShow.togglenull");
+            describe(`${url}: tabposition (${test_type})`, function () {
+                it("The 'Show' Panel is in the top by default", function () {
+                    setViewportAndVisitUrl(url);
+                    cy.get("div.toggle.toggleShow.togglenull");
+                });
+                it("The 'Show' Panel is in the top, because of prop 'tabposition=top'", function () {
+                    const test_query = test_type === "settings" ? "settingsTest=tab2" : "tabposition=top";
+                    setViewportAndVisitUrl(`${url}?${test_query}`);
+                    cy.get("div.toggle.toggleShow.toggletop");
+                });
+                it("The 'Show' Panel is in the middle, because of prop 'tabposition=middle'", function () {
+                    const test_query = test_type === "settings" ? "settingsTest=tab3" : "tabposition=middle";
+                    setViewportAndVisitUrl(`${url}?${test_query}`);
+                    cy.get("div.toggle.toggleShow.togglemiddle");
+                });
+                it("The 'Show' Panel is in the bottom, because of prop 'tabposition=bottom'", function () {
+                    const test_query = test_type === "settings" ? "settingsTest=tab4" : "tabposition=bottom";
+                    setViewportAndVisitUrl(`${url}?${test_query}`);
+                    cy.get("div.toggle.toggleShow.togglebottom");
+                });
             });
-            it("The 'Show' Panel is in the top, because of prop 'tabposition=top'", function () {
-                setViewportAndVisitUrl(url + "?tabposition=top");
-                cy.get("div.toggle.toggleShow.toggletop");
-            });
-            it("The 'Show' Panel is in the middle, because of prop 'tabposition=middle'", function () {
-                setViewportAndVisitUrl(url + "?tabposition=middle");
-                cy.get("div.toggle.toggleShow.togglemiddle");
-            });
-            it("The 'Show' Panel is in the bottom, because of prop 'tabposition=bottom'", function () {
-                setViewportAndVisitUrl(url + "?tabposition=bottom");
-                cy.get("div.toggle.toggleShow.togglebottom");
-            });
-        });
 
-        describe(url + ": " + "tabposition (setting)", function () {
-            it("The 'Show' Panel is in the top by default", function () {
-                setViewportAndVisitUrl(url + "?settingsTest=tab1");
-                cy.get("div.toggle.toggleShow.togglenull");
-            });
-            it("The 'Show' Panel is in the top, because of prop 'tabposition=top'", function () {
-                setViewportAndVisitUrl(url + "?settingsTest=tab2");
-                cy.get("div.toggle.toggleShow.toggletop");
-            });
-            it("The 'Show' Panel is in the middle, because of prop 'tabposition=middle'", function () {
-                setViewportAndVisitUrl(url + "?settingsTest=tab3");
-                cy.get("div.toggle.toggleShow.togglemiddle");
-            });
-            it("The 'Show' Panel is in the bottom, because of prop 'tabposition=bottom'", function () {
-                setViewportAndVisitUrl(url + "?settingsTest=tab4");
-                cy.get("div.toggle.toggleShow.togglebottom");
+            describe(`${url}: Settings - 'rows' override (${test_type})`, function () {
+                describe("No rows - has no effect on existing values", function () {
+                    it("visit test page", function () {
+                        setViewportAndVisitUrl(`${url}/Rows/?test_${test_type}=1`);
+                    });
+                    it_unaffectedValuesAreUnchanged();
+                });
+
+                describe("readme Example1: custom HTML row", function () {
+                    it("visit test page", function () {
+                        setViewportAndVisitUrl(`${url}/Rows/?test_${test_type}=2`);
+                    });
+                    it_unaffectedValuesAreUnchanged();
+                    const selector = ".test2";
+                    const first = 0;
+                    it("Basic html override", function () {
+                        nthSelectorEqualsText(first, selector, "containsABC: valuecontainingabc");
+                    });
+                    it("Has red text", function () {
+                        cy.get(selector)
+                            .should("have.attr", "style")
+                            .then(function (style) {
+                                expect(style).to.eq("color:red");
+                            });
+                    });
+                });
+
+                describe("readme Example2: overriding the value of an existing 'String' Type", function () {
+                    it("visit test page", function () {
+                        setViewportAndVisitUrl(`${url}/Rows/?test_${test_type}=3`);
+                    });
+                    it_unaffectedValuesAreUnchanged("string");
+                    it("Overrides all strings by adding '!'", function () {
+                        const string_val = 1;
+                        const val = 12;
+                        nthSelectorEqualsText(string_val, "span.val", "testy!");
+                        nthSelectorEqualsText(val, "span.val", "valuecontainingabc!");
+                    });
+                });
+
+                describe("readme Example3: simplifying an object", function () {
+                    it("visit test page", function () {
+                        setViewportAndVisitUrl(`${url}/Rows/?test_${test_type}=4`);
+                    });
+                    it_unaffectedValuesAreUnchanged();
+                    it("Displays conctatenated value 'test1 (test10)'", function () {
+                        const val = 12;
+                        nthSelectorEqualsText(val, "span.val", "test1 (test10)");
+                    });
+                    it("Displays updated 'string' type instead of original 'object'", function () {
+                        const type = 10;
+                        nthSelectorEqualsText(type, "span.type", "string");
+                    });
+                });
+
+                describe("readme Example4: changing the type", function () {
+                    it("visit test page", function () {
+                        setViewportAndVisitUrl(`${url}/Rows/?test_${test_type}=5`);
+                    });
+                    it_unaffectedValuesAreUnchanged();
+                    it("Displays updated 'my_type' type instead of original 'object'", function () {
+                        const type = 10;
+                        nthSelectorEqualsText(type, "span.type", "my_type");
+                    });
+                });
+
+                describe("readme Example5: tweaking row_settings, without changing html", function () {
+                    it("visit test page", function () {
+                        setViewportAndVisitUrl(`${url}/Rows/?test_${test_type}=6`);
+                    });
+                    it_unaffectedValuesAreUnchanged();
+                    it("Updates key to 'mykey'", function () {
+                        const key = 10;
+                        nthSelectorEqualsText(key, "span.key", "mykey");
+                    });
+                    it("Displays conctatenated value 'containsABC: valuecontainingabc'", function () {
+                        const val = 12;
+                        nthSelectorEqualsText(val, "span.val", "containsABC: valuecontainingabc");
+                    });
+                    it("Updates type to 'my_type'", function () {
+                        const type = 10;
+                        nthSelectorEqualsText(type, "span.type", "my_type");
+                    });
+                    const num_spaces = 12;
+                    it(`Updates indent spaces to ${num_spaces}`, function () {
+                        const selector = "div.row span";
+                        const span = 62;
+
+                        cy.get(selector)
+                            .eq(span)
+                            .invoke("text")
+                            .then((text) => {
+                                const spaces = text.split("mykey");
+                                expect(spaces[0].length).to.equal(num_spaces);
+                            });
+                    });
+                });
+
+                describe("readme Example2a: multiple overrides - of the value of an existing 'String' Type", function () {
+                    it("visit test page", function () {
+                        setViewportAndVisitUrl(`${url}/Rows/?test_${test_type}=7`);
+                    });
+                    it_unaffectedValuesAreUnchanged();
+                    const first = 12;
+                    const second = 13;
+                    const third = 14;
+                    it("1st Override applies to first matching string by adding '-1'", function () {
+                        nthSelectorEqualsText(first, "span.val", "valuecontainingabc-1");
+                    });
+                    it("1st and 3rd Overrides apply to SECOND matching string by adding '-13' - to demonstrate it works in order", function () {
+                        nthSelectorEqualsText(second, "span.val", "valuecontainingabc1-13");
+                    });
+                    it("1st, 2nd and 3rd Overrides apply to THIRD matching string by adding '-123'- to demonstrate it works in order", function () {
+                        nthSelectorEqualsText(third, "span.val", "valuecontainingabc12-123");
+                    });
+                });
+
+                describe("readme Example6: matches, but no overrides - has no effect on existing values", function () {
+                    it("visit test page", function () {
+                        setViewportAndVisitUrl(`${url}/Rows/?test_${test_type}=8`);
+                    });
+                    it_unaffectedValuesAreUnchanged();
+                });
             });
         });
 
@@ -570,138 +639,12 @@ module.exports = (index) => {
             });
         });
     });
-
-    describe(url + ": " + "Settings - 'rows' override", function () {
-        describe("No rows - has no effect on existing values", function () {
-            it("visit test page", function () {
-                setViewportAndVisitUrl(url + "/Rows/?test=1");
-            });
-
-            it_unaffectedValuesAreUnchanged();
-        });
-
-        describe("readme Example1: custom HTML row", function () {
-            it("visit test page", function () {
-                setViewportAndVisitUrl(url + "/Rows/?test=2");
-            });
-            it_unaffectedValuesAreUnchanged();
-            const selector = ".test2";
-            const first = 0;
-            it("Basic html override", function () {
-                nthSelectorEqualsText(first, selector, "containsABC: valuecontainingabc");
-            });
-            it("Has red text", function () {
-                cy.get(selector)
-                    .should("have.attr", "style")
-                    .then(function (style) {
-                        expect(style).to.eq("color:red");
-                    });
-            });
-        });
-
-        describe("readme Example2: overriding the value of an existing 'String' Type", function () {
-            it("visit test page", function () {
-                setViewportAndVisitUrl(url + "/Rows/?test=3");
-            });
-            it_unaffectedValuesAreUnchanged("string");
-            it("Overrides all strings by adding '!'", function () {
-                const string_val = 1;
-                const val = 12;
-                nthSelectorEqualsText(string_val, "span.val", "testy!");
-                nthSelectorEqualsText(val, "span.val", "valuecontainingabc!");
-            });
-        });
-
-        describe("readme Example3: simplifying an object", function () {
-            it("visit test page", function () {
-                setViewportAndVisitUrl(url + "/Rows/?test=4");
-            });
-            it_unaffectedValuesAreUnchanged();
-            it("Displays conctatenated value 'test1 (test10)'", function () {
-                const val = 12;
-                nthSelectorEqualsText(val, "span.val", "test1 (test10)");
-            });
-            it("Displays updated 'string' type instead of original 'object'", function () {
-                const type = 10;
-                nthSelectorEqualsText(type, "span.type", "string");
-            });
-        });
-
-        describe("readme Example4: changing the type", function () {
-            it("visit test page", function () {
-                setViewportAndVisitUrl(url + "/Rows/?test=5");
-            });
-            it_unaffectedValuesAreUnchanged();
-            it("Displays updated 'my_type' type instead of original 'object'", function () {
-                const type = 10;
-                nthSelectorEqualsText(type, "span.type", "my_type");
-            });
-        });
-
-        describe("readme Example5: tweaking row_settings, without changing html", function () {
-            it("visit test page", function () {
-                setViewportAndVisitUrl(url + "/Rows/?test=6");
-            });
-            it_unaffectedValuesAreUnchanged();
-            it("Updates key to 'mykey'", function () {
-                const key = 10;
-                nthSelectorEqualsText(key, "span.key", "mykey");
-            });
-            it("Displays conctatenated value 'containsABC: valuecontainingabc'", function () {
-                const val = 12;
-                nthSelectorEqualsText(val, "span.val", "containsABC: valuecontainingabc");
-            });
-            it("Updates type to 'my_type'", function () {
-                const type = 10;
-                nthSelectorEqualsText(type, "span.type", "my_type");
-            });
-            const num_spaces = 12;
-            it(`Updates indent spaces to ${num_spaces}`, function () {
-                const selector = "div.row span";
-                const span = 62;
-
-                cy.get(selector)
-                    .eq(span)
-                    .invoke("text")
-                    .then((text) => {
-                        const spaces = text.split("mykey");
-                        expect(spaces[0].length).to.equal(num_spaces);
-                    });
-            });
-        });
-
-        describe("readme Example2a: multiple overrides - of the value of an existing 'String' Type", function () {
-            it("visit test page", function () {
-                setViewportAndVisitUrl(url + "/Rows/?test=7");
-            });
-            it_unaffectedValuesAreUnchanged();
-            const first = 12;
-            const second = 13;
-            const third = 14;
-            it("1st Override applies to first matching string by adding '-1'", function () {
-                nthSelectorEqualsText(first, "span.val", "valuecontainingabc-1");
-            });
-            it("1st and 3rd Overrides apply to SECOND matching string by adding '-13' - to demonstrate it works in order", function () {
-                nthSelectorEqualsText(second, "span.val", "valuecontainingabc1-13");
-            });
-            it("1st, 2nd and 3rd Overrides apply to THIRD matching string by adding '-123'- to demonstrate it works in order", function () {
-                nthSelectorEqualsText(third, "span.val", "valuecontainingabc12-123");
-            });
-        });
-
-        describe("readme Example6: matches, but no overrides - has no effect on existing values", function () {
-            it("visit test page", function () {
-                setViewportAndVisitUrl(url + "/Rows/?test=8");
-            });
-            it_unaffectedValuesAreUnchanged();
-        });
-    });
 };
 
 function callAutomaticCounterTests(url, rate, before, after, not, is_settings) {
     const queryString = is_settings ? "?settingsTest=rateLimit" : "?rateLimit=";
     const full_url = rate === 100 ? url : url + queryString + rate;
-    const test_type = is_settings ? " (from settings:ratelimit prop)" : " (from ratelimit prop)";
+    const test_type = is_settings ? " (from settings:ratelimit)" : " (from ratelimit prop)";
     it(`data before rate:${rate} is same ${test_type}`, function () {
         testAutomaticCounter(full_url, "span.cache_data", before, false, not);
     });

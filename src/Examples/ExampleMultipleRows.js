@@ -7,6 +7,7 @@ const value = {
 
 const test1 = {
     value,
+    settings: {},
 };
 
 const test2 = {
