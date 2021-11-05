@@ -84,7 +84,6 @@ const dist_custom_element_iife_copy2 = {
 };
 
 //custom element distributable as ES module index.mjs
-//v2 attempt using preprocessor
 const dist_custom_element_es = {
     input: "./src/Examples/CustomElement/main_es.js",
     output: [
@@ -103,6 +102,29 @@ const dist_custom_element_es = {
             dedupe: ["svelte"],
         }),
         move_styles_to_root_element("./" + pkg.module),
+        terser(),
+    ],
+};
+
+//custom element distributable as ES module value.mjs
+const dist_value_custom_element_es = {
+    input: "./src/Examples/ValueCustomElement/main_es.js",
+    output: [
+        {
+            file: "dist/value.mjs",
+            sourcemap: true,
+            format: "es",
+            name: "SvelteObjectExplorerValueCustomElementESModule",
+        },
+    ],
+    plugins: [
+        rolluppluginiconifysvg({ logging: "some" }),
+        svelte(create_custom_element),
+        resolve({
+            browser: true,
+            dedupe: ["svelte"],
+        }),
+        move_styles_to_root_element("./dist/value.mjs"),
         terser(),
     ],
 };
@@ -202,4 +224,6 @@ export default [
     expander_example1_svelte_component,
     expander_example2_svelte_component,
     rows_example1_svelte_component,
+
+    dist_value_custom_element_es,
 ];
