@@ -216,7 +216,6 @@ export default [
     dist_custom_element_es,
 
     example_page_custom_element_es,
-    /*
     expander_example1_custom_element_es,
     expander_example2_custom_element_es,
     rows_example_custom_element_es,
@@ -235,5 +234,4 @@ export default [
     rows_example1_svelte_component,
 
     dist_value_custom_element_es,
-    */
 ];
