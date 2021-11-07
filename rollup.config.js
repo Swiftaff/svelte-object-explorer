@@ -1,4 +1,5 @@
 import svelte from "rollup-plugin-svelte";
+import commonjs from "@rollup/plugin-commonjs";
 import resolve from "@rollup/plugin-node-resolve";
 import pkg from "./package.json";
 import rolluppluginiconifysvg from "rollup-plugin-iconify-svg";
@@ -16,6 +17,7 @@ import { terser } from "rollup-plugin-terser";
 const plugins = [
     rolluppluginiconifysvg({ logging: "some" }),
     svelte({ ...removeWhitespace, emitCss: false }),
+    commonjs(),
     resolve({
         browser: true,
         dedupe: ["svelte"],
@@ -30,6 +32,7 @@ const dist_custom_element_iife = {
     plugins: [
         rolluppluginiconifysvg({ logging: "some" }),
         svelte(create_custom_element),
+        commonjs(),
         resolve({
             browser: true,
             dedupe: ["svelte"],
@@ -52,6 +55,7 @@ const dist_custom_element_iife_copy1 = {
     plugins: [
         rolluppluginiconifysvg({ logging: "some" }),
         svelte(create_custom_element),
+        commonjs(),
         resolve({
             browser: true,
             dedupe: ["svelte"],
@@ -74,6 +78,7 @@ const dist_custom_element_iife_copy2 = {
     plugins: [
         rolluppluginiconifysvg({ logging: "some" }),
         svelte(create_custom_element),
+        commonjs(),
         resolve({
             browser: true,
             dedupe: ["svelte"],
@@ -97,6 +102,7 @@ const dist_custom_element_es = {
     plugins: [
         rolluppluginiconifysvg({ logging: "some" }),
         svelte(create_custom_element),
+        commonjs(),
         resolve({
             browser: true,
             dedupe: ["svelte"],
@@ -120,6 +126,7 @@ const dist_value_custom_element_es = {
     plugins: [
         rolluppluginiconifysvg({ logging: "some" }),
         svelte(create_custom_element),
+        commonjs(),
         resolve({
             browser: true,
             dedupe: ["svelte"],
@@ -206,6 +213,14 @@ const rows_example1_svelte_component = {
 };
 
 export default [
+    dist_custom_element_es,
+
+    example_page_custom_element_es,
+    /*
+    expander_example1_custom_element_es,
+    expander_example2_custom_element_es,
+    rows_example_custom_element_es,
+
     dist_custom_element_iife,
     dist_custom_element_iife_copy1,
     dist_custom_element_iife_copy2,
@@ -214,16 +229,11 @@ export default [
     expander_example2_custom_element_iife,
     rows_example_custom_element_iife,
 
-    dist_custom_element_es,
-    example_page_custom_element_es,
-    expander_example1_custom_element_es,
-    expander_example2_custom_element_es,
-    rows_example_custom_element_es,
-
     example_page_svelte_component,
     expander_example1_svelte_component,
     expander_example2_svelte_component,
     rows_example1_svelte_component,
 
     dist_value_custom_element_es,
+    */
 ];

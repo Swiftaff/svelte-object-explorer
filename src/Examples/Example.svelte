@@ -2,16 +2,14 @@
     import { count } from "./ExampleCustomStore.js";
     import example_rows from "./ExampleRows.js";
     import settingsFixtures from "./ExampleSettings.js";
+    import { exampleArray, exampleValue } from "./ExampleValue.js";
 
     export let sendprops = () => {};
 
     let thisPage;
     let counter = 1;
-    let array = [
-        { first: "Bob", surname: "Marley" },
-        { first: "John", surname: "Lennon" },
-        { first: "The Chuckle", surname: "Brothers" },
-    ];
+    let example_extras = { SvelteVariable: counter, customStore: count, customStoreValue: $count, html: thisPage };
+    let array = exampleArray;
     let value = {};
     let params = new URL(document.location).searchParams;
     let open = params.get("openPropsTest");
@@ -28,84 +26,14 @@
     $: if (thisPage) update_value();
 
     function update_value() {
-        value = {
-            html: thisPage,
-            string1: "testy",
-            longstring:
-                "Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet.",
-            array,
-            array2: [[["test1", "test2"], "test2"], "test2"],
-            longarray: new Array(101).fill("x").map((x, i) => "" + i),
-            object: {
-                test1: {
-                    test1: { test1: { test1: "test1", test2: "test2" }, test2: "test2" },
-                    test2: "test2",
-                },
-                test2: "test2",
-            },
-            number1: 123,
-            number2: 123.456789,
-            //number3: 9007199254740992n * 2,
-            boolean1: true,
-            boolean2: false,
-            null: null,
-            undefined: undefined,
-            symbol1: Symbol(),
-            symbol2: Symbol("foo"),
-            arrowfunction: () => {},
-            arrowfunction2: (a, b, c, d) => {
-                console.log("long, long, long, long comment test");
-                arrowfunction();
-            },
-            function: function test(a, b, c, d) {
-                console.log("test");
-            },
-            deep: {
-                deep: {
-                    deep: {
-                        deep: {
-                            deep: {
-                                arrowfunction2: (a, b, c, d) => {
-                                    console.log("long, long, long, long comment test");
-                                    arrowfunction();
-                                },
-                            },
-                        },
-                    },
-                },
-                SvelteVariable: counter,
-            },
-            SvelteVariable: counter,
-            customStore: count,
-            customStoreValue: $count,
-            pluginTest1a: {
-                name: "custom_object1",
-                specific_key1: "test1",
-                value_key_a: "abc",
-            },
-            pluginTest1b: {
-                name: "custom_object1",
-                specific_key1: "test1",
-                value_key_a: "abc",
-                value_key_b: "123",
-            },
-            pluginTest2: "string: starts with string",
-            pluginTest3: {
-                name: "custom_object2",
-                specific_key2: "test2",
-                value_key_b: "ABC",
-                value_key_c: 2,
-            },
-            pluginTest4: {
-                name: "custom_object2",
-                specific_key2: "test2",
-                value_key_b: "ABC",
-                value_key_c: 2,
-                value_key_d: Symbol("test"),
-            },
-        };
+        exampleValue.SvelteVariable = counter;
+        exampleValue.customStore = count;
+        exampleValue.customStoreValue = $count;
+        exampleValue.html = thisPage;
+        example_extras = { SvelteVariable: counter, customStore: count, customStoreValue: $count, html: thisPage };
+        value = exampleValue;
         const settings = getSettings();
-        const props = { value, open, fade, tabposition, ratelimit, rows, settings };
+        const props = { value, open, fade, tabposition, ratelimit, rows, settings, example_extras };
         sendprops(props);
     }
 
@@ -143,9 +71,8 @@
                 counter++;
                 update_value();
                 const settings = getSettings();
-                const props = { value, open, fade, tabposition, ratelimit, rows, settings };
+                const props = { value, open, fade, tabposition, ratelimit, rows, settings, example_extras };
                 sendprops(props);
-                window.svelteobjectexplorer = props;
             }, 1000);
         } else clearInterval(loop);
     }

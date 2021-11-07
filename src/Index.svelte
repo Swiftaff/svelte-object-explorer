@@ -76,8 +76,8 @@
 
     function refreshDataAndCache() {
         if (toggle) {
-            get_props_from_window_object();
-            override_props_with_settings();
+            get_props_from_settings_or_window();
+
             const current_time = new Date();
             if (isTimeToCheckData(current_time)) {
                 cache.dataLastChecked = current_time;
@@ -140,29 +140,26 @@
         }
     }
 
-    function get_props_from_window_object() {
-        const obj = window.svelteobjectexplorer;
-        if (window && obj) {
-            if ("settings" in obj) settings = obj.settings;
-            if ("value" in obj) value = obj.value;
-            if ("open" in obj) open = obj.open;
-            if ("fade" in obj) fade = obj.fade;
-            if ("tabposition" in obj) tabposition = obj.tabposition;
-            if ("ratelimit" in obj) ratelimit = obj.ratelimit;
-            if ("rows" in obj) rows = obj.rows;
-        }
+    function get_props_from_settings_or_window() {
+        if (window && window.svelteobjectexplorer) override_props(window.svelteobjectexplorer);
+        if (
+            settings &&
+            (!window ||
+                (window && !window.svelteobjectexplorer) ||
+                (window && window.svelteobjectexplorer && !window.svelteobjectexplorer.overridesettings))
+        )
+            override_props(settings); // settings approach overrides window approach
     }
 
-    function override_props_with_settings() {
-        if (settings) {
-            //console.log("settings", settings);
-            if ("value" in settings) value = settings.value;
-            if ("open" in settings) open = settings.open;
-            if ("fade" in settings) fade = settings.fade;
-            if ("tabposition" in settings) tabposition = settings.tabposition;
-            if ("ratelimit" in settings && typeof settings.ratelimit === "number") ratelimit = settings.ratelimit;
-            if ("rows" in settings) rows = settings.rows;
-        }
+    function override_props(obj) {
+        //console.log("obj", obj);
+        if ("settings" in obj) settings = obj.settings;
+        if ("value" in obj) value = obj.value;
+        if ("open" in obj) open = obj.open;
+        if ("fade" in obj) fade = obj.fade;
+        if ("tabposition" in obj) tabposition = obj.tabposition;
+        if ("ratelimit" in obj) ratelimit = obj.ratelimit;
+        if ("rows" in obj) rows = obj.rows;
     }
 
     // UI functions

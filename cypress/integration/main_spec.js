@@ -20,106 +20,30 @@ const VIEWPORT_WIDTH = 1000;
 const es = "/CustomElementES";
 const iife = "/CustomElementIIFE";
 const svelte = "/SvelteComponent";
-const example_urls = [es, iife, svelte];
 const excerpts_of_urls_with_no_startstop = ["Expander", "Rows"];
+
+// exported
+const example_urls = [es, iife, svelte];
 const props_and_settings = ["props", "settings"];
+const expected_positions = {
+    longstring_row: 3,
+    longstring_row_2nd_position: 16,
+};
 
-module.exports = (index) => {
-    const url = example_urls[index];
-    describe(url + ": " + "Toggle Main panel", function () {
-        it("Panel is visible", function () {
-            setViewportAndVisitUrl(url);
-            cy.get("div.tree");
-        });
-
-        it("Hide button is visible", function () {
-            cy.get("div.toggle.toggleShow");
-        });
-
-        it("Clicking hide button, hides panel", function () {
-            cy.get("div.toggle.toggleShow").click();
-            cy.get("div.toggle.toggleHide");
-            cy.get("div.tree").should("not.exist");
-        });
-
-        it("Show button is visible", function () {
-            cy.get("div.toggle.toggleHide");
-        });
-
-        it("Clicking show button, shows panel", function () {
-            cy.get("div.toggle.toggleHide").click();
-            cy.get("div.tree");
-        });
-    });
-
-    describe(url + ": " + "Toggle panel objects", function () {
-        const rows = 27;
-        const multiline_rows = 9;
-        const all = rows + multiline_rows;
-        it(`Count of data rows should be ${all} (${rows} rows + ${multiline_rows} multilines)`, function () {
-            //setViewportAndVisitUrl(url);
-            cy.get("div.row").should("have.length", all);
-            nthSelectorEqualsText(0, "span.len", "(" + rows + ")");
-        });
-
-        it("List of child types should match test data", function () {
-            const types = [o, h, s, s, a, a, A, o, n, n, b, b, N, u, S, S, F, F, f, o, n, o, n, c1a, c1b, c2, c3];
-            for (let i = 0; i < types.length; i++) {
-                nthSelectorEqualsText(i, "span.type", types[i]);
-            }
-        });
-
-        const html_row = 1;
-        const child_rows = 13;
-        it(`Clicking first sub-item 'HTML' expand arrow, should expand item, showing ${child_rows} children of correct type`, function () {
-            //setViewportAndVisitUrl(url);
-            cy.get("button.pause").click();
-            nthSelectorClick(1, "span.dataArrow");
-            nthSelectorEqualsText(html_row, "span.len", `(${child_rows})`);
-            nthSelectorEqualsText(html_row, "span.type", "HTML");
-
-            for (let i = html_row + 1; i < child_rows; i++) {
-                nthSelectorEqualsText(i, "span.type", h);
-            }
-        });
-    });
+function test_suite(url, props_and_settings, is_not_a_shared_test = true) {
+    describe(url + ": " + "Toggle Main panel", () => shared_toggle_main_panel());
+    describe(url + ": " + "Toggle panel objects", () => shared_toggle_panel_objects());
 
     describe(url + ": " + "Props or Settings", function () {
         props_and_settings.forEach((test_type) => {
-            describe(`${url}: open (${test_type})`, function () {
-                const longstring_row = 3;
-                const longstring_row_2nd_position = 16;
-                const test_query = test_type === "settings" ? "settingsTest" : "openPropsTest";
-                it(`Open = null, No panels are open`, function () {
-                    setViewportAndVisitUrl(url);
-                    //item 'longstring' with no panels open above it, should be in original position
-                    nthSelectorEqualsText(longstring_row, "div.row span.key", "longstring");
-                });
-
-                it("Open = 'string1', is not an object or array so no panels are open", function () {
-                    setViewportAndVisitUrl(`${url}?${test_query}=string1`);
-                    //item 'longstring' with no panels open above it, should be in original position
-                    nthSelectorEqualsText(longstring_row, "div.row span.key", "longstring");
-                });
-
-                it("Open = 'bananaman', is not a valid reference so no panels are open", function () {
-                    setViewportAndVisitUrl(`${url}?${test_query}=bananaman`);
-                    //item 'longstring' with no panels open above it, should be in original position
-                    nthSelectorEqualsText(longstring_row, "div.row span.key", "longstring");
-                });
-
-                it("Open = 'html', is an object, so it is open, so longstring is further down", function () {
-                    setViewportAndVisitUrl(`${url}?${test_query}=html`);
-                    //item 'longstring' after expanded 'html' should be further down
-                    nthSelectorEqualsText(longstring_row_2nd_position, "div.row span.key", "longstring");
-                });
-            });
+            if (is_not_a_shared_test)
+                describe(`${url}: open (${test_type})`, () => prop_open(test_type, expected_positions));
 
             describe(`${url}: fade (${test_type})`, function () {
                 describe(url + ": " + "Fade = true", function () {
                     it("Panel is visible with 0.3 opacity when NOT mouseover", function () {
                         const test_query = test_type === "settings" ? "settingsTest=fade1" : "fade=true";
-                        setViewportAndVisitUrl(`${url}?${test_query}`);
+                        setViewportAndVisitUrlAndExtraSteps(`${url}?${test_query}`);
                         cy.get("div.tree").should("have.css", "opacity", "0.3");
                     });
 
@@ -130,7 +54,7 @@ module.exports = (index) => {
 
                 describe(url + ": " + "Fade = false", function () {
                     it("Panel is visible with 1 opacity when NOT mouseover", function () {
-                        setViewportAndVisitUrl(url);
+                        setViewportAndVisitUrlAndExtraSteps(url);
                         cy.get("div.tree").should("have.css", "opacity", "1");
                     });
 
@@ -142,22 +66,22 @@ module.exports = (index) => {
 
             describe(`${url}: tabposition (${test_type})`, function () {
                 it("The 'Show' Panel is in the top by default", function () {
-                    setViewportAndVisitUrl(url);
+                    setViewportAndVisitUrlAndExtraSteps(url);
                     cy.get("div.toggle.toggleShow.togglenull");
                 });
                 it("The 'Show' Panel is in the top, because of prop 'tabposition=top'", function () {
                     const test_query = test_type === "settings" ? "settingsTest=tab2" : "tabposition=top";
-                    setViewportAndVisitUrl(`${url}?${test_query}`);
+                    setViewportAndVisitUrlAndExtraSteps(`${url}?${test_query}`);
                     cy.get("div.toggle.toggleShow.toggletop");
                 });
                 it("The 'Show' Panel is in the middle, because of prop 'tabposition=middle'", function () {
                     const test_query = test_type === "settings" ? "settingsTest=tab3" : "tabposition=middle";
-                    setViewportAndVisitUrl(`${url}?${test_query}`);
+                    setViewportAndVisitUrlAndExtraSteps(`${url}?${test_query}`);
                     cy.get("div.toggle.toggleShow.togglemiddle");
                 });
                 it("The 'Show' Panel is in the bottom, because of prop 'tabposition=bottom'", function () {
                     const test_query = test_type === "settings" ? "settingsTest=tab4" : "tabposition=bottom";
-                    setViewportAndVisitUrl(`${url}?${test_query}`);
+                    setViewportAndVisitUrlAndExtraSteps(`${url}?${test_query}`);
                     cy.get("div.toggle.toggleShow.togglebottom");
                 });
             });
@@ -165,14 +89,14 @@ module.exports = (index) => {
             describe(`${url}: Settings - 'rows' override (${test_type})`, function () {
                 describe("No rows - has no effect on existing values", function () {
                     it("visit test page", function () {
-                        setViewportAndVisitUrl(`${url}/Rows/?test_${test_type}=1`);
+                        setViewportAndVisitUrlAndExtraSteps(`${url}/Rows/?test_${test_type}=1`);
                     });
                     it_unaffectedValuesAreUnchanged();
                 });
 
                 describe("readme Example1: custom HTML row", function () {
                     it("visit test page", function () {
-                        setViewportAndVisitUrl(`${url}/Rows/?test_${test_type}=2`);
+                        setViewportAndVisitUrlAndExtraSteps(`${url}/Rows/?test_${test_type}=2`);
                     });
                     it_unaffectedValuesAreUnchanged();
                     const selector = ".test2";
@@ -191,7 +115,7 @@ module.exports = (index) => {
 
                 describe("readme Example2: overriding the value of an existing 'String' Type", function () {
                     it("visit test page", function () {
-                        setViewportAndVisitUrl(`${url}/Rows/?test_${test_type}=3`);
+                        setViewportAndVisitUrlAndExtraSteps(`${url}/Rows/?test_${test_type}=3`);
                     });
                     it_unaffectedValuesAreUnchanged("string");
                     it("Overrides all strings by adding '!'", function () {
@@ -204,7 +128,7 @@ module.exports = (index) => {
 
                 describe("readme Example3: simplifying an object", function () {
                     it("visit test page", function () {
-                        setViewportAndVisitUrl(`${url}/Rows/?test_${test_type}=4`);
+                        setViewportAndVisitUrlAndExtraSteps(`${url}/Rows/?test_${test_type}=4`);
                     });
                     it_unaffectedValuesAreUnchanged();
                     it("Displays conctatenated value 'test1 (test10)'", function () {
@@ -219,7 +143,7 @@ module.exports = (index) => {
 
                 describe("readme Example4: changing the type", function () {
                     it("visit test page", function () {
-                        setViewportAndVisitUrl(`${url}/Rows/?test_${test_type}=5`);
+                        setViewportAndVisitUrlAndExtraSteps(`${url}/Rows/?test_${test_type}=5`);
                     });
                     it_unaffectedValuesAreUnchanged();
                     it("Displays updated 'my_type' type instead of original 'object'", function () {
@@ -230,7 +154,7 @@ module.exports = (index) => {
 
                 describe("readme Example5: tweaking row_settings, without changing html", function () {
                     it("visit test page", function () {
-                        setViewportAndVisitUrl(`${url}/Rows/?test_${test_type}=6`);
+                        setViewportAndVisitUrlAndExtraSteps(`${url}/Rows/?test_${test_type}=6`);
                     });
                     it_unaffectedValuesAreUnchanged();
                     it("Updates key to 'mykey'", function () {
@@ -262,7 +186,7 @@ module.exports = (index) => {
 
                 describe("readme Example2a: multiple overrides - of the value of an existing 'String' Type", function () {
                     it("visit test page", function () {
-                        setViewportAndVisitUrl(`${url}/Rows/?test_${test_type}=7`);
+                        setViewportAndVisitUrlAndExtraSteps(`${url}/Rows/?test_${test_type}=7`);
                     });
                     it_unaffectedValuesAreUnchanged();
                     const first = 12;
@@ -281,7 +205,7 @@ module.exports = (index) => {
 
                 describe("readme Example6: matches, but no overrides - has no effect on existing values", function () {
                     it("visit test page", function () {
-                        setViewportAndVisitUrl(`${url}/Rows/?test_${test_type}=8`);
+                        setViewportAndVisitUrlAndExtraSteps(`${url}/Rows/?test_${test_type}=8`);
                     });
                     it_unaffectedValuesAreUnchanged();
                 });
@@ -310,13 +234,13 @@ module.exports = (index) => {
     describe(url + ": " + "Panel data updates when App data updates", function () {
         describe("Manual: Clicking counter buttons should change the manual counter", function () {
             it("customStoreValue is initially set to 0", function () {
-                setViewportAndVisitUrl(url);
+                setViewportAndVisitUrlAndExtraSteps(url);
                 nthSelectorEqualsText(customStoreValue_row, "div.row span.key", "customStoreValue");
                 nthSelectorEqualsText(customStoreValue_end_row, "div.row span.val", "0"); // 22 + 6 multi-lines from longstring
             });
 
             it("click increase button twice, should equal 2", function () {
-                setViewportAndVisitUrl(url);
+                setViewportAndVisitUrlAndExtraSteps(url);
                 cy.get("#incr").click();
                 cy.get("#incr").click();
                 cy.wait(1000);
@@ -338,7 +262,7 @@ module.exports = (index) => {
 
         describe(url + ": " + "Automatic: Data updates when paused and un-paused, compared to view", function () {
             it("data and view are the same on page load", function () {
-                setViewportAndVisitUrl(url);
+                setViewportAndVisitUrlAndExtraSteps(url);
                 cy.get("span.cache_view")
                     .invoke("text")
                     .then((count1) => {
@@ -347,7 +271,7 @@ module.exports = (index) => {
                     });
             });
             it("after 1 seconds of pausing, data has increased, but view should not", function () {
-                setViewportAndVisitUrl(url);
+                setViewportAndVisitUrlAndExtraSteps(url);
                 cy.get("button.pause").click();
                 cy.get("span.cache_data")
                     .invoke("text")
@@ -369,7 +293,7 @@ module.exports = (index) => {
                     });
             });
             it("both data and view will update after unpause", function () {
-                setViewportAndVisitUrl(url);
+                setViewportAndVisitUrlAndExtraSteps(url);
                 cy.get("button.pause").click();
                 cy.get("span.cache_data")
                     .invoke("text")
@@ -401,7 +325,7 @@ module.exports = (index) => {
     describe(url + ": " + "Adjust panel width", function () {
         describe("Mousedown/mouseup on edge, will toggle the transition of the toggle button", function () {
             it("toggle has transition on page load", function () {
-                setViewportAndVisitUrl(url + "/Expander/Example1");
+                setViewportAndVisitUrlAndExtraSteps(url + "/Expander/Example1");
                 cy.get(".toggle").then((el) => {
                     expect(el[0].style.transitionDuration).to.equal("0.2s");
                 });
@@ -433,7 +357,7 @@ module.exports = (index) => {
 
         describe("Dragging left and right, changes width, saves to localStorage", function () {
             it("Drag edge to the left, will increase panel width", function () {
-                setViewportAndVisitUrl(url + "/Expander/Example1");
+                setViewportAndVisitUrlAndExtraSteps(url + "/Expander/Example1");
                 let first, second, clientX;
 
                 //mousedown on edge, get position
@@ -458,7 +382,7 @@ module.exports = (index) => {
             });
 
             it("Drag edge too far to the left, will increase panel width to max", function () {
-                setViewportAndVisitUrl(url + "/Expander/Example1");
+                setViewportAndVisitUrlAndExtraSteps(url + "/Expander/Example1");
                 let first, second, clientX;
                 const leftmost = 26;
 
@@ -540,7 +464,7 @@ module.exports = (index) => {
             const rows = 4;
             const content_row = 8;
             it(`should have ${rows} rows of data to start with`, function () {
-                setViewportAndVisitUrl(url + "/Expander/Example1");
+                setViewportAndVisitUrlAndExtraSteps(url + "/Expander/Example1");
 
                 cy.get("div.row").should("have.length", rows);
             });
@@ -569,7 +493,7 @@ module.exports = (index) => {
             const rows = 63;
 
             it(`has ${rows} rows of data to start with`, function () {
-                setViewportAndVisitUrl(url + "/Expander/Example2");
+                setViewportAndVisitUrlAndExtraSteps(url + "/Expander/Example2");
                 nthSelectorClick(expander3_child_arrow, "span.dataArrow");
                 nthSelectorClick(expander4_child_arrow, "span.dataArrow");
                 cy.get("div.row").should("have.length", rows);
@@ -639,7 +563,95 @@ module.exports = (index) => {
             });
         });
     });
-};
+    // --------------------------------------------------
+    // these specs below are also used by svelte-app-explorer
+    function shared_toggle_main_panel() {
+        it("Panel is visible", function () {
+            setViewportAndVisitUrlAndExtraSteps(url);
+            cy.get("div.tree");
+        });
+
+        it("Hide button is visible", function () {
+            cy.get("div.toggle.toggleShow");
+        });
+
+        it("Clicking hide button, hides panel", function () {
+            cy.get("div.toggle.toggleShow").click();
+            cy.get("div.toggle.toggleHide");
+            cy.get("div.tree").should("not.exist");
+        });
+
+        it("Show button is visible", function () {
+            cy.get("div.toggle.toggleHide");
+        });
+
+        it("Clicking show button, shows panel", function () {
+            cy.get("div.toggle.toggleHide").click();
+            cy.get("div.tree");
+        });
+    }
+
+    function shared_toggle_panel_objects() {
+        const rows = 27;
+        const multiline_rows = 9;
+        const all = rows + multiline_rows;
+        it(`Count of data rows should be ${all} (${rows} rows + ${multiline_rows} multilines)`, function () {
+            setViewportAndVisitUrlAndExtraSteps(url);
+            cy.get("div.row").should("have.length", all);
+            nthSelectorEqualsText(0, "span.len", "(" + rows + ")");
+        });
+
+        it("List of child types should match test data", function () {
+            const types = [o, h, s, s, a, a, A, o, n, n, b, b, N, u, S, S, F, F, f, o, n, o, n, c1a, c1b, c2, c3];
+            for (let i = 0; i < types.length; i++) {
+                nthSelectorEqualsText(i, "span.type", types[i]);
+            }
+        });
+
+        const html_row = 1;
+        const child_rows = 13;
+        it(`Clicking first sub-item 'HTML' expand arrow, should expand item, showing ${child_rows} children of correct type`, function () {
+            cy.get("button.pause").click();
+            nthSelectorClick(1, "span.dataArrow");
+            nthSelectorEqualsText(html_row, "span.len", `(${child_rows})`);
+            nthSelectorEqualsText(html_row, "span.type", "HTML");
+
+            for (let i = html_row + 1; i < child_rows; i++) {
+                nthSelectorEqualsText(i, "span.type", h);
+            }
+        });
+    }
+
+    // these specs above are also used by svelte-app-explorer
+    // --------------------------------------------------
+
+    function prop_open(test_type, positions) {
+        const test_query = test_type === "settings" ? "settingsTest" : "openPropsTest";
+        it(`Open = null, No panels are open`, function () {
+            setViewportAndVisitUrlAndExtraSteps(url);
+            //item 'longstring' with no panels open above it, should be in original position
+            nthSelectorEqualsText(positions.longstring_row, "div.row span.key", "longstring");
+        });
+
+        it("Open = 'string1', is not an object or array so no panels are open", function () {
+            setViewportAndVisitUrlAndExtraSteps(`${url}?${test_query}=string1`);
+            //item 'longstring' with no panels open above it, should be in original position
+            nthSelectorEqualsText(positions.longstring_row, "div.row span.key", "longstring");
+        });
+
+        it("Open = 'bananaman', is not a valid reference so no panels are open", function () {
+            setViewportAndVisitUrlAndExtraSteps(`${url}?${test_query}=bananaman`);
+            //item 'longstring' with no panels open above it, should be in original position
+            nthSelectorEqualsText(positions.longstring_row, "div.row span.key", "longstring");
+        });
+
+        it("Open = 'html', is an object, so it is open, so longstring is further down", function () {
+            setViewportAndVisitUrlAndExtraSteps(`${url}?${test_query}=html`);
+            //item 'longstring' after expanded 'html' should be further down
+            nthSelectorEqualsText(positions.longstring_row_2nd_position, "div.row span.key", "longstring");
+        });
+    }
+}
 
 function callAutomaticCounterTests(url, rate, before, after, not, is_settings) {
     const queryString = is_settings ? "?settingsTest=rateLimit" : "?rateLimit=";
@@ -660,7 +672,7 @@ function callAutomaticCounterTests(url, rate, before, after, not, is_settings) {
 }
 
 function testAutomaticCounter(url, selector, wait, should_be_greater, not_visible = "", i) {
-    setViewportAndVisitUrl(url);
+    setViewportAndVisitUrlAndExtraSteps(url);
     cy.get(selector)
         .invoke("text")
         .then((count1) => {
@@ -704,8 +716,8 @@ function it_unaffectedValuesAreUnchanged(exceptions = "") {
     });
 }
 
-function nthSelectorEqualsText(n, selector, compare_text) {
-    cy.get(selector).eq(n).invoke("text").should("equal", compare_text);
+function nthSelectorEqualsText(n, selector, compare_text, equality = "equal") {
+    cy.get(selector).eq(n).invoke("text").should(equality, compare_text);
 }
 
 function nthSelectorClick(n, selector) {
@@ -715,6 +727,10 @@ function nthSelectorClick(n, selector) {
 function setViewportAndVisitUrl(url) {
     cy.viewport(VIEWPORT_WIDTH, 600);
     cy.visit(url);
+}
+
+function setViewportAndVisitUrlAndExtraSteps(url) {
+    setViewportAndVisitUrl(url);
     extra_steps_for_main_test_url(url);
 }
 
@@ -723,12 +739,15 @@ function extra_steps_for_main_test_url(url) {
         excerpts_of_urls_with_no_startstop.filter((excerpt) => url.includes(excerpt)).length == 0;
     if (is_a_main_test_url) {
         cy.get(".startstop").click();
-        wait_for_panel_to_populate_with_real_data_not_just_first_dom_load();
+        wait_for_panel_to_populate_with_real_data_not_just_first_dom_load(27);
     }
 }
 
-function wait_for_panel_to_populate_with_real_data_not_just_first_dom_load() {
-    cy.get("span.len").eq(0).invoke("text").should("equal", "(27)");
+function wait_for_panel_to_populate_with_real_data_not_just_first_dom_load(val) {
+    cy.get("span.len")
+        .eq(0)
+        .invoke("text")
+        .should("equal", `(${"" + val})`);
 }
 
 function getStyleLeftValue(el) {
@@ -742,3 +761,14 @@ function mouseMoveX(x) {
         win.dispatchEvent(new win.MouseEvent("mouseup", { clientX: x, clientY: 0 }));
     });
 }
+
+module.exports = {
+    test_suite,
+    example_urls,
+    props_and_settings,
+    expected_positions,
+    setViewportAndVisitUrl,
+    nthSelectorEqualsText,
+    nthSelectorClick,
+    wait_for_panel_to_populate_with_real_data_not_just_first_dom_load,
+};
